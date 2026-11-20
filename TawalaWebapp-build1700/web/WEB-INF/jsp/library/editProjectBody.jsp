@@ -50,7 +50,7 @@
 							<c:when test="${form.savedCategoryId != 0}">
 								<c:set var="selectedCategoryId" value="${form.savedCategoryId}"/>
 							</c:when>
-							<c:when test="${form.project.category.id != 0}">
+							<c:when test="${not empty form.project.category and form.project.category.id != 0}">
 								<c:set var="selectedCategoryId" value="${form.project.category.id}"/>
 							</c:when>
 						</c:choose>
@@ -67,7 +67,8 @@
 	                  		</c:forEach>
 	                  	</optgroup>
                 	</c:forEach>
-	                	</select> 
+	                	</select>
+	                	<span id="tawalaSavedCategoryId" hidden><c:out value="${form.savedCategoryId}" /></span>
 	                	<a id="addCategoryLink" class="" 
 	                			href="javascript:showCategorySection('newCategory', 
 	                			'<c:out value="${targetId}" />')" title="Add new category" >

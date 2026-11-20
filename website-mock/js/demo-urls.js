@@ -40,6 +40,7 @@ window.TAWALA_LIBRARY_CATEGORIES = [
   { slug: "business", label: "Business", source: "weblibrary" },
   { slug: "entertainment", label: "Entertainment", source: "weblibrary" },
   { slug: "advanced", label: "Advanced", source: "weblibrary" },
+  { slug: "user-project-submissions", label: "User Project Submissions", source: "submissions" },
 ];
 window.TAWALA_LIBRARY = {
   "simple-survey": {
@@ -822,6 +823,10 @@ window.TawalaDemo = {
     }
     /* Seed rows live under TAWALA_LIBRARY[id] without an id field — stamp it for callers
      * (library-detail Save a copy uses project.id; libraryEntries() already injects id). */
+    if (!base && typeof window !== "undefined" && window.TAWALA_USER_SUBMISSIONS) {
+      const submitted = window.TAWALA_USER_SUBMISSIONS[id];
+      if (submitted) return this.applyCategoryOverride({ ...submitted, id });
+    }
     return base ? this.applyCategoryOverride({ ...base, id }) : null;
   },
   getMyTawala(id) {
@@ -2078,9 +2083,15 @@ window.TawalaDemo = {
     try {
       const u = new URL(url, "http://localhost/");
       const path = (u.pathname || "").replace(/\/+$/, "") || "/";
-      return path === "/projectmanager/testdrive";
+      return (
+        path === "/projectmanager/testdrive" ||
+        path === "/library/oneclicktestdrive" ||
+        path === "/library/testdrive"
+      );
     } catch {
-      return /\/projectmanager\/testdrive(?:\?|$)/i.test(String(url));
+      return /\/(?:projectmanager\/testdrive|library\/(?:oneclicktestdrive|testdrive))(?:\?|$)/i.test(
+        String(url)
+      );
     }
   },
   /**

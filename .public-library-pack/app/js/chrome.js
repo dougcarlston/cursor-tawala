@@ -1,0 +1,664 @@
+/**
+ * Shared header/footer for website-mock.
+ * Links with ready: false get class link-pending (greyed, non-clickable).
+ *
+ * Mock session (not real Auth Task #21): localStorage `tawala.mock.session`
+ * `{ user, at }`. Login sets it; Logout clears it. Drives Welcome chrome,
+ * Library “Copy to MyTawala” visibility, and guest vs real My Tawala routing.
+ */
+(function () {
+  const SESSION_KEY = "tawala.mock.session";
+  /** Explicit guest/browse mode — set by Logout. Cleared by Login. */
+  const GUEST_KEY = "tawala.mock.guest";
+  const CLERK_PUBLISHABLE_KEY = "pk_test_cmFyZS1iYXQtNjMzNy5jbGVyay5hY2NvdW50cy5kZXYk";
+  const CLERK_JS_URL = "https://rare-bat-6337.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js";
+
+  let clerkInstance = null;
+  let clerkLoaded = false;
+
+  function initClerk() {
+    if (isPublicSite()) return;
+    if (typeof window === "undefined" || !CLERK_PUBLISHABLE_KEY) return;
+    if (window.Clerk && window.Clerk.isReady) {
+      clerkInstance = window.Clerk;
+      onClerkReady();
+      return;
+    }
+
+    const existingScript = document.querySelector(`script[src*="clerk.browser.js"]`);
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.setAttribute("data-clerk-publishable-key", CLERK_PUBLISHABLE_KEY);
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      script.src = CLERK_JS_URL;
+      script.onload = async () => {
+        try {
+          if (window.Clerk) {
+            await window.Clerk.load();
+            clerkInstance = window.Clerk;
+            clerkLoaded = true;
+            onClerkReady();
+          }
+        } catch (err) {
+          console.warn("[TawalaChrome] Clerk load warning:", err);
+        }
+      };
+      document.head.appendChild(script);
+    } else {
+      existingScript.addEventListener("load", async () => {
+        try {
+          if (window.Clerk) {
+            await window.Clerk.load();
+            clerkInstance = window.Clerk;
+            clerkLoaded = true;
+            onClerkReady();
+          }
+        } catch (err) {
+          console.warn("[TawalaChrome] Clerk load warning:", err);
+        }
+      });
+    }
+  }
+
+  function onClerkReady() {
+    if (!clerkInstance) return;
+    const user = clerkInstance.user;
+    if (user) {
+      const displayName =
+        user.fullName ||
+        user.firstName ||
+        user.username ||
+        (user.primaryEmailAddress ? user.primaryEmailAddress.emailAddress.split("@")[0] : null) ||
+        user.id ||
+        "Author";
+      const email = user.primaryEmailAddress ? user.primaryEmailAddress.emailAddress : "";
+      setSession(displayName, {
+        id: user.id,
+        email: email,
+        fullName: user.fullName || null,
+        username: user.username || null,
+        authProvider: "clerk",
+      });
+    }
+
+    clerkInstance.addListener((emission) => {
+      if (emission && emission.user) {
+        const u = emission.user;
+        const displayName =
+          u.fullName ||
+          u.firstName ||
+          u.username ||
+          (u.primaryEmailAddress ? u.primaryEmailAddress.emailAddress.split("@")[0] : null) ||
+          u.id ||
+          "Author";
+        setSession(displayName, {
+          id: u.id,
+          email: u.primaryEmailAddress ? u.primaryEmailAddress.emailAddress : "",
+          fullName: u.fullName || null,
+          username: u.username || null,
+          authProvider: "clerk",
+        });
+        mountHeaderOnly();
+        updateSidebarAdminVisibility();
+      } else if (emission && !emission.user && !isGuestMode()) {
+        mountHeaderOnly();
+        updateSidebarAdminVisibility();
+      }
+    });
+
+    mountHeaderOnly();
+    updateSidebarAdminVisibility();
+  }
+
+  function mountHeaderOnly() {
+    const headerEl = document.getElementById("tawala-chrome-header");
+    if (headerEl) {
+      const body = document.body;
+      const activePage = (body && body.dataset.tawalaPage) || "home";
+      const user = currentUser() || "";
+      headerEl.innerHTML = renderHeader(activePage, user);
+      bindAccountMenus(headerEl);
+    }
+  }
+
+  function readSession() {
+    try {
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && parsed.user) return parsed;
+    } catch {
+      /* ignore */
+    }
+    return null;
+  }
+
+  /** Public host copy. Does not default every visitor to the dev session. */
+  function isPublicSite() {
+    return typeof window !== "undefined" && window.TAWALA_PUBLIC_SITE === true;
+  }
+
+  function isGuestMode() {
+    try {
+      return localStorage.getItem(GUEST_KEY) === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Mock auth: default logged-in as "dev" (matches prior hard-coded My Tawala).
+   * Logout → guest mode (Library Save hidden; MY TAWALA → sample preview).
+   * Login clears guest mode and stores a session.
+   */
+  function isLoggedIn() {
+    if (isGuestMode()) return false;
+    if (readSession()) return true;
+    if (isPublicSite()) return false;
+    /* No session and not explicitly guest → treat as logged-in for mock UX. */
+    return true;
+  }
+
+  function currentUser() {
+    if (isGuestMode()) return "";
+    const s = readSession();
+    if (s && s.user) return String(s.user);
+    if (isPublicSite()) return "";
+    return "dev";
+  }
+
+  function currentAuthUser() {
+    if (isGuestMode()) return null;
+    return readSession();
+  }
+
+  /**
+   * Check if current user is an authorized Administrator.
+   * Admins include:
+   * 1. Any Clerk signed-in user with role "admin" or designated admin emails/usernames
+   * 2. Local fallback accounts "admin" or "dev"
+   * 3. Explicit admin mode flag in localStorage
+   */
+  function isAdmin() {
+    if (!isLoggedIn()) return false;
+    const auth = currentAuthUser();
+    if (!auth) return false;
+    /* Public site: only the account's Administrator flag, seen as the ADMIN link. */
+    if (isPublicSite()) return auth.isAdmin === true;
+    const user = String(auth.user || "").trim().toLowerCase();
+    const email = String(auth.email || "").trim().toLowerCase();
+    const username = String(auth.username || "").trim().toLowerCase();
+
+    // Default development & admin aliases
+    if (user === "admin" || user === "dev") return true;
+
+    // Clerk users or explicitly flagged admin
+    if (auth.isAdmin === true || auth.role === "admin") return true;
+    if (email && (email.includes("admin") || email.includes("tawala") || email.endsWith("@tawala.com"))) {
+      return true;
+    }
+    // Check localStorage admin override if present
+    try {
+      if (localStorage.getItem("tawala.mock.libraryAdmin") === "true") return true;
+    } catch {
+      /* ignore */
+    }
+
+    // Any Clerk-authenticated author in the current workspace
+    if (auth.authProvider === "clerk") {
+      return true;
+    }
+
+    return false;
+  }
+
+  function setSession(user, extra) {
+    const name = String(user || "dev").trim() || "dev";
+    try {
+      localStorage.removeItem(GUEST_KEY);
+      const data = {
+        user: name,
+        at: new Date().toISOString(),
+        ...(extra && typeof extra === "object" ? extra : {}),
+      };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(data));
+    } catch {
+      /* ignore */
+    }
+    return name;
+  }
+
+  async function clearSession() {
+    try {
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.setItem(GUEST_KEY, "1");
+      if (window.Clerk && typeof window.Clerk.signOut === "function") {
+        await window.Clerk.signOut();
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function openSignIn() {
+    if (window.Clerk && typeof window.Clerk.openSignIn === "function") {
+      window.Clerk.openSignIn();
+    } else {
+      location.href = "login.html";
+    }
+  }
+
+  function openSignUp() {
+    if (window.Clerk && typeof window.Clerk.openSignUp === "function") {
+      window.Clerk.openSignUp();
+    } else {
+      location.href = "signup.html";
+    }
+  }
+
+  function openUserProfile() {
+    if (window.Clerk && typeof window.Clerk.openUserProfile === "function") {
+      window.Clerk.openUserProfile();
+    }
+  }
+
+  /** Guest taste My Tawala; logged-in users get the real private pile. */
+  function myTawalaHref() {
+    if (isPublicSite()) return "/app/mytawala.html";
+    return isLoggedIn() ? "mytawala.html" : "mytawala-demo.html";
+  }
+
+  const LINKS = {
+    about: { href: "about.html", label: "ABOUT", nav: true, ready: true },
+    faq: { href: "faq.html", label: "FAQ", nav: true, ready: true },
+    designer: {
+      href: "http://localhost:5173",
+      label: "DESIGNER",
+      nav: true,
+      ready: true,
+      target: "_blank",
+    },
+    library: { href: "library.html", label: "LIBRARY", nav: true, ready: true },
+    mytawala: { href: "mytawala.html", label: "MY TAWALA", nav: true, ready: true },
+    home: { href: "index.html", label: "HOME", nav: true, ready: true },
+    login: { href: "login.html", label: "Log in", ready: true },
+    register: { href: "signup.html", label: "Register", ready: true },
+    signup: {
+      href: "signup.html",
+      label: "Sign up for FREE account here!",
+      ready: true,
+    },
+    signupShort: { href: "signup.html", label: "Sign up free", ready: true },
+    logout: { href: "logout.html", label: "Logout", ready: true },
+    changePassword: {
+      href: "#",
+      label: "Change Password",
+      ready: false,
+      title: "Change your password (not wired in mock)",
+    },
+    designerStub: {
+      href: "designer.html",
+      label: "Designer stub",
+      ready: true,
+    },
+    websiteMock: {
+      href: "http://localhost:5500/",
+      label: "Website mock",
+      ready: true,
+    },
+    signupApps: {
+      href: "signup.html",
+      label: "Create your own Tawala apps",
+      ready: true,
+    },
+    companyInfo: { href: "about.html", label: "Company Info", ready: true },
+    terms: { href: "terms.html", label: "Terms &amp; Conditions", ready: true },
+    privacy: { href: "privacy.html", label: "Privacy Policy", ready: true },
+    docs: { href: "docs.html", label: "Docs", ready: true },
+  };
+
+  /** LTR: Home · Library · My Tawala · Designer · FAQ · About */
+  const NAV_ORDER = ["home", "library", "mytawala", "designer", "faq", "about"];
+
+  function resolveHref(key) {
+    if (key === "mytawala") return myTawalaHref();
+    if (isPublicSite() && key === "home") return "/home";
+    if (isPublicSite() && key === "library") return "/app/library.html?v=20261119-admin8";
+    const item = LINKS[key];
+    return item ? item.href : "#";
+  }
+
+  function anchor(key, labelOverride) {
+    const item = LINKS[key];
+    if (!item) return "";
+    const text = labelOverride || item.label;
+    if (!item.ready) {
+      const title = item.title ? ` title="${item.title}"` : ' title="Unavailable"';
+      return `<span class="link-pending" aria-disabled="true"${title}>${text}</span>`;
+    }
+    const target =
+      item.target === "_blank" ? ' target="_blank" rel="noopener"' : "";
+    return `<a href="${resolveHref(key)}"${target}>${text}</a>`;
+  }
+
+  function renderNav(activePage) {
+    return NAV_ORDER.map((key) => {
+      const item = LINKS[key];
+      const selected =
+        key === activePage ||
+        (key === "mytawala" &&
+          (activePage === "mytawala" || activePage === "mytawala-demo"));
+      if (!item.ready) {
+        return `<li class="${selected ? "selected" : ""}"><span class="link-pending" aria-disabled="true">${item.label}</span></li>`;
+      }
+      const target =
+        item.target === "_blank" ? ' target="_blank" rel="noopener"' : "";
+      return `<li class="${selected ? "selected" : ""}"><a href="${resolveHref(key)}"${target}${selected ? ' aria-current="page"' : ""}>${item.label}</a></li>`;
+    }).join("\n          ");
+  }
+
+  function renderAccountMenu(user) {
+    const isClerk = clerkInstance && clerkInstance.user;
+    const auth = currentAuthUser();
+    const administratorLink =
+      isPublicSite() && auth && auth.administratorPage === true
+        ? `<li><a href="/app/administrator.jsp">Administrator</a></li>`
+        : "";
+    const items = user
+      ? [
+          administratorLink,
+          isClerk
+            ? `<li><a href="#" class="clerk-profile-action" title="Manage your Clerk profile &amp; security">Manage Account</a></li>`
+            : `<li>${anchor("changePassword")}</li>`,
+          `<li><a href="${isPublicSite() ? "/logout" : "logout.html"}" class="clerk-logout-action">Logout</a></li>`,
+        ]
+      : [
+          `<li><a href="${isPublicSite() ? "/user/registration" : "signup.html"}" class="clerk-signup-action">Register</a></li>`,
+          `<li><a href="${isPublicSite() ? "/login" : "login.html?next=mytawala.html"}" class="clerk-login-action">Log in</a></li>`,
+        ];
+    return (
+      `<div class="account-menu">` +
+      `<button type="button" class="account-menu-toggle" aria-haspopup="true" aria-expanded="false">` +
+      `My Account <span class="account-menu-caret" aria-hidden="true">▾</span>` +
+      `</button>` +
+      `<ul class="account-menu-panel" hidden>` +
+      items.join("") +
+      `</ul>` +
+      `</div>`
+    );
+  }
+
+  function renderGuestStatus() {
+    if (isPublicSite()) {
+      return (
+        `Welcome. Please ` +
+        `<a href="/user/registration">register</a> or ` +
+        `<a href="/login">Log in</a> ` +
+        renderAccountMenu("")
+      );
+    }
+    return (
+      `Welcome. Please ` +
+      `<a href="signup.html" class="clerk-signup-action">register</a> or ` +
+      `<a href="login.html?next=mytawala.html" class="clerk-login-action">Log in</a> ` +
+      renderAccountMenu("")
+    );
+  }
+
+  function renderHeader(activePage, user) {
+    const adminBadge = isAdmin()
+      ? `<span class="tawala-admin-badge" title="Authenticated Administrator" style="background:#d9534f;color:#fff;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:3px;margin-right:6px;vertical-align:middle;letter-spacing:0.5px;">ADMIN</span>`
+      : "";
+
+    const status = user
+      ? `${adminBadge}Welcome back, <span class="userName">${user}</span>. ${renderAccountMenu(user)}`
+      : renderGuestStatus();
+
+    return `
+    <div id="hd">
+      <div id="headingLogo"><a href="index.html"><img src="images/template/tawala-logo-white.gif" width="136" height="24" alt="Tawala" /></a></div>
+      <div id="headingStatus">${status}</div>
+      <div id="headingMenu">
+        <ul>
+          ${renderNav(activePage)}
+        </ul>
+      </div>
+    </div>`;
+  }
+
+  function renderFooter() {
+    return `
+    <div id="ft" class="footer">
+      <ul>
+        <li>${anchor("companyInfo")}</li>
+        <li>${anchor("terms")}</li>
+        <li>${anchor("privacy")}</li>
+        <li>${anchor("docs")}</li>
+        <li><a href="mailto:info@tawala.com">Contact Us</a></li>
+      </ul>
+    </div>`;
+  }
+
+  function renderBanner(activePage) {
+    const mtHref = myTawalaHref();
+    let html =
+      `<strong>Website mock</strong> — static draft from legacy JSP. Grey controls = not implemented. Test-drive → :8080. ` +
+      `<a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a> · this site :5500` +
+      ` · <a href="docs.html" title="Mock ops docs (Publish, Export/Import, admin…)">Docs</a>.` +
+      (activePage === "mytawala"
+        ? ` · <b>My Tawala</b> (private) · <a href="library.html">Library</a>`
+        : activePage === "mytawala-demo"
+          ? ` · <b>My Tawala</b> (guest preview) · <a href="library.html">Library</a> · <a href="signup.html">Register</a>`
+          : activePage === "library"
+            ? ` · <b>Library</b> (public) · <a href="${mtHref}">My Tawala</a>`
+            : activePage === "docs"
+              ? ` · <b>Docs</b> · <a href="README.md">README.md</a>`
+              : "");
+    /* localhost vs 127.0.0.1 = different origins / separate localStorage. Owner data lives on localhost. */
+    try {
+      if (typeof location !== "undefined" && location.hostname === "127.0.0.1") {
+        const path =
+          activePage === "library"
+            ? "library.html"
+            : activePage === "mytawala-demo"
+              ? location.pathname && location.pathname.indexOf("mytawala-demo-project") >= 0
+                ? "mytawala-demo-project.html" + (location.search || "")
+                : "mytawala-demo.html"
+              : activePage === "mytawala"
+                ? location.pathname && location.pathname.indexOf("mytawala-project") >= 0
+                  ? "mytawala-project.html" + (location.search || "")
+                  : "mytawala.html"
+                : "mytawala.html";
+        const href = "http://localhost:5500/" + path.replace(/^\//, "");
+        html +=
+          `<span class="mock-banner-where">My Tawala / Library data is stored <b>per address</b> — ` +
+          `you’re on <code>127.0.0.1</code>. If your projects are missing, open ` +
+          `<a href="${href}">http://localhost:5500/…</a> (same server, different localStorage).</span>`;
+      }
+    } catch {
+      /* ignore */
+    }
+    return html;
+  }
+
+  function bindAccountMenus(root) {
+    const scope = root || document;
+
+    scope.querySelectorAll(".clerk-profile-action").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        openUserProfile();
+      });
+    });
+
+    scope.querySelectorAll(".clerk-login-action").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        if (window.Clerk) {
+          e.preventDefault();
+          openSignIn();
+        }
+      });
+    });
+
+    scope.querySelectorAll(".clerk-signup-action").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        if (window.Clerk) {
+          e.preventDefault();
+          openSignUp();
+        }
+      });
+    });
+
+    scope.querySelectorAll(".clerk-logout-action").forEach((el) => {
+      el.addEventListener("click", async (e) => {
+        if (window.Clerk && window.Clerk.user) {
+          e.preventDefault();
+          await clearSession();
+          location.href = "logout.html";
+        }
+      });
+    });
+
+    scope.querySelectorAll(".account-menu").forEach((menu) => {
+      const toggle = menu.querySelector(".account-menu-toggle");
+      const panel = menu.querySelector(".account-menu-panel");
+      if (!toggle || !panel || toggle.dataset.bound === "1") return;
+      toggle.dataset.bound = "1";
+
+      function close() {
+        panel.hidden = true;
+        toggle.setAttribute("aria-expanded", "false");
+        menu.classList.remove("is-open");
+      }
+
+      function open() {
+        panel.hidden = false;
+        toggle.setAttribute("aria-expanded", "true");
+        menu.classList.add("is-open");
+      }
+
+      toggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (panel.hidden) open();
+        else close();
+      });
+
+      panel.addEventListener("click", (e) => e.stopPropagation());
+    });
+
+    if (!document.documentElement.dataset.accountMenuDocBound) {
+      document.documentElement.dataset.accountMenuDocBound = "1";
+      document.addEventListener("click", () => {
+        document.querySelectorAll(".account-menu.is-open").forEach((menu) => {
+          const toggle = menu.querySelector(".account-menu-toggle");
+          const panel = menu.querySelector(".account-menu-panel");
+          if (panel) panel.hidden = true;
+          if (toggle) toggle.setAttribute("aria-expanded", "false");
+          menu.classList.remove("is-open");
+        });
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        document.querySelectorAll(".account-menu.is-open").forEach((menu) => {
+          const toggle = menu.querySelector(".account-menu-toggle");
+          const panel = menu.querySelector(".account-menu-panel");
+          if (panel) panel.hidden = true;
+          if (toggle) toggle.setAttribute("aria-expanded", "false");
+          menu.classList.remove("is-open");
+        });
+      });
+    }
+  }
+
+  function updateSidebarAdminVisibility() {
+    const isUserAdmin = isAdmin();
+    const blocks = document.querySelectorAll("#sidebarMaintainerToolsBlock");
+    blocks.forEach((el) => {
+      el.style.display = isUserAdmin ? "block" : "none";
+    });
+  }
+
+  /**
+   * The public Library page does not share the prototype's browser login.
+   * Read the real Tomcat session from /home and show that name.
+   */
+  function syncPublicAccount() {
+    if (!isPublicSite()) return Promise.resolve("");
+    return fetch("/home", { credentials: "same-origin", cache: "no-store" })
+      .then((res) => (res.ok ? res.text() : ""))
+      .then((html) => {
+        const match = String(html).match(
+          /Welcome back,\s*<span class="userName">([^<]*)<\/span>/
+        );
+        const name = match ? match[1].trim() : "";
+        const admin = /href\s*=\s*["']\/administration\/users["']/.test(html);
+        const administratorPage = /href\s*=\s*["']\/app\/administrator\.jsp["']/.test(html);
+        try {
+          if (name) {
+            setSession(name, { authProvider: "java", isAdmin: admin, administratorPage: administratorPage });
+          } else {
+            localStorage.removeItem(SESSION_KEY);
+            localStorage.removeItem(GUEST_KEY);
+          }
+        } catch {
+          /* ignore */
+        }
+        mount();
+        return name;
+      })
+      .catch(() => "");
+  }
+
+  function mount() {
+    initClerk();
+    const body = document.body;
+    const activePage = body.dataset.tawalaPage || "home";
+    /* Session wins. data-tawala-user is display-only when logged in (legacy pages). */
+    const sessionUser = currentUser();
+    const user = sessionUser || "";
+    const showBanner = body.dataset.tawalaBanner !== "false" && !isPublicSite();
+
+    const bannerEl = document.getElementById("tawala-chrome-banner");
+    const headerEl = document.getElementById("tawala-chrome-header");
+    const footerEl = document.getElementById("tawala-chrome-footer");
+
+    if (bannerEl && showBanner) {
+      bannerEl.className = "mock-banner";
+      bannerEl.innerHTML = renderBanner(activePage);
+    } else if (bannerEl) {
+      bannerEl.remove();
+    }
+
+    if (headerEl) {
+      headerEl.innerHTML = renderHeader(activePage, user);
+      bindAccountMenus(headerEl);
+    }
+    if (footerEl) {
+      footerEl.innerHTML = renderFooter();
+    }
+    updateSidebarAdminVisibility();
+  }
+
+  window.TawalaChrome = {
+    mount,
+    anchor,
+    LINKS,
+    SESSION_KEY,
+    GUEST_KEY,
+    isLoggedIn,
+    isGuestMode,
+    isAdmin,
+    currentUser,
+    currentAuthUser,
+    setSession,
+    syncPublicAccount,
+    clearSession,
+    openSignIn,
+    openSignUp,
+    openUserProfile,
+    myTawalaHref,
+    readSession,
+  };
+})();

@@ -10,7 +10,7 @@
   <script src="js/demo-urls.js?v=20260915-dup4"></script>
   <script src="js/transfer.js?v=20260915-dup4"></script>
   <script src="js/form-starts.js?v=20261112-starts1"></script>
-  <script src="js/project-ops.js?v=20261113-actions13"></script>
+  <script src="js/project-ops.js?v=20261119-publish8"></script>
   <script src="js/data-ops.js?v=20260826-pubpriv1"></script>
 </head>
 <body data-tawala-page="mytawala">
@@ -158,6 +158,10 @@
       const match = String(html || "").match(re);
       if (!match) return "";
       return match[1]
+        .replace(/\\u([0-9a-fA-F]{4})/g, function (_, hex) {
+          return String.fromCharCode(parseInt(hex, 16));
+        })
+        .replace(/\\\//g, "/")
         .replace(/\\'/g, "'")
         .replace(/\\"/g, '"')
         .replace(/\\\\/g, "\\")
@@ -172,6 +176,98 @@
         exportAll: javaStringVar(html, "linkToExportAll"),
         importAll: javaStringVar(html, "linkToImportAll"),
       };
+    }
+
+    function foldStartKey(value) {
+      return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+    }
+
+    function startNameAllowed(allowed, formName) {
+      if (
+        window.TawalaProjectOps &&
+        typeof TawalaProjectOps.startNameAllowed === "function"
+      ) {
+        return TawalaProjectOps.startNameAllowed(allowed, formName);
+      }
+      if (!allowed) return false;
+      const want = foldStartKey(formName);
+      for (const item of allowed) {
+        if (foldStartKey(item) === want) return true;
+      }
+      return false;
+    }
+
+    /**
+     * Start links for this account project. A copied name ("… 63bc7d5b") still
+     * matches the catalog. If the name does not match, the forms themselves do:
+     * AdminStart and Start Questionnaire are the only starts. A miss must not
+     * list every form — Java marks a missing startPoint as a run link.
+     */
+    function allowedStartsFor(projectName, formNames) {
+      if (
+        window.TawalaProjectOps &&
+        typeof TawalaProjectOps.allowedStartNames === "function"
+      ) {
+        return TawalaProjectOps.allowedStartNames(projectName, formNames);
+      }
+      const byFold = new Map();
+      (formNames || []).forEach((formName) => {
+        const text = String(formName || "").trim();
+        const key = foldStartKey(text);
+        if (key && !byFold.has(key)) byFold.set(key, text);
+      });
+      if (byFold.has("adminstart") && byFold.has("startquestionnaire")) {
+        return new Set([byFold.get("adminstart"), byFold.get("startquestionnaire")]);
+      }
+      return null;
+    }
+
+    function formNameFromHref(href) {
+      if (!href) return "";
+      const match = String(href).match(/[?&](?:formName|form)=([^&#]+)/i);
+      if (!match) return "";
+      try {
+        return decodeURIComponent(match[1].replace(/\+/g, " ")).trim();
+      } catch {
+        return "";
+      }
+    }
+
+    /** Names the project file marked startPoint="true". Omitted is not a start. */
+    function markedStartNames(doc, forms) {
+      if (!doc || typeof doc.getElementById !== "function") return null;
+      const holder = doc.getElementById("pmMarkedStarts");
+      if (!holder) return null;
+      const listed = holder.textContent
+        .split(/\n/)
+        .map((value) => value.replace(/\s+/g, " ").trim())
+        .filter(Boolean);
+      if (!listed.length) return null;
+      const byFold = new Map();
+      (forms || []).forEach((row) => {
+        const key = foldStartKey(row.name);
+        if (key && !byFold.has(key)) byFold.set(key, row.name);
+      });
+      return new Set(listed.map((name) => byFold.get(foldStartKey(name)) || name));
+    }
+
+    /**
+     * Start list for the page. The project file's startPoint marks win.
+     * A catalog miss does not promote every Java run link.
+     */
+    function resolveAllowedStarts(doc, title, forms) {
+      const marked = markedStartNames(doc, forms);
+      if (marked) return marked;
+      const catalog = allowedStartsFor(
+        title,
+        forms.map((row) => row.name)
+      );
+      if (catalog) return catalog;
+      const runs = forms.filter((row) => row.runHref);
+      if (runs.length > 0 && runs.length < forms.length) {
+        return new Set(runs.map((row) => row.name));
+      }
+      return new Set();
     }
 
     async function loadPublicProjectDetail() {
@@ -192,20 +288,27 @@
       let title = name;
       let forms = [];
       let accountHtml = "";
+      let detailDoc = null;
       let lastUsed = "";
       try {
         const res = await fetch(javaUrl, { credentials: "same-origin", cache: "no-store" });
         const html = await res.text();
         accountHtml = html;
         const doc = new DOMParser().parseFromString(html, "text/html");
-        const heading = doc.querySelector("h2");
-        if (heading && heading.textContent.trim()) title = heading.textContent.trim();
+        detailDoc = doc;
+        const javaNameEl = doc.getElementById("pmJavaProjectName");
+        const javaName = javaNameEl
+          ? javaNameEl.textContent.replace(/\s+/g, " ").trim()
+          : "";
+        if (javaName) title = javaName;
         forms = [...doc.querySelectorAll("#projectForms tr")].map((tr) => {
           const cells = [...tr.querySelectorAll("td")];
           const run = tr.querySelector("a[id^='run']");
           const view = tr.querySelector("a[id^='view']");
+          const fromLink = formNameFromHref(view && view.getAttribute("href"));
+          const fromCell = cells[1] ? cells[1].textContent.replace(/\s+/g, " ").trim() : "";
           return {
-            name: cells[1] ? cells[1].textContent.replace(/\s+/g, " ").trim() : "",
+            name: fromLink || fromCell,
             responses: cells[2] ? cells[2].textContent.replace(/\s+/g, " ").trim() : "",
             runHref: run ? run.getAttribute("href") : "",
             viewHref: view ? view.getAttribute("href") : "",
@@ -247,13 +350,15 @@
         forms = [];
       }
       document.title = "Tawala - " + title;
+      const allowedStarts = resolveAllowedStarts(detailDoc, title, forms);
       const startPoints = forms
-        .filter((row) => row.runHref)
+        .filter((row) => row.runHref && startNameAllowed(allowedStarts, row.name))
         .map((row) => ({ form: row.name, label: row.name, url: row.runHref }));
+      const runForId = forms.find((row) => row.runHref);
       const uniqueId =
-        (startPoints[0] &&
+        (runForId &&
           TawalaDemo.uniqueIdFromUrl &&
-          TawalaDemo.uniqueIdFromUrl(startPoints[0].url)) ||
+          TawalaDemo.uniqueIdFromUrl(runForId.runHref)) ||
         "";
       let publishedToLibraryId = "";
       if (typeof TawalaDemo.libraryEntries === "function") {
@@ -284,6 +389,7 @@
         publishedToLibraryId,
         publishedToLibraryVersion: publishedToLibraryId ? 1 : null,
         formNames: forms.map((row) => row.name),
+        markedStartNames: [...allowedStarts],
         startPoints,
         versions: [
           {

@@ -2586,18 +2586,83 @@
     return new Set(orderedStartPoints(project).map(startPointFormKey));
   }
 
-  /**
-   * Real start-link names from the project definition.
-   * A pushed project often has a Run link on every form, because Java treats a
-   * missing startPoint attribute as true. That list is not the start links.
-   */
-  function knownStartNameSet(project) {
-    const table = typeof window !== "undefined" ? window.TAWALA_FORM_STARTS : null;
-    if (!table || !project) return null;
-    const name = projectDisplayName(project).trim().toLowerCase();
-    if (name && table.byName && Array.isArray(table.byName[name]) && table.byName[name].length) {
-      return new Set(table.byName[name]);
+  function foldStartKey(value) {
+    return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+  }
+
+  /** Case-insensitive membership. Catalog spelling and the account form name can differ. */
+  function startNameAllowed(allowed, formName) {
+    if (!allowed) return false;
+    const want = foldStartKey(formName);
+    if (!want) return false;
+    for (const item of allowed) {
+      if (foldStartKey(item) === want) return true;
     }
+    return false;
+  }
+
+  function catalogStartsByProjectName(projectName) {
+    const table = typeof window !== "undefined" ? window.TAWALA_FORM_STARTS : null;
+    if (!table || !table.byName) return null;
+    const folded = foldStartKey(projectName);
+    if (!folded) return null;
+    const keys = Object.keys(table.byName).sort(
+      (a, b) => foldStartKey(b).length - foldStartKey(a).length
+    );
+    const hit = keys.find((key) => {
+      const foldedKey = foldStartKey(key);
+      return folded === foldedKey || (foldedKey && folded.startsWith(foldedKey));
+    });
+    const starts = hit && table.byName[hit];
+    return Array.isArray(starts) && starts.length ? new Set(starts) : null;
+  }
+
+  /**
+   * Identify starts from the forms on the page when the account name is a copy
+   * ("… 63bc7d5b") or a heading replaced the name. Java's omitted startPoint
+   * attribute is true, so a name miss must not turn every run link into a start.
+   */
+  function catalogStartsByFormList(formNames) {
+    const byFold = new Map();
+    (formNames || []).forEach((name) => {
+      const text = String(name || "").trim();
+      const key = foldStartKey(text);
+      if (key && !byFold.has(key)) byFold.set(key, text);
+    });
+    if (byFold.has("adminstart") && byFold.has("startquestionnaire")) {
+      return new Set([byFold.get("adminstart"), byFold.get("startquestionnaire")]);
+    }
+    const table = typeof window !== "undefined" ? window.TAWALA_FORM_STARTS : null;
+    if (!table || !table.byName) return null;
+    const present = new Set(byFold.keys());
+    let best = null;
+    let bestCount = 0;
+    Object.keys(table.byName).forEach((key) => {
+      const starts = table.byName[key] || [];
+      const foldedStarts = starts.map(foldStartKey).filter(Boolean);
+      if (foldedStarts.length < 2) return;
+      if (!foldedStarts.every((foldedName) => present.has(foldedName))) return;
+      if (foldedStarts.length > bestCount) {
+        best = foldedStarts.map((foldedName) => byFold.get(foldedName));
+        bestCount = foldedStarts.length;
+      }
+    });
+    return best && best.length ? new Set(best) : null;
+  }
+
+  function allowedStartNames(projectName, formNames) {
+    const fromForms = catalogStartsByFormList(formNames);
+    if (fromForms) return fromForms;
+    const titled = catalogStartsByProjectName(projectName);
+    if (!titled) return null;
+    const names = (formNames || []).map(foldStartKey).filter(Boolean);
+    if (!names.length || [...titled].every((name) => names.includes(foldStartKey(name)))) {
+      return titled;
+    }
+    return null;
+  }
+
+  function projectFormNameList(project) {
     const forms = [];
     const seen = new Set();
     function add(value) {
@@ -2606,14 +2671,40 @@
       seen.add(text);
       forms.push(text);
     }
-    (Array.isArray(project.formNames) ? project.formNames : []).forEach(add);
-    (Array.isArray(project.forms) ? project.forms : []).forEach((form) =>
+    (Array.isArray(project && project.formNames) ? project.formNames : []).forEach(add);
+    (Array.isArray(project && project.forms) ? project.forms : []).forEach((form) =>
       add(typeof form === "string" ? form : form && form.name)
     );
     orderedStartPoints(project).forEach((sp) => add(startPointFormKey(sp)));
-    if (!forms.length || !table.bySignature) return null;
+    return forms;
+  }
+
+  /**
+   * Real start-link names from the project definition.
+   * A pushed project often has a Run link on every form, because Java treats a
+   * missing startPoint attribute as true. That list is not the start links.
+   */
+  function knownStartNameSet(project) {
+    if (project && Array.isArray(project.markedStartNames)) {
+      return new Set(project.markedStartNames);
+    }
+    const table = typeof window !== "undefined" ? window.TAWALA_FORM_STARTS : null;
+    if (!project) return null;
+    const forms = projectFormNameList(project);
+    const allowed = allowedStartNames(projectDisplayName(project), forms);
+    if (allowed) return allowed;
+    if (!forms.length || !table || !table.bySignature) return null;
     const starts = table.bySignature[forms.slice().sort().join("\n")];
     return Array.isArray(starts) && starts.length ? new Set(starts) : null;
+  }
+
+  /** True when Java's omitted startPoint default put a run link on every form. */
+  function everyListedFormIsAStartPoint(project) {
+    const forms = projectFormNameList(project);
+    const starts = orderedStartPoints(project).map(startPointFormKey).filter(Boolean);
+    if (forms.length < 2 || starts.length < forms.length) return false;
+    const startFolds = new Set(starts.map(foldStartKey));
+    return forms.every((name) => startFolds.has(foldStartKey(name)));
   }
 
   /** Map form key → first matching start point (idx + url + label). */
@@ -2624,7 +2715,8 @@
     raw.forEach((sp) => {
       const key = startPointFormKey(sp);
       if (!key || map.has(key)) return;
-      if (allowed && !allowed.has(key)) return;
+      if (allowed && !startNameAllowed(allowed, key)) return;
+      if (!allowed && everyListedFormIsAStartPoint(project)) return;
       map.set(key, {
         idx: map.size,
         url: sp.url ? String(sp.url) : "",
@@ -2633,8 +2725,11 @@
     });
     if (allowed) {
       allowed.forEach((name) => {
-        if (map.has(name)) return;
-        const sp = raw.find((item) => startPointFormKey(item) === name);
+        const existing = [...map.keys()].find((key) => foldStartKey(key) === foldStartKey(name));
+        if (existing) return;
+        const sp = raw.find(
+          (item) => foldStartKey(startPointFormKey(item)) === foldStartKey(name)
+        );
         map.set(name, {
           idx: map.size,
           url: sp && sp.url ? String(sp.url) : "",
@@ -7041,75 +7136,716 @@
     }
   }
 
-  /** Publish dialog from the prototype. The last step submits the account publish form. */
-  async function openPublicPublishDialog(publishUrl, projectName) {
-    let action = "";
+  function detailProjectName() {
+    const title = document.querySelector("h2.pm-detail-title");
+    if (!title) return "";
+    const copy = title.cloneNode(true);
+    copy.querySelectorAll(".pm-status-badge").forEach(function (el) {
+      el.remove();
+    });
+    return String(copy.textContent || "").replace(/\s+/g, " ").trim();
+  }
+
+  /** The name this page was opened with. That is the account project name. */
+  function pageProjectName() {
     try {
-      action = accountActionPath(publishUrl);
-      if (new URL(action, location.href).pathname.replace(/;[^/]*$/, "").replace(/\/$/, "") !== "/projectmanager/publish") {
-        action = "";
-      }
+      const fromQuery = new URL(location.href).searchParams.get("name");
+      if (fromQuery && fromQuery.trim()) return fromQuery.trim();
     } catch {
-      action = "";
+      /* the heading is the other source */
     }
-    if (!action) {
-      setStatus("Publish is not available for this project.");
-      return;
+    return detailProjectName();
+  }
+
+  function decodePublishText(text) {
+    return String(text || "")
+      .replace(/<br\s*\/?>/gi, " ")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&#(\d+);/g, function (_, digits) {
+        const code = Number(digits);
+        return code > 0 && code < 0x110000 ? String.fromCodePoint(code) : _;
+      })
+      .replace(/&#x([0-9a-f]+);/gi, function (_, hex) {
+        const code = parseInt(hex, 16);
+        return code > 0 && code < 0x110000 ? String.fromCodePoint(code) : _;
+      })
+      .replace(/&nbsp;/gi, " ")
+      .replace(/&amp;/gi, "&")
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;|&apos;/gi, "'")
+      .replace(/&lt;/gi, "<")
+      .replace(/&gt;/gi, ">")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function duplicateLibraryName(text) {
+    const match = String(text || "").match(/Project with name ["“](.+?)["”] already exists/i);
+    return match ? match[1].trim() : "";
+  }
+
+  /** Projects on the public Java Library page. The WebLibrary catalog is a different list. */
+  function parsePublicLibraryListing(html) {
+    const text = String(html || "");
+    const headingMatch = text.match(/<h2>([^<]*)<\/h2>/i);
+    const heading = decodePublishText(headingMatch ? headingMatch[1] : "");
+    const categories = [];
+    const categoryRe = /label:\s*'((?:\\'|[^'])*)'\s*,\s*id:\s*'(\d+)'/g;
+    let categoryMatch;
+    while ((categoryMatch = categoryRe.exec(text))) {
+      const label = categoryMatch[1].replace(/\\'/g, "'").replace(/\s*\(\d+\)\s*$/, "").trim();
+      if (label && !categories.some(function (item) { return item.id === categoryMatch[2]; })) {
+        categories.push({ id: categoryMatch[2], label: label });
+      }
     }
-    setStatus("Opening Publish…");
-    let doc;
+    const projects = [];
+    const projectRe = /<a href="([^"]*\/library\/projectdetail\?id=(\d+))"[^>]*>\s*([^<]*?)\s*<\/a>/gi;
+    let projectMatch;
+    while ((projectMatch = projectRe.exec(text))) {
+      const name = decodePublishText(projectMatch[3]);
+      if (!name) continue;
+      projects.push({ id: projectMatch[2], href: projectMatch[1], name: name });
+    }
+    return { heading: heading, categories: categories, projects: projects };
+  }
+
+  /** Same published-project list, plus the description and date on each row. */
+  function parsePublishedLibraryProjects(html) {
+    const page = parsePublicLibraryListing(html);
+    const text = String(html || "");
+    page.projects.forEach(function (project) {
+      const anchor = text.indexOf('id="projectDetailsLink' + project.id + '"');
+      const start = anchor >= 0 ? text.lastIndexOf("<tr", anchor) : -1;
+      const end = start >= 0 ? text.indexOf("</tr>", anchor) : -1;
+      const row = start >= 0 && end > start ? text.slice(start, end) : "";
+      const desc = row.match(/<span class="description">([^<]*)<\/span>/i);
+      const author = row.match(/<span class="author">([^<]*)<\/span>/i);
+      const updated = row.match(/<td class="updated[^"]*">([^<]*)<\/td>/i);
+      const clones = row.match(/<td class="clonedCount">([^<]*)<\/td>/i);
+      project.shortDescription = decodePublishText(desc ? desc[1] : "");
+      project.author = decodePublishText(author ? author[1] : "");
+      project.updated = decodePublishText(updated ? updated[1] : "");
+      project.cloneCount = clones ? parseInt(clones[1], 10) || 0 : 0;
+    });
+    return page;
+  }
+
+  /** Prefer Start Questionnaire. Strip the session id so the link is shareable. */
+  function submissionTestDriveFromDetail(html, projectId) {
+    const text = String(html || "");
+    const re = /\/library\/oneclicktestdrive[^"'?\s]*\?([^"'<\s]+)/gi;
+    const forms = [];
+    let match;
+    while ((match = re.exec(text))) {
+      const params = new URLSearchParams(match[1].replace(/&amp;/g, "&"));
+      const form = params.get("form") || "";
+      const versionId = params.get("version_id") || "";
+      if (!form || !versionId) continue;
+      if (forms.some(function (item) { return item.form === form; })) continue;
+      forms.push({ form: form, versionId: versionId });
+    }
+    if (!forms.length) return { testDriveUrl: "", versionId: "", startPoints: [] };
+    const preferred =
+      forms.find(function (item) { return item.form === "Start Questionnaire"; }) || forms[0];
+    const testDriveUrl =
+      "/library/oneclicktestdrive?project_id=" +
+      encodeURIComponent(projectId) +
+      "&version_id=" +
+      encodeURIComponent(preferred.versionId) +
+      "&form=" +
+      encodeURIComponent(preferred.form);
+    return {
+      testDriveUrl: testDriveUrl,
+      versionId: preferred.versionId,
+      startPoints: [{ label: preferred.form, url: testDriveUrl }],
+    };
+  }
+
+  const PUBLIC_LIBRARY_GROUPS = [
+    "Activities",
+    "Meetings and Gatherings",
+    "Polls and Surveys",
+    "Entertainment",
+  ];
+
+  /** Which public group lists this published project. Empty means User Project Submissions. */
+  function publishedGroupFor(projectId, groups) {
+    const id = String(projectId || "");
+    const map = groups || {};
+    for (let i = 0; i < PUBLIC_LIBRARY_GROUPS.length; i++) {
+      const label = PUBLIC_LIBRARY_GROUPS[i];
+      const ids = map[label] || [];
+      if (ids.some(function (item) { return String(item) === id; })) return label;
+    }
+    return "";
+  }
+
+  /** Parent value that creates a top-level category visitors can see. */
+  function applicationLibraryParent(html) {
+    const body = selectInnerHtml(html, "category.parent");
+    const groupRe = /<optgroup\b([^>]*)>([\s\S]*?)<\/optgroup>/gi;
+    let group;
+    while ((group = groupRe.exec(body))) {
+      const labelMatch = group[1].match(/\blabel\s*=\s*(?:"([^"]*)"|'([^']*)')/i);
+      const library = decodePublishText(
+        labelMatch ? (labelMatch[1] != null ? labelMatch[1] : labelMatch[2]) : ""
+      );
+      if (library !== "Tawala Application Library") continue;
+      const id = group[2].match(/toplevelcategory(\d+)/);
+      if (id) return "toplevelcategory" + id[1];
+    }
+    return "";
+  }
+
+  /** Category id on the signed-in edit form, only in the library visitors can see. */
+  function editCategoryOption(html, label) {
+    const want = decodePublishText(label);
+    const hit = accountCategoryOptions(html).find(function (option) {
+      return option.library === "Tawala Application Library" && decodePublishText(option.label) === want;
+    });
+    return hit ? hit.id : "";
+  }
+
+  async function createLibraryCategory(pageUrl, projectId, label, parent) {
+    const body = new URLSearchParams();
+    body.set("project_id", String(projectId));
+    body.set("category.name", label);
+    body.set("category.description", label);
+    body.set("category.parent", parent);
+    body.set("categoryCreationAction", "Create");
+    const posted = await fetch(pageUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
+      redirect: "follow",
+    });
+    const html = await posted.text();
+    const newId = newCategoryIdFromOptions(html);
+    if (!/^\d+$/.test(newId)) {
+      return { id: "", problem: publishServerProblem(html) || "The category was not created." };
+    }
+    const option = accountCategoryOptions(html).find(function (item) { return item.id === newId; });
+    if (option && decodePublishText(option.label) !== decodePublishText(label)) {
+      return { id: "", problem: "The new category did not match " + label + "." };
+    }
+    return { id: newId, problem: "" };
+  }
+
+  /**
+   * Move a published project into a public group, or back to Samples.
+   * Uses the signed-in edit form. Visitors then read the category from search.
+   */
+  async function movePublishedProject(javaId, label) {
+    const id = String(javaId || "").trim();
+    if (!/^\d+$/.test(id)) return { ok: false, error: "That published project has no id." };
+    const pageUrl = "/library/editproject?project_id=" + encodeURIComponent(id);
+    const opened = await fetch(pageUrl, {
+      credentials: "same-origin",
+      cache: "no-store",
+      redirect: "follow",
+    });
+    let openedPath = "";
+    try {
+      openedPath = new URL(opened.url, location.origin).pathname;
+    } catch (e) {
+      openedPath = "";
+    }
+    if (/\/login(?:\?|$)/.test(openedPath)) {
+      return { ok: false, error: "Sign in as an administrator to move a published project." };
+    }
+    const html = await opened.text();
+    if (!selectInnerHtml(html, "project.category")) {
+      return {
+        ok: false,
+        error: publishServerProblem(html) || "Sign in as an administrator to move a published project.",
+      };
+    }
+    const target = decodePublishText(label) || "Samples";
+    let categoryId = editCategoryOption(html, target);
+    if (!categoryId && target !== "Samples") {
+      const parent = applicationLibraryParent(html);
+      if (!parent) {
+        return { ok: false, error: "The public Library has no place to add " + target + "." };
+      }
+      const created = await createLibraryCategory(pageUrl, id, target, parent);
+      if (!created.id) return { ok: false, error: created.problem || "The category was not created." };
+      categoryId = created.id;
+    }
+    if (!categoryId) return { ok: false, error: "Couldn't find the Samples category." };
+    const body = new URLSearchParams();
+    body.set("project_id", id);
+    body.set("project.category", categoryId);
+    const posted = await fetch(pageUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
+      redirect: "follow",
+    });
+    let postedPath = "";
+    try {
+      postedPath = new URL(posted.url, location.origin).pathname;
+    } catch (e) {
+      postedPath = "";
+    }
+    const savedHtml = await posted.text();
+    const problem = publishServerProblem(savedHtml);
+    if (/\/library\/projectdetail(?:\?|$)/.test(postedPath) && !problem) return { ok: true, categoryId: categoryId };
+    return { ok: false, error: problem || "The project was not moved." };
+  }
+
+  function namedControlValue(html, fieldName) {
+    const re = /<(input|textarea)\b([^>]*)>/gi;
+    let match;
+    while ((match = re.exec(html))) {
+      const attrs = match[2];
+      const nameMatch = attrs.match(/\bname\s*=\s*(?:"([^"]*)"|'([^']*)')/i);
+      const name = nameMatch ? (nameMatch[1] != null ? nameMatch[1] : nameMatch[2]) : "";
+      if (name !== fieldName) continue;
+      if (String(match[1]).toLowerCase() === "textarea") {
+        const openEnd = match.index + match[0].length;
+        const close = html.toLowerCase().indexOf("</textarea>", openEnd);
+        if (close < 0) return "";
+        return decodePublishText(html.slice(openEnd, close));
+      }
+      const valueMatch = attrs.match(/\bvalue\s*=\s*(?:"([^"]*)"|'([^']*)')/i);
+      return decodePublishText(valueMatch ? (valueMatch[1] != null ? valueMatch[1] : valueMatch[2]) : "");
+    }
+    return null;
+  }
+
+  function selectedEditCategoryId(html) {
+    const selected = accountCategoryOptions(html).filter(function (option) { return option.selected; });
+    const inLibrary = selected.find(function (option) {
+      return option.library === "Tawala Application Library";
+    });
+    const hit = inLibrary || selected[0];
+    return hit ? hit.id : "";
+  }
+
+  async function openPublishedEdit(javaId) {
+    const id = String(javaId || "").trim();
+    if (!/^\d+$/.test(id)) return { ok: false, error: "That published project has no id." };
+    const pageUrl = "/library/editproject?project_id=" + encodeURIComponent(id);
+    const opened = await fetch(pageUrl, {
+      credentials: "same-origin",
+      cache: "no-store",
+      redirect: "follow",
+    });
+    let openedPath = "";
+    try {
+      openedPath = new URL(opened.url, location.origin).pathname;
+    } catch (e) {
+      openedPath = "";
+    }
+    if (/\/login(?:\?|$)/.test(openedPath)) {
+      return { ok: false, error: "Sign in as an administrator to edit a published project." };
+    }
+    const html = await opened.text();
+    if (!selectInnerHtml(html, "project.category")) {
+      return {
+        ok: false,
+        error: publishServerProblem(html) || "Sign in as an administrator to edit a published project.",
+      };
+    }
+    return { ok: true, id: id, pageUrl: pageUrl, html: html };
+  }
+
+  /** Save the published name and one-line description. Leaves the category as it is. */
+  async function updatePublishedProject(javaId, name, shortDescription) {
+    const opened = await openPublishedEdit(javaId);
+    if (!opened.ok) return opened;
+    const nextName = decodePublishText(name);
+    const nextDesc = decodePublishText(shortDescription);
+    if (!nextName) return { ok: false, error: "The project name cannot be empty." };
+    if (!nextDesc) return { ok: false, error: "The description cannot be empty." };
+    const categoryId = selectedEditCategoryId(opened.html);
+    if (!categoryId) return { ok: false, error: "The published project has no category to keep." };
+    const longDescription = namedControlValue(opened.html, "project.longDescription");
+    const body = new URLSearchParams();
+    body.set("project_id", opened.id);
+    body.set("project.name", nextName);
+    body.set("project.shortDescription", nextDesc);
+    body.set("project.longDescription", longDescription == null ? "" : longDescription);
+    body.set("project.category", categoryId);
+    const posted = await fetch(opened.pageUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
+      redirect: "follow",
+    });
+    let postedPath = "";
+    try {
+      postedPath = new URL(posted.url, location.origin).pathname;
+    } catch (e) {
+      postedPath = "";
+    }
+    const savedHtml = await posted.text();
+    const problem = publishServerProblem(savedHtml);
+    if (/\/library\/projectdetail(?:\?|$)/.test(postedPath) && !problem) return { ok: true };
+    return { ok: false, error: problem || "The name and description were not saved." };
+  }
+
+  /** Existing signed-in delete. A deleted project drops out of the public list. */
+  async function deletePublishedProject(javaId) {
+    const id = String(javaId || "").trim();
+    if (!/^\d+$/.test(id)) return { ok: false, error: "That published project has no id." };
+    const body = new URLSearchParams();
+    body.set("id", id);
+    const posted = await fetch("/library/deleteproject", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
+      redirect: "follow",
+    });
+    let postedPath = "";
+    try {
+      postedPath = new URL(posted.url, location.origin).pathname;
+    } catch (e) {
+      postedPath = "";
+    }
+    if (/\/login(?:\?|$)/.test(postedPath)) {
+      return { ok: false, error: "Sign in as an administrator to delete a published project." };
+    }
+    const html = await posted.text();
+    if (/has been deleted/i.test(html)) return { ok: true };
+    return { ok: false, error: publishServerProblem(html) || "The project was not deleted." };
+  }
+
+  function matchPublicLibraryProject(html, name) {
+    const page = parsePublicLibraryListing(html);
+    const want = String(name || "").trim();
+    const hit = page.projects.find(function (project) { return project.name === want; });
+    if (!hit) return null;
+    return {
+      id: hit.id,
+      href: hit.href,
+      name: hit.name,
+      library: page.heading,
+      category: page.categories.length === 1 ? page.categories[0].label : "",
+    };
+  }
+
+  async function lookupPublicLibraryName(name) {
+    try {
+      const res = await fetch("/library/search", { credentials: "same-origin", redirect: "follow" });
+      return matchPublicLibraryProject(await res.text(), name);
+    } catch {
+      return null;
+    }
+  }
+
+  function libraryDuplicateMessage(name, located) {
+    const quoted = '“' + name + '”';
+    if (located) {
+      const place = located.library
+        ? located.library + (located.category ? ", category " + located.category : "")
+        : "the public Library";
+      return (
+        "The Library already has a project named " + quoted + ". It is in " + place +
+        " at " + located.href + ". That listing is not on the WebLibrary catalog page. " +
+        "Enter a different Library name to publish a separate copy. Existing listings are left as they are."
+      );
+    }
+    return (
+      "The Library already has a project named " + quoted +
+      ", but that row is not on the public Library list. Enter a different Library name. " +
+      "Existing listings are left as they are."
+    );
+  }
+
+  function publishBlocks(html, tag, className) {
+    const re = new RegExp(
+      "<" + tag + "\\b[^>]*class=\"" + className + "\"[^>]*>([\\s\\S]*?)<\\/" + tag + ">",
+      "gi"
+    );
+    const out = [];
+    let match;
+    while ((match = re.exec(html))) {
+      const text = decodePublishText(match[1]);
+      if (text && !/function\s|margin:/.test(text)) out.push(text.slice(0, 500));
+    }
+    return out;
+  }
+
+  /** Field and page messages from the account publish form. Headings are not errors. */
+  function publishServerProblem(html) {
+    const text = String(html || "");
+    const messages = publishBlocks(text, "span", "error")
+      .concat(publishBlocks(text, "div", "error"))
+      .concat(publishBlocks(text, "div", "message"));
+    if (messages.length) return messages[0];
+    if (/Unable to find project/i.test(text)) return "The account could not find this project.";
+    if (/We are very sorry|An error occurred!/i.test(text)) {
+      return "The publish page did not finish. The project was not copied into the Library.";
+    }
+    if (/failed to convert|no matching editors/i.test(text)) {
+      return "The Library category was not accepted.";
+    }
+    return "";
+  }
+
+  function publishSucceeded(html) {
+    return /Your project has been published to the Library/i.test(String(html || ""));
+  }
+
+  function selectInnerHtml(html, ending) {
+    const re = /<select\b([^>]*)>([\s\S]*?)<\/select>/gi;
+    let match;
+    while ((match = re.exec(html))) {
+      const nameMatch = match[1].match(/\bname\s*=\s*(?:"([^"]*)"|'([^']*)')/i);
+      const name = nameMatch ? (nameMatch[1] != null ? nameMatch[1] : nameMatch[2]) : "";
+      if (name === ending || name.endsWith("." + ending)) return match[2];
+    }
+    return "";
+  }
+
+  function optionTags(selectHtml) {
+    const options = [];
+    const re = /<option\b([^>]*)>([\s\S]*?)<\/option>/gi;
+    let match;
+    while ((match = re.exec(selectHtml))) {
+      const valueMatch = match[1].match(/\bvalue\s*=\s*(?:"([^"]*)"|'([^']*)')/i);
+      const value = valueMatch ? (valueMatch[1] != null ? valueMatch[1] : valueMatch[2]) : "";
+      options.push({
+        value: value,
+        label: decodePublishText(match[2]),
+        selected: /\bselected\b/i.test(match[1]),
+      });
+    }
+    return options;
+  }
+
+  /**
+   * Categories on the account publish form. Those are the libraries this
+   * user is allowed to update. The public Samples list is not one of them.
+   */
+  function accountCategoryOptions(html) {
+    const body = selectInnerHtml(html, "project.category");
+    if (!body) return [];
+    const result = [];
+    const groupRe = /<optgroup\b([^>]*)>([\s\S]*?)<\/optgroup>/gi;
+    let group;
+    let foundGroup = false;
+    while ((group = groupRe.exec(body))) {
+      foundGroup = true;
+      const labelMatch = group[1].match(/\blabel\s*=\s*(?:"([^"]*)"|'([^']*)')/i);
+      const library = decodePublishText(labelMatch ? (labelMatch[1] != null ? labelMatch[1] : labelMatch[2]) : "");
+      optionTags(group[2]).forEach(function (option) {
+        if (!/^\d+$/.test(option.value)) return;
+        result.push({ id: option.value, label: option.label, library: library, selected: option.selected });
+      });
+    }
+    if (!foundGroup) {
+      optionTags(body).forEach(function (option) {
+        if (!/^\d+$/.test(option.value)) return;
+        result.push({ id: option.value, label: option.label, library: "", selected: option.selected });
+      });
+    }
+    return result;
+  }
+
+  /** Library ids from the account form's "create category" parent menu. */
+  function updatableLibraryIds(html) {
+    const body = selectInnerHtml(html, "category.parent");
+    const ids = [];
+    const re = /toplevelcategory(\d+)/g;
+    let match;
+    while ((match = re.exec(body))) {
+      if (ids.indexOf(match[1]) < 0) ids.push(match[1]);
+    }
+    return ids;
+  }
+
+  function savedCategoryId(html) {
+    const match = String(html || "").match(/id="tawalaSavedCategoryId"[^>]*>([^<]*)</);
+    const id = match ? decodePublishText(match[1]) : "";
+    return /^\d+$/.test(id) && id !== "0" ? id : "";
+  }
+
+  function searchPageCategories(html) {
+    const headingMatch = String(html || "").match(/<h2>([^<]*)<\/h2>/i);
+    const heading = decodePublishText(headingMatch ? headingMatch[1] : "");
+    const choices = [];
+    const re = /label:\s*'((?:\\'|[^'])*)'\s*,\s*id:\s*'(\d+)'/g;
+    let match;
+    while ((match = re.exec(html))) {
+      const label = match[1].replace(/\\'/g, "'").replace(/\s*\(\d+\)\s*$/, "").trim();
+      if (!label || choices.some(function (choice) { return choice.id === match[2]; })) continue;
+      choices.push({ id: match[2], label: label });
+    }
+    return { heading: heading, choices: choices };
+  }
+
+  function fillCategorySelect(select, options) {
+    select.textContent = "";
+    const blank = document.createElement("option");
+    blank.value = "";
+    blank.textContent = options.length ? "Please select ..." : "No categories";
+    select.appendChild(blank);
+    options.forEach(function (option) {
+      const node = document.createElement("option");
+      node.value = option.id;
+      node.textContent = option.label;
+      select.appendChild(node);
+    });
+    const real = [...select.options].filter(function (option) {
+      return /^\d+$/.test(option.value) || option.value.indexOf("create:") === 0;
+    });
+    if (real.length === 1) real[0].selected = true;
+    return real.length;
+  }
+
+  /**
+   * Categories this account can publish into.
+   * Public /library/search lists only Samples. That system-library category
+   * is used only when the account form itself offers it.
+   */
+  function choosePublishCategories(accountHtml, communityPage) {
+    const fromAccount = accountCategoryOptions(accountHtml);
+    if (fromAccount.length) return { options: fromAccount, problem: "" };
+    const community = communityPage || { heading: "", choices: [] };
+    if (/community/i.test(community.heading) && community.choices.length) {
+      return {
+        options: community.choices.map(function (choice) {
+          return { id: choice.id, label: choice.label, library: community.heading };
+        }),
+        problem: "",
+      };
+    }
+    const libraries = updatableLibraryIds(accountHtml);
+    const pageRendered = /Publish As New Project/i.test(accountHtml) || libraries.length > 0;
+    const libraryId = libraries.indexOf("2") >= 0 ? "2" : (libraries[0] || "");
+    if (pageRendered && libraryId) {
+      return {
+        options: [{
+          id: "create:" + libraryId,
+          label: "Other",
+          library: libraryId === "2" ? "User Community Library" : "",
+        }],
+        problem: "",
+      };
+    }
+    return {
+      options: [],
+      problem: publishServerProblem(accountHtml) || "The Library categories for this account did not load.",
+    };
+  }
+
+  async function loadPublishCategories(action) {
+    let accountHtml = "";
     try {
       const res = await fetch(action, { credentials: "same-origin", redirect: "follow" });
       if (res.url && /\/login(?:\?|$)/.test(new URL(res.url, location.href).pathname)) {
         location.assign(res.url);
-        return;
+        return { options: [], problem: "", redirected: true };
       }
-      doc = new DOMParser().parseFromString(await res.text(), "text/html");
-    } catch (e) {
+      accountHtml = await res.text();
+    } catch {
+      accountHtml = "";
+    }
+    let community = { heading: "", choices: [] };
+    if (!accountCategoryOptions(accountHtml).length) {
+      try {
+        const res = await fetch("/library/search?library=2", {
+          credentials: "same-origin",
+          redirect: "follow",
+        });
+        community = searchPageCategories(await res.text());
+      } catch {
+        community = { heading: "", choices: [] };
+      }
+    }
+    return choosePublishCategories(accountHtml, community);
+  }
+
+  function publishFormBody(projectId, name, categoryId, description) {
+    const body = new URLSearchParams();
+    body.set("project_id", projectId);
+    body.set("project.name", name);
+    body.set("project.category", categoryId);
+    body.set("project.shortDescription", description);
+    body.set("project.longDescription", "");
+    body.set("submit", "Submit");
+    return body;
+  }
+
+  async function createPublishCategory(action, projectId, libraryId) {
+    const body = new URLSearchParams();
+    body.set("project_id", projectId);
+    body.set("category.name", "Other");
+    body.set("category.description", "Other");
+    body.set("category.parent", "toplevelcategory" + libraryId);
+    body.set("categoryCreationAction", "Create");
+    const posted = await fetch(action, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
+      redirect: "follow",
+    });
+    if (posted.url && /\/login(?:\?|$)/.test(new URL(posted.url, location.href).pathname)) {
+      location.assign(posted.url);
+      return { id: "", problem: "", redirected: true };
+    }
+    const html = await posted.text();
+    const id = newCategoryIdFromOptions(html);
+    if (/^\d+$/.test(id)) return { id: id, problem: "" };
+    return {
+      id: "",
+      problem: publishServerProblem(html) || "The Library category was not created.",
+    };
+  }
+
+  /** Numeric id from the redisplayed publish form's project.category menu. */
+  function newCategoryIdFromOptions(html) {
+    const options = accountCategoryOptions(html).filter(function (option) {
+      return /^\d+$/.test(option.id);
+    });
+    const selected = options.filter(function (option) { return option.selected; });
+    if (selected.length === 1) return selected[0].id;
+    const saved = savedCategoryId(html);
+    const matched = options.filter(function (option) { return option.id === saved; });
+    if (matched.length === 1) return matched[0].id;
+    return "";
+  }
+
+  /**
+   * Publish dialog on this page. Categories load after it is open.
+   * Confirm is the only step that submits the account publish form.
+   */
+  async function openPublicPublishDialog(publishUrl, projectName) {
+    const displayName = String(projectName || pageProjectName() || "").trim();
+    if (!displayName) {
       setStatus("Publish is not available for this project.");
-      window.alert("Couldn't open Publish\n\n" + ((e && e.message) || "The form did not load."));
       return;
     }
-    const categorySelect = doc.querySelector(
-      'select[name="project.category"], select[name="form.project.category"]'
-    );
-    const nameField = doc.querySelector(
-      'input[name="project.name"], input[name="form.project.name"]'
-    );
-    const descField = doc.querySelector(
-      'input[name="project.shortDescription"], input[name="form.project.shortDescription"]'
-    );
-    const idField = doc.querySelector('input[name="project_id"]');
-    if (!categorySelect || !nameField) {
-      const problem = restoreServerMessage(doc);
-      setStatus("Publish is not available for this project.");
-      window.alert("Couldn't open Publish\n\n" + (problem || "The form did not load."));
-      return;
-    }
+    const action = "/projectmanager/publish?project_id=" + encodeURIComponent(displayName);
     closePublishModal();
-    const displayName = String((nameField.value || projectName || "this project")).trim();
+    const shownName = displayName;
     const backdrop = document.createElement("div");
     backdrop.className = "tawala-modal-backdrop";
     backdrop.id = PUBLISH_MODAL_ID;
     backdrop.innerHTML =
       '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="publishModalTitle">' +
       '<h3 id="publishModalTitle">Publish to Library</h3>' +
-      '<p class="pm-hint tawala-modal-lede">Publishing “' + escapeHtml(displayName) + '” copies it into the public Library.</p>' +
+      '<p class="pm-hint tawala-modal-lede">Publishing “' + escapeHtml(shownName) + '” copies it into the public Library.</p>' +
       '<div class="tawala-modal-body">' +
       '<div class="tawala-modal-grid">' +
       '<label class="tawala-modal-field" for="publishNameInput">Library name' +
-      '<input type="text" id="publishNameInput" value="' + escapeHtml(displayName) + '" />' +
+      '<input type="text" id="publishNameInput" maxlength="60" value="' + escapeHtml(shownName) + '" />' +
       "</label>" +
       '<label class="tawala-modal-field" for="publishCategorySelect">Library category (required)' +
       '<select id="publishCategorySelect"></select>' +
       "</label>" +
       '<label class="tawala-modal-field tawala-modal-field--full" for="publishDescInput">Library description (one line)' +
-      '<textarea id="publishDescInput" rows="2" autocomplete="off" placeholder="Shown under the name in the public Library">' +
-      escapeHtml(descField ? descField.value : "") +
-      "</textarea>" +
+      '<textarea id="publishDescInput" rows="2" autocomplete="off" placeholder="Shown under the name in the public Library"></textarea>' +
       "</label>" +
       "</div>" +
-      '<p class="pm-hint tawala-modal-hint-tight">The Library copy is a separate listing and does not include saved responses. Your project and its responses stay here.</p>' +
+      '<p class="pm-hint tawala-modal-hint-tight">The Library copy is a separate listing and does not include saved responses. Your project and its responses stay here. Keep the longer name so the existing Library project stays as it is.</p>' +
       '<p class="pm-hint" id="publishModalError" role="alert" style="display:none;"></p>' +
       "</div>" +
       '<div class="tawala-modal-actions">' +
@@ -7119,14 +7855,44 @@
     document.body.appendChild(backdrop);
     document.addEventListener("keydown", handlePublishModalKeydown, true);
     const liveCategory = backdrop.querySelector("#publishCategorySelect");
-    liveCategory.innerHTML = categorySelect.innerHTML;
+    liveCategory.innerHTML = '<option value="">Loading categories…</option>';
+    liveCategory.disabled = true;
     const nameInput = backdrop.querySelector("#publishNameInput");
     const descInput = backdrop.querySelector("#publishDescInput");
     const errEl = backdrop.querySelector("#publishModalError");
+    const confirmBtn = backdrop.querySelector("#publishModalConfirm");
+    confirmBtn.disabled = true;
     nameInput.focus();
     nameInput.select();
     bindDismissOnBackdropClick(backdrop, closePublishModal);
     backdrop.querySelector("#publishModalCancel").addEventListener("click", closePublishModal);
+    void (async function fillPublishCategories() {
+      const loaded = await loadPublishCategories(action);
+      if (!document.body.contains(backdrop) || loaded.redirected) return;
+      const count = fillCategorySelect(liveCategory, loaded.options);
+      if (!count) {
+        errEl.textContent = loaded.problem || "The Library categories for this account did not load.";
+        errEl.style.display = "";
+        return;
+      }
+      const publisherIsAdmin =
+        typeof TawalaChrome !== "undefined" &&
+        typeof TawalaChrome.isAdmin === "function" &&
+        TawalaChrome.isAdmin();
+      if (!publisherIsAdmin) {
+        const chosen = [...liveCategory.options].find(function (option) {
+          return /^\d+$/.test(option.value) || option.value.indexOf("create:") === 0;
+        });
+        liveCategory.textContent = "";
+        const only = document.createElement("option");
+        only.value = chosen ? chosen.value : "";
+        only.textContent = "User Project Submissions";
+        only.selected = true;
+        liveCategory.appendChild(only);
+      }
+      liveCategory.disabled = !publisherIsAdmin;
+      confirmBtn.disabled = false;
+    })();
     backdrop.querySelector("#publishModalConfirm").addEventListener("click", async function () {
       const nameVal = nameInput.value.trim();
       const categoryVal = liveCategory.value.trim();
@@ -7139,8 +7905,9 @@
         errEl.style.display = "";
         return;
       }
-      if (!categoryVal) {
-        errEl.textContent = "Pick a Library category for the published project.";
+      const creating = categoryVal.indexOf("create:") === 0;
+      if (!/^\d+$/.test(categoryVal) && !creating) {
+        errEl.textContent = "Pick a Library category. The menu did not have a category id.";
         errEl.style.display = "";
         return;
       }
@@ -7149,18 +7916,44 @@
         errEl.style.display = "";
         return;
       }
-      const confirmMsg =
-        "Publish “" + nameVal + "” to the public Library (category: " + categoryLabel + ")?\n\n" +
-        "The Library copy will not include saved responses. Your project is unchanged.";
+      const shownCategory = categoryLabel === "User Project Submissions"
+        ? "User Project Submissions"
+        : categoryLabel;
+      const confirmMsg = categoryLabel === "User Project Submissions"
+        ? "Publish “" + nameVal + "” to the Library in User Project Submissions?\n\n" +
+          "The Library copy will not include saved responses. Your project is unchanged."
+        : creating
+        ? "Publish “" + nameVal + "” to the Library in a new category named Other?\n\n" +
+          "The Library copy will not include saved responses. Your project is unchanged."
+        : "Publish “" + nameVal + "” to the public Library (category: " + shownCategory + ")?\n\n" +
+          "The Library copy will not include saved responses. Your project is unchanged.";
       if (!window.confirm(confirmMsg)) return;
       errEl.style.display = "none";
-      const body = new URLSearchParams();
-      body.set("project_id", (idField && idField.value) || projectName || nameVal);
-      body.set(nameField.getAttribute("name") || "project.name", nameVal);
-      body.set(categorySelect.getAttribute("name") || "project.category", categoryVal);
-      body.set((descField && descField.getAttribute("name")) || "project.shortDescription", descVal);
-      body.set("submit", "Submit");
       try {
+        const already = await lookupPublicLibraryName(nameVal);
+        if (already) {
+          const problem = libraryDuplicateMessage(nameVal, already);
+          errEl.textContent = problem;
+          errEl.style.display = "";
+          nameInput.focus();
+          nameInput.select();
+          window.alert("Couldn't publish “" + nameVal + "”\n\n" + problem);
+          return;
+        }
+        let categoryId = categoryVal;
+        if (creating) {
+          const created = await createPublishCategory(action, displayName, categoryVal.slice("create:".length));
+          if (created.redirected) return;
+          if (!/^\d+$/.test(created.id || "")) {
+            const problem = created.problem || "The Library category was not created.";
+            errEl.textContent = problem;
+            errEl.style.display = "";
+            window.alert("Couldn't publish “" + nameVal + "”\n\n" + problem);
+            return;
+          }
+          categoryId = created.id;
+        }
+        const body = publishFormBody(displayName, nameVal, categoryId, descVal);
         const posted = await fetch(action, {
           method: "POST",
           credentials: "same-origin",
@@ -7172,23 +7965,25 @@
           location.assign(posted.url);
           return;
         }
-        const result = new DOMParser().parseFromString(await posted.text(), "text/html");
-        const heads = result.querySelectorAll("h3, h5");
-        let published = false;
-        for (let i = 0; i < heads.length; i++) {
-          if (/has been published/i.test(String(heads[i].textContent || ""))) published = true;
-        }
-        if (published) {
+        const resultHtml = await posted.text();
+        if (publishSucceeded(resultHtml)) {
           closePublishModal();
           const msg = "Published “" + nameVal + "” to the Library.";
           setStatus(msg);
           window.alert(msg);
           return;
         }
-        const problem = restoreServerMessage(result) || "The project was not published.";
-        errEl.textContent = problem;
+        const problem = publishServerProblem(resultHtml) || "The project was not published.";
+        const duplicateName = duplicateLibraryName(problem);
+        const located = duplicateName ? await lookupPublicLibraryName(duplicateName) : null;
+        const shown = duplicateName ? libraryDuplicateMessage(duplicateName, located) : problem;
+        errEl.textContent = shown;
         errEl.style.display = "";
-        window.alert("Couldn't publish “" + nameVal + "”\n\n" + problem);
+        if (duplicateName) {
+          nameInput.focus();
+          nameInput.select();
+        }
+        window.alert("Couldn't publish “" + nameVal + "”\n\n" + shown);
       } catch (e) {
         const problem = (e && e.message) || "The form could not be submitted.";
         errEl.textContent = problem;
@@ -7232,7 +8027,7 @@
 
     if (wired === "publish-mytawala" || op === "publish") {
       ev.preventDefault();
-      void openPublicPublishDialog(actions.publish, name);
+      void openPublicPublishDialog(actions.publish, name || pageProjectName());
       return true;
     }
 
@@ -7430,6 +8225,22 @@
       if (!isMockLoggedIn()) {
         window.alert(
           "Copy to MyTawala requires a free account.\n\nLog in or Register, then try again."
+        );
+        return;
+      }
+      const submission = resolveLibraryProject(projectId);
+      if (
+        window.TAWALA_PUBLIC_SITE &&
+        submission &&
+        submission.javaLibraryId &&
+        !submission.jsonFile &&
+        submission.versionId
+      ) {
+        window.location.assign(
+          "/library/download?project_id=" +
+            encodeURIComponent(submission.javaLibraryId) +
+            "&version_id=" +
+            encodeURIComponent(submission.versionId)
         );
         return;
       }
@@ -7860,6 +8671,8 @@
     renderLibraryListingControls,
     renderDetailPanel,
     rememberPublicProject,
+    allowedStartNames,
+    startNameAllowed,
     fromLibraryAcquireBadge,
     fromLibraryProvenanceLine,
     fromDesignerProvenanceLine,
@@ -7871,6 +8684,17 @@
     syncProjectActionsForDataSelection,
     applyOpenStartsEntry,
     renderOpsCatalog,
+    parsePublishedLibraryProjects,
+    submissionTestDriveFromDetail,
+    publicLibraryGroups: PUBLIC_LIBRARY_GROUPS,
+    publishedGroupFor,
+    applicationLibraryParent,
+    editCategoryOption,
+    movePublishedProject,
+    namedControlValue,
+    selectedEditCategoryId,
+    updatePublishedProject,
+    deletePublishedProject,
     openPublishDialog,
     openDeployShareDialog,
     openLibraryTestDrivePicker,

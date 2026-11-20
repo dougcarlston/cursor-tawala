@@ -332,8 +332,9 @@
     const fromBase = base
       .filter((c) => !overlay.deleted[c.slug])
       .map((c) => ({ ...c, label: overlay.renamed[c.slug] || c.label }));
+    const baseSlugs = new Set(fromBase.map((c) => c.slug));
     const fromAdded = overlay.added
-      .filter((c) => !overlay.deleted[c.slug])
+      .filter((c) => !overlay.deleted[c.slug] && !baseSlugs.has(c.slug))
       .map((c) => ({ ...c, label: overlay.renamed[c.slug] || c.label, source: c.source || "admin" }));
     return [...fromBase, ...fromAdded];
   }
@@ -1846,7 +1847,7 @@
    * Edit the public Library one-line blurb (overlay only). Empty restores the
    * catalog seed description when this id exists in TAWALA_LIBRARY.
    */
-  function updateLibraryListingDescription(libraryId, shortDescription) {
+  function updateLibraryListingDescription(libraryId, shortDescription, options) {
     const id = String(libraryId || "").trim();
     if (!id) return { ok: false, error: "missing-library" };
     const listing =
@@ -1855,7 +1856,8 @@
         ? { id, ...window.TAWALA_LIBRARY[id] }
         : getLibraryOverlayEntry(id));
     if (!listing) return { ok: false, error: "no-listing" };
-    if (!canEditLibraryListingDescription(listing)) {
+    const asAdmin = options && options.asAdmin === true;
+    if (!asAdmin && !canEditLibraryListingDescription(listing)) {
       return { ok: false, error: "not-author" };
     }
     const next = ownerFacingProjectDescription(shortDescription);

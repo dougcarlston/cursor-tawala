@@ -39,7 +39,9 @@ public class ViewProjectDetailsController implements Controller {
 		User currentUser = UserInfoPreparationInterceptor
 				.getSessionUser(request);
 		boolean allowedToEdit = ProjectLibraryService
-				.getLibrariesUpdatableByUser(currentUser).contains(
+				.userMayChangePublishedNameOrDescription(project, currentUser)
+				&& ProjectLibraryService.getLibrariesUpdatableByUser(
+						currentUser).contains(
 						project.getCategory().getLibrary());
 
 		boolean allowedToDownload = currentUser != null

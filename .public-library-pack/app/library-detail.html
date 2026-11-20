@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>window.TAWALA_PUBLIC_SITE=true;window.TAWALA_JAVA_ORIGIN=location.origin;</script>
+  <meta charset="utf-8" />
+  <meta http-equiv="refresh" content="0;url=library.html" />
+  <title>Tawala - Library (redirect)</title>
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var id = params.get("project") || params.get("id") || "";
+      var next = "library.html";
+      if (id) next += "?highlight=" + encodeURIComponent(id);
+      location.replace(next);
+    })();
+  </script>
+</head>
+<body>
+  <p>Public Library project detail pages were retired. <a id="redir" href="library.html">Continue to the Library listing</a>.</p>
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var id = params.get("project") || params.get("id") || "";
+      var a = document.getElementById("redir");
+      if (a && id) a.href = "library.html?highlight=" + encodeURIComponent(id);
+    })();
+  </script>
+</body>
+</html>

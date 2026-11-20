@@ -31,12 +31,41 @@
 <%-- Browser visits use the 2026 Project Details layout. Fetch from that page still reads this JSP. --%>
 <style>#bd { visibility: hidden; }</style>
 <div id="pmJavaProjectName" hidden><c:out value="${projectInfo.project.name}" /></div>
+<%-- Explicit startPoint="true" only. An omitted attribute is Java's default, not a start mark. --%>
+<%
+	StringBuilder tawalaMarkedStarts = new StringBuilder();
+	Object tawalaInfoObj = request.getAttribute("projectInfo");
+	if (tawalaInfoObj instanceof com.tawala.web.projectmanager.ProjectInfo) {
+		com.tawala.project.Project tawalaDef =
+			((com.tawala.web.projectmanager.ProjectInfo) tawalaInfoObj).getProject().getProject();
+		String tawalaXml = tawalaDef == null ? null : tawalaDef.getProjectXmlDefinition();
+		if (tawalaXml != null) {
+			java.util.regex.Matcher tawalaForms = java.util.regex.Pattern.compile(
+				"<form\\b([^>]*)>", java.util.regex.Pattern.CASE_INSENSITIVE).matcher(tawalaXml);
+			java.util.regex.Pattern tawalaStart = java.util.regex.Pattern.compile(
+				"\\bstartPoint\\s*=\\s*([\"'])(true|false)\\1", java.util.regex.Pattern.CASE_INSENSITIVE);
+			java.util.regex.Pattern tawalaFormName = java.util.regex.Pattern.compile(
+				"\\bname\\s*=\\s*([\"'])([^\"']*)\\1", java.util.regex.Pattern.CASE_INSENSITIVE);
+			while (tawalaForms.find()) {
+				String attrs = tawalaForms.group(1);
+				java.util.regex.Matcher start = tawalaStart.matcher(attrs);
+				java.util.regex.Matcher formName = tawalaFormName.matcher(attrs);
+				if (!start.find() || !formName.find()) continue;
+				if (!"true".equalsIgnoreCase(start.group(2))) continue;
+				if (tawalaMarkedStarts.length() > 0) tawalaMarkedStarts.append('\n');
+				tawalaMarkedStarts.append(formName.group(2));
+			}
+		}
+	}
+	request.setAttribute("tawalaMarkedStartNames", tawalaMarkedStarts.toString());
+%>
+<div id="pmMarkedStarts" hidden><c:out value="${tawalaMarkedStartNames}" /></div>
 <script>
 (function () {
   var holder = document.getElementById("pmJavaProjectName");
   var name = holder ? holder.textContent.replace(/^\s+|\s+$/g, "") : "";
   if (!name) return;
-  location.replace("/app/mytawala-project.html?name=" + encodeURIComponent(name) + "&openStarts=1");
+  location.replace("/app/mytawala-project.html?name=" + encodeURIComponent(name) + "&openStarts=1&v=20261119-publish8");
 })();
 </script>
 

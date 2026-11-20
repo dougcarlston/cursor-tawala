@@ -7,9 +7,9 @@
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css?v=20260911-tdpick1" />
-  <script src="js/demo-urls.js?v=20260915-dup4"></script>
+  <script src="js/demo-urls.js?v=20261119-lib4"></script>
   <script src="js/transfer.js?v=20260915-dup4"></script>
-  <script src="js/project-ops.js?v=20260915-dup4"></script>
+  <script src="js/project-ops.js?v=20261119-lib4"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -36,9 +36,9 @@
           <h3>Next level</h3>
           <p><a href="signup.html">Create your own Tawala apps</a> — free account.</p>
         </div>
-        <div class="block" id="sidebarMaintainerToolsBlock" style="display:none !important;">
+        <div class="block" id="sidebarMaintainerToolsBlock" style="display:none;">
           <h3>Maintainer tools</h3>
-          <p><a href="library-admin.html">Library admin tools</a></p>
+          <p><a href="library-admin.html">Library Admin Tools</a></p>
         </div>
       </div>
 
@@ -86,7 +86,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20261112-acct2"></script>
+  <script src="js/chrome.js?v=20261119-admin2"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -190,6 +190,15 @@
       );
     }
 
+    function publicMoveLabels() {
+      return [
+        "Activities",
+        "Meetings and Gatherings",
+        "Polls and Surveys",
+        "Entertainment",
+      ];
+    }
+
     function categorySectionHtml(slug, label, list) {
       return (
         `<details class="library-category" data-slug="${escapeHtml(slug)}" open>` +
@@ -198,16 +207,47 @@
           `<span class="library-category-name">${escapeHtml(label)}</span>` +
           `<span class="library-category-count">${list.length}</span>` +
           `</summary>` +
-          `<div class="library-category-body" role="list">${list.map(projectRowHtml).join("")}</div>` +
+          `<div class="library-category-body" role="list">` +
+          (label === "User Project Submissions"
+            ? `<p class="mytawala-listing-nav-hint">Published by Users for anyone to download and use.&nbsp;&nbsp;They are in the public domain and Tawala does not test or vouch for them.</p>`
+            : "") +
+          `${list.map(projectRowHtml).join("")}</div>` +
           `</details>`
       );
     }
 
-    function renderGroups(rows, catSlug) {
+    function submissionSectionHtml(list, note) {
+      const body = note
+        ? `<p class="pm-hint">${escapeHtml(note)}</p>`
+        : list.map(projectRowHtml).join("");
+      return (
+        `<details class="library-category" data-slug="user-submissions" open>` +
+        `<summary class="library-category-heading">` +
+        `<span class="library-category-toggle" aria-hidden="true"></span>` +
+        `<span class="library-category-name">User Project Submissions</span>` +
+        `<span class="library-category-count">${note ? 0 : list.length}</span>` +
+        `</summary>` +
+        `<div class="library-category-body" role="list">` +
+        `<p class="mytawala-listing-nav-hint">Published by Users for anyone to download and use.&nbsp;&nbsp;They are in the public domain and Tawala does not test or vouch for them.</p>` +
+        body +
+        `</div></details>`
+      );
+    }
+
+    function renderGroups(rows, submissions, catSlug, submissionNote) {
       const host = document.getElementById("libraryGroups");
       const frame = document.getElementById("libraryListingFrame");
       const empty = document.getElementById("libraryEmpty");
-      if (!rows.length) {
+      const pending = (submissions || []).filter(
+        (p) => publicMoveLabels().indexOf(p.category) < 0
+      );
+      const placed = (submissions || []).filter(
+        (p) => publicMoveLabels().indexOf(p.category) >= 0
+      );
+      const categories = TawalaDemo.libraryCategories();
+      const byLabel = new Map(categories.map((c) => [c.label, []]));
+      const showSubmissions = !catSlug && !byLabel.has("User Project Submissions") && (pending.length || submissionNote);
+      if (!rows.length && !placed.length && !showSubmissions) {
         host.innerHTML = "";
         if (frame) frame.hidden = true;
         empty.hidden = false;
@@ -216,13 +256,18 @@
       empty.hidden = true;
       if (frame) frame.hidden = false;
 
-      const categories = TawalaDemo.libraryCategories();
-      const byLabel = new Map(categories.map((c) => [c.label, []]));
       const orphan = [];
       rows.forEach((p) => {
         if (byLabel.has(p.category)) byLabel.get(p.category).push(p);
         else orphan.push(p);
       });
+      placed.forEach((p) => {
+        if (byLabel.has(p.category)) byLabel.get(p.category).push(p);
+      });
+      const submissionCategory = byLabel.has("User Project Submissions");
+      if (submissionCategory) {
+        pending.forEach((p) => byLabel.get("User Project Submissions").push(p));
+      }
 
       const sections = [];
       categories.forEach((c) => {
@@ -234,6 +279,9 @@
 
       if (orphan.length && !catSlug) {
         sections.push(categorySectionHtml("other", "Other", orphan));
+      }
+      if (showSubmissions) {
+        sections.push(submissionSectionHtml(pending, submissionNote));
       }
 
       host.innerHTML = sections.join("");
@@ -259,7 +307,130 @@
       return rows;
     }
 
-    function applyFilters() {
+    function catalogNameSet(rows) {
+      const names = new Set();
+      (rows || []).forEach((p) => {
+        names.add(TawalaDemo.displayName(p.name).trim().toLowerCase());
+      });
+      return names;
+    }
+
+    function placeSubmission(entry, group) {
+      if (publicMoveLabels().indexOf(group) >= 0) {
+        return { ...entry, category: group, userSubmission: true };
+      }
+      return { ...entry, category: "User Project Submissions", userSubmission: true };
+    }
+
+    async function publishedGroups(page) {
+      const groups = {};
+      const labels =
+        typeof TawalaProjectOps !== "undefined" && TawalaProjectOps.publicLibraryGroups
+          ? TawalaProjectOps.publicLibraryGroups
+          : publicMoveLabels();
+      await Promise.all(
+        labels.map(async (label) => {
+          const cat = (page.categories || []).find((item) => item.label === label);
+          if (!cat) {
+            groups[label] = [];
+            return;
+          }
+          const res = await fetch(
+            "/library/search?library=1&category=" + encodeURIComponent(cat.id),
+            { credentials: "same-origin", cache: "no-store" }
+          );
+          if (!res.ok) {
+            groups[label] = [];
+            return;
+          }
+          const listed = TawalaProjectOps.parsePublishedLibraryProjects(await res.text());
+          groups[label] = (listed.projects || []).map((project) => project.id);
+        })
+      );
+      return groups;
+    }
+
+    async function loadUserSubmissions(catalog) {
+      if (!window.TAWALA_PUBLIC_SITE) return { rows: [], note: "" };
+      if (
+        typeof TawalaProjectOps === "undefined" ||
+        typeof TawalaProjectOps.parsePublishedLibraryProjects !== "function"
+      ) {
+        return { rows: [], note: "Published projects could not be loaded." };
+      }
+      const res = await fetch("/library/search", {
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      if (!res.ok) return { rows: [], note: "Published projects could not be loaded." };
+      const page = TawalaProjectOps.parsePublishedLibraryProjects(await res.text());
+      const groups = await publishedGroups(page);
+      const taken = catalogNameSet(catalog);
+      const fresh = (page.projects || []).filter(
+        (p) => p.name && !taken.has(p.name.trim().toLowerCase())
+      );
+      const detailed = await Promise.all(
+        fresh.map(async (p) => {
+          let drive = {
+            testDriveUrl: "/library/projectdetail?id=" + encodeURIComponent(p.id),
+            versionId: "",
+            startPoints: [],
+          };
+          try {
+            const detail = await fetch(
+              "/library/projectdetail?id=" + encodeURIComponent(p.id),
+              { credentials: "same-origin", cache: "no-store" }
+            );
+            if (detail.ok && typeof TawalaProjectOps.submissionTestDriveFromDetail === "function") {
+              const picked = TawalaProjectOps.submissionTestDriveFromDetail(
+                await detail.text(),
+                p.id
+              );
+              if (picked && picked.testDriveUrl) drive = picked;
+            }
+          } catch (e) {
+            /* keep the project page link */
+          }
+          const group =
+            typeof TawalaProjectOps.publishedGroupFor === "function"
+              ? TawalaProjectOps.publishedGroupFor(p.id, groups)
+              : "";
+          return placeSubmission({
+            id: "lib-" + p.id,
+            name: p.name,
+            shortDescription: p.shortDescription || "",
+            longDescription: "",
+            updated: p.updated || "",
+            rating: 0,
+            comments: 0,
+            cloneCount: p.cloneCount || 0,
+            timesUsed: 0,
+            versionId: drive.versionId || "",
+            javaLibraryId: p.id,
+            testDriveUrl: drive.testDriveUrl,
+            startPoints: drive.startPoints || [],
+            deployed: true,
+            liveReady: true,
+          }, group);
+        })
+      );
+      window.TAWALA_USER_SUBMISSIONS = {};
+      detailed.forEach((entry) => {
+        window.TAWALA_USER_SUBMISSIONS[entry.id] = entry;
+      });
+      return { rows: detailed, note: "" };
+    }
+
+    function matchesQuery(p, q) {
+      return (
+        TawalaDemo.displayName(p.name).toLowerCase().includes(q) ||
+        (p.shortDescription || "").toLowerCase().includes(q) ||
+        (p.longDescription || "").toLowerCase().includes(q) ||
+        (p.category || "").toLowerCase().includes(q)
+      );
+    }
+
+    async function applyFilters() {
       const errEl = document.getElementById("libraryRenderError");
       if (errEl) {
         errEl.hidden = true;
@@ -273,18 +444,23 @@
         const cat = params.get("cat");
         const q = (params.get("query") || "").toLowerCase();
         let rows = catalogRows();
+        let submissionNote = "";
+        let submissions = [];
+        try {
+          const loaded = await loadUserSubmissions(catalogRows());
+          submissions = loaded.rows || [];
+          submissionNote = loaded.note || "";
+        } catch (loadErr) {
+          submissionNote = "Published projects could not be loaded.";
+        }
         const catMeta = cat ? TawalaDemo.categoryBySlug(cat) : null;
         if (catMeta) {
           rows = rows.filter((p) => p.category === catMeta.label);
+          submissions = submissions.filter((p) => p.category === catMeta.label);
         }
         if (q) {
-          rows = rows.filter(
-            (p) =>
-              TawalaDemo.displayName(p.name).toLowerCase().includes(q) ||
-              (p.shortDescription || "").toLowerCase().includes(q) ||
-              (p.longDescription || "").toLowerCase().includes(q) ||
-              (p.category || "").toLowerCase().includes(q)
-          );
+          rows = rows.filter((p) => matchesQuery(p, q));
+          submissions = submissions.filter((p) => matchesQuery(p, q));
         }
         const title = document.getElementById("listingTitle");
         if (q) {
@@ -301,7 +477,7 @@
         }
         document.getElementById("query").value = params.get("query") || "";
         highlightCategory(cat);
-        renderGroups(rows, catMeta ? catMeta.slug : null);
+        renderGroups(rows, submissions, catMeta ? catMeta.slug : null, submissionNote);
         const hint = document.getElementById("libraryCountHint");
         if (hint) {
           hint.textContent =

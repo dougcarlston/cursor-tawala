@@ -418,7 +418,31 @@ public class ProjectLibraryService {
 									+ project.getId());
 				}
 
-				verifyUserAllowedToModifyProject(original, user);
+				boolean nameOrDescriptionChanged = !sameText(original.getName(),
+						project.getName())
+						|| !sameText(original.getShortDescription(),
+								project.getShortDescription())
+						|| !sameText(original.getLongDescription(),
+								project.getLongDescription());
+				if (nameOrDescriptionChanged
+						&& !userMayChangePublishedNameOrDescription(original,
+								user)) {
+					throw new IllegalStateException(
+							"Only the author or an administrator can change the name or description of project #"
+									+ project.getId() + ".");
+				}
+
+				boolean sameCategory = original.getCategory() != null
+						&& project.getCategory() != null
+						&& original.getCategory().getId() != 0
+						&& original.getCategory().getId() == project
+								.getCategory().getId();
+				boolean libraryUpdatable = getLibrariesUpdatableByUser(user)
+						.contains(original.getCategory().getLibrary());
+				if (!(libraryUpdatable || (sameCategory && userMayChangePublishedNameOrDescription(
+						original, user)))) {
+					verifyUserAllowedToModifyProject(original, user);
+				}
 
 				Category originalCategory = original.getCategory();
 
@@ -1144,6 +1168,32 @@ public class ProjectLibraryService {
 		criteria.addOrder(Order.desc("cloneCount"));
 		return TawalaSessionFactory.MAIN.getHibernateTemplate().findByCriteria(
 				criteria);
+	}
+
+	/**
+	 * Name and description of a published project belong to its author.
+	 * An administrator may change them. Other accounts may not.
+	 */
+	public static boolean userMayChangePublishedNameOrDescription(
+			final LibraryProject project, final User user) {
+		if (project == null || user == null || user.getId() == null) {
+			return false;
+		}
+		if (user.isAdministrator()) {
+			return true;
+		}
+		String authorId = project.getAuthorId();
+		if (authorId == null) {
+			return false;
+		}
+		return User.normalizeUserName(user.getId()).equals(
+				User.normalizeUserName(authorId));
+	}
+
+	private static boolean sameText(String left, String right) {
+		String a = left == null ? "" : left;
+		String b = right == null ? "" : right;
+		return a.equals(b);
 	}
 
 	private static void verifyUserAllowedToModifyProject(

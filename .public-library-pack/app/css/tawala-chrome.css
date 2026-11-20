@@ -1,0 +1,4253 @@
+/* Mock-only chrome: banner, pending links, layout, test-drive boxes — layered on legacy site CSS.
+ * Button / control tokens mirror designer-web/src/styles.css (:root). */
+
+:root {
+  --tw-bg: #f0f0f0;
+  --tw-panel: #ffffff;
+  --tw-border: #aca899;
+  --tw-border-dark: #716f64;
+  --tw-toolbar-bg: #ece9d8;
+  --tw-accent: #316ac5;
+  --tw-text: #000000;
+  --tw-muted: #444444;
+  --tw-disabled-opacity: 0.45;
+  /* Legacy site link accent (tawala-base) — keep for nav / listing titles */
+  --tw-site-link: #bb4343;
+}
+
+/* Public Library character — richer legacy red; My Tawala stays Designer-blue.
+ * Tokens from tawala-base h1 (#c24322) + lookalike Library stills. */
+body[data-tawala-page="library"] {
+  --lib-red: #c24322;
+  --lib-red-deep: #a31c1c;
+  --lib-red-ink: #8a2f1f;
+  --lib-blush: #faf0ea;
+  --lib-paper: #fdf8f5;
+  --lib-band: #f0ddd3;
+  --lib-band-edge: #d4a890;
+  --lib-warm-border: #e0c4b4;
+}
+
+.mock-banner {
+  background: var(--tw-panel);
+  border: 1px solid var(--tw-border);
+  border-left: 4px solid var(--tw-accent);
+  padding: 8px 12px;
+  margin: 12px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--tw-text);
+}
+
+.mock-banner a {
+  color: var(--tw-accent);
+}
+
+.mock-banner-where {
+  display: block;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--tw-border);
+  color: var(--tw-muted);
+}
+
+/* Pages menu — Designer accent bar (readable white text; not yellow/brown) */
+#hd {
+  background-image: none !important;
+  background: linear-gradient(180deg, #3d78d1 0%, var(--tw-accent) 52%, #2a5cad 100%) !important;
+  border-bottom: 1px solid var(--tw-border-dark);
+  height: 74px;
+  box-sizing: border-box;
+  /* Extra padding below labels so baseline sits clearly above the bar bottom */
+  padding-bottom: 14px;
+}
+
+#headingLogo {
+  background-image: none !important;
+}
+
+#headingStatus {
+  color: #e8f0fa !important;
+  font-size: 12px;
+}
+
+#headingStatus a {
+  color: #ffffff !important;
+  text-decoration: underline;
+  font-size: 14px; /* Login (and status links) match Pages menu size */
+}
+
+#headingStatus a:hover {
+  color: #ffffff !important;
+  opacity: 0.9;
+}
+
+/* Welcome / My Account dropdown (shared chrome) */
+#headingStatus .account-menu {
+  display: inline-block;
+  position: relative;
+  margin-left: 6px;
+  vertical-align: baseline;
+  z-index: 40;
+}
+
+#headingStatus .account-menu-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  padding: 0 2px;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  line-height: inherit;
+}
+
+#headingStatus .account-menu-toggle:hover {
+  opacity: 0.9;
+}
+
+#headingStatus .account-menu-caret {
+  display: inline-block;
+  margin-left: 2px;
+  font-size: 0.85em;
+  text-decoration: none;
+}
+
+#headingStatus .account-menu-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 10.5em;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid var(--tw-border-dark);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+  text-align: left;
+  z-index: 50;
+}
+
+#headingStatus .account-menu-panel li {
+  margin: 0;
+  padding: 0;
+}
+
+#headingStatus .account-menu-panel a,
+#headingStatus .account-menu-panel .link-pending {
+  display: block;
+  padding: 6px 12px;
+  color: var(--tw-text) !important;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+#headingStatus .account-menu-panel a:hover {
+  background: #eef3fa;
+  color: var(--tw-accent) !important;
+  text-decoration: none;
+  opacity: 1;
+}
+
+#headingStatus .account-menu-panel .link-pending {
+  color: #999 !important;
+  cursor: default;
+}
+
+#doc #headingMenu {
+  margin-top: 6px;
+}
+
+/* LTR menu order (overrides legacy float:right which reversed HTML order) */
+#headingMenu ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  float: none;
+}
+
+#headingMenu ul li {
+  float: none !important;
+  display: block;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+#headingMenu,
+#headingMenu ul li {
+  font-size: 14px;
+}
+
+#headingMenu a,
+#headingMenu a:visited {
+  color: #ffffff !important;
+  opacity: 0.92;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  line-height: 22px;
+  padding-bottom: 6px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+#headingMenu a:hover {
+  color: #ffffff !important;
+  opacity: 1;
+  text-decoration: underline;
+}
+
+#headingMenu ul li.selected a,
+#headingMenu ul li.selected a:visited,
+#headingMenu ul li.selected a:hover {
+  color: #ffffff !important;
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+#headingMenu .link-pending {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Flexible page shell — fluid width; beat legacy fixed 76.92em / min-width 600px */
+#doc {
+  width: auto !important;
+  max-width: 76.92em;
+  min-width: 0 !important;
+  box-sizing: border-box;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#bd > .content {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Unmistakable listing identity — My Tawala vs public Library */
+.listing-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  margin: 0 0 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--tw-border);
+  background: #f0f0f0;
+  font-size: 0.92em;
+  line-height: 1.3;
+}
+
+.listing-identity .listing-where {
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  color: var(--tw-text);
+}
+
+.listing-identity .listing-pile {
+  color: var(--tw-muted);
+  font-size: 0.9em;
+}
+
+.listing-identity .listing-switch {
+  margin-left: auto;
+  font-size: 0.9em;
+}
+
+body[data-tawala-page="mytawala"] .listing-identity {
+  border-left: 4px solid var(--tw-accent);
+}
+
+body[data-tawala-page="library"] .listing-identity {
+  border-left: 4px solid var(--lib-red, #c24322);
+  background: #f0f0f0;
+  border-color: var(--tw-border);
+}
+
+body[data-tawala-page="library"] .listing-identity .listing-where {
+  color: var(--tw-text);
+  letter-spacing: 0.03em;
+}
+
+/* My Tawala / Project Details: no redundant pageTitle (nav “My Tawala” is enough) */
+
+body[data-tawala-page="library"] .pageTitle:not(.library-detail-crumb) h1::after {
+  content: " · Public catalog";
+  font-weight: normal;
+  font-size: 0.55em;
+  color: var(--tw-muted);
+  opacity: 0.9;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+}
+
+.link-pending,
+#headingMenu .link-pending,
+#ft .link-pending {
+  color: #999 !important;
+  cursor: default;
+  text-decoration: none;
+  opacity: 0.75;
+}
+
+#hd .link-pending {
+  color: #ddd !important;
+}
+
+.webapp.featured-pending {
+  opacity: 0.65;
+}
+
+.webapp.featured-pending .pending-label {
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Two-column body (library, detail, My Tawala) */
+#bd {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 0 12px;
+  align-items: start;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+#bd.home-layout {
+  grid-template-columns: 1fr 200px;
+}
+
+#bd.home-layout #yui-main {
+  order: 1;
+}
+
+#bd.home-layout .sidebar-left {
+  order: 2;
+}
+
+.sidebar-left .block,
+.content > .block {
+  background: #f8f6f2;
+  border: 1px solid #d8d0c4;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.sidebar-left .block h3,
+.content .block h3,
+.content .block h4 {
+  margin: 0 0 8px;
+  font-size: 1em;
+  color: #bb4343;
+  border-bottom: 1px solid #d8d0c4;
+  padding-bottom: 4px;
+}
+
+.sidebar-left .block p {
+  margin: 0.4em 0;
+  font-size: 0.92em;
+  line-height: 1.45;
+}
+
+/* Home page — CSS fallbacks when homepage/*.gif assets are absent */
+body[data-tawala-page="home"] #hd {
+  height: 72px;
+  background-image: url("../images/template/heading-blue-slice.gif");
+}
+
+body[data-tawala-page="home"] #hd #headingLogo {
+  background-image: url("../images/template/heading-corner-left.gif");
+}
+
+body[data-tawala-page="home"] #subheading {
+  background-image: none;
+  background: linear-gradient(180deg, #4a7ab8 0%, #2d5a94 100%);
+  height: auto;
+  min-height: 72px;
+  line-height: 1.35;
+  padding: 14px 16px;
+}
+
+body[data-tawala-page="home"] #subheading #tagLine {
+  padding-top: 0;
+  color: #bbdaf9;
+  font-size: 1.65em;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+body[data-tawala-page="home"] #subheading #subtagline {
+  margin-top: 6px;
+  font-size: 0.95em;
+  line-height: 1.4;
+  max-width: 52em;
+}
+
+body[data-tawala-page="home"] #featuredApps {
+  background-image: none;
+  background: linear-gradient(180deg, #e8e8e8 0%, #d4d4d4 100%);
+  height: auto;
+  padding-bottom: 12px;
+  overflow: auto;
+}
+
+body[data-tawala-page="home"] #featuredApps #apps .webapp {
+  background-image: none;
+  background: #fff;
+  border: 1px solid #c8bfb0;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  height: auto;
+  min-height: 185px;
+}
+
+body[data-tawala-page="home"] #featuredApps #apps .webapp a.icon-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 88px;
+  height: 72px;
+  background: linear-gradient(180deg, #5a8fc4 0%, #3a6aa0 100%);
+  border: 1px solid #2d5a94;
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  text-decoration: none;
+}
+
+body[data-tawala-page="home"] #featuredApps #apps .webapp a.icon-tile .icon-label {
+  color: #fff;
+  font-size: 1.35em;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  font-family: arial, helvetica, sans-serif;
+}
+
+body[data-tawala-page="home"] #featuredApps #apps .webapp a.icon-tile:hover {
+  background: linear-gradient(180deg, #6a9fd4 0%, #4a7ab0 100%);
+}
+
+body[data-tawala-page="home"] #featuredApps .featuredLinks {
+  clear: both;
+  padding-top: 8px;
+}
+
+body[data-tawala-page="home"] #featuredList .webapp .title a {
+  color: #bb4343;
+  text-decoration: none;
+}
+
+body[data-tawala-page="home"] #featuredList .webapp .title a:hover {
+  text-decoration: underline;
+}
+
+.sidebar-left .test-drive-note {
+  font-size: 11px;
+  color: #666;
+  margin: 0 0 8px;
+  line-height: 1.35;
+}
+
+/* Library — subdued shell aligned with My Tawala; red accent only on identity strip + links */
+body[data-tawala-page="library"] .sidebar-left .block {
+  background: var(--tw-panel);
+  border-color: var(--tw-border);
+}
+
+body[data-tawala-page="library"] .sidebar-left .block h3 {
+  color: var(--tw-text);
+  border-bottom-color: var(--tw-border);
+  font-family: arial, helvetica, sans-serif;
+  font-size: 1em;
+  letter-spacing: 0;
+}
+
+.pageTitle h1 {
+  margin: 0.6em 0 0.5em;
+  padding-left: 0;
+  float: none;
+  width: auto;
+  font-size: 1.6em;
+  color: #bb4343;
+  border-bottom: 2px solid #bb4343;
+  padding-bottom: 4px;
+}
+
+body[data-tawala-page="library"] .pageTitle:not(.library-detail-crumb) h1 {
+  font-family: arial, helvetica, sans-serif;
+  font-size: 1.45em;
+  color: var(--tw-text);
+  border-bottom: 2px solid var(--tw-accent);
+  padding-bottom: 4px;
+  letter-spacing: 0;
+}
+
+/* Detail: quiet crumb — project name is the hero */
+body[data-tawala-page="library"] .pageTitle.library-detail-crumb {
+  margin: 0;
+  padding: 0.35em 0 0;
+}
+
+body[data-tawala-page="library"] .pageTitle.library-detail-crumb h1 {
+  margin: 0 0 2px;
+  padding: 0;
+  border: none;
+  font-family: arial, helvetica, sans-serif;
+  font-size: 0.88em;
+  font-weight: normal;
+  color: var(--tw-muted);
+  letter-spacing: 0.02em;
+}
+
+body[data-tawala-page="library"] .pageTitle.library-detail-crumb h1 a {
+  color: var(--lib-red-ink);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+body[data-tawala-page="library"] .pageTitle.library-detail-crumb h1 a:hover {
+  text-decoration: underline;
+}
+
+#library #search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, #f5f5f5 0%, #ececec 100%);
+  border: 1px solid var(--tw-border);
+}
+
+#library #search h3 {
+  margin: 0;
+  font-size: 1em;
+  font-family: arial, helvetica, sans-serif;
+  color: var(--tw-text);
+}
+
+#library #search .searchInput input.text {
+  width: min(280px, 100%);
+  padding: 5px 8px;
+  border: 1px solid var(--tw-border);
+  background: #fff;
+}
+
+#library #search .searchInput input.button {
+  padding: 5px 14px;
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--tw-text);
+  border: 1px solid var(--tw-border-dark);
+  border-radius: 3px;
+  background: linear-gradient(180deg, #fafafa 0%, #e8e8e8 100%);
+}
+
+#library #search .searchInput input.button:hover {
+  background: linear-gradient(180deg, #fff 0%, #ececec 100%);
+  border-color: var(--tw-accent);
+}
+
+body[data-tawala-page="library"] .sidebar-left .block.category-tree {
+  overflow: hidden;
+}
+
+body[data-tawala-page="library"] .category-tree .library-chrome-stubs,
+body[data-tawala-page="library"] .category-tree #categoryNav {
+  max-width: 100%;
+}
+
+body[data-tawala-page="library"] .category-tree .library-tree-controls {
+  gap: 3px;
+  padding: 4px 4px;
+}
+
+body[data-tawala-page="library"] .category-tree .library-tree-controls .pm-icon-action {
+  font-size: 9px;
+  padding: 3px 5px;
+  line-height: 1.2;
+}
+
+body[data-tawala-page="library"] .category-tree .library-admin-stubs {
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 4px;
+}
+
+body[data-tawala-page="library"] .category-tree .library-admin-stubs .pm-action {
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+body[data-tawala-page="library"] .category-tree #categoryNav > li:first-child a {
+  font-weight: bold;
+}
+
+.category-tree ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 14px;
+}
+
+.category-tree > ul {
+  padding-left: 0;
+}
+
+.category-tree li {
+  margin: 5px 0;
+  font-size: 0.92em;
+  line-height: 1.35;
+}
+
+.category-tree a.active {
+  color: var(--lib-red, #c24322);
+  font-weight: bold;
+}
+
+table.projectListing {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 0.92em;
+}
+
+table.projectListing th,
+table.projectListing td {
+  border: 1px solid #d8d0c4;
+  padding: 7px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+table.projectListing thead th {
+  background: #e8e2d8;
+  font-size: 0.95em;
+}
+
+table.projectListing tbody tr.link:hover {
+  background: #faf6f0;
+}
+
+table.projectListing .rating {
+  white-space: nowrap;
+}
+
+table.projectListing .description {
+  color: #666;
+  font-size: 0.92em;
+  line-height: 1.35;
+}
+
+/* Dense Library / My Tawala name column — descriptions live on detail pages */
+table.projectListing td.info {
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+/* Dev deploy status — detail / ops only; not list-row banners */
+.deploy-badge {
+  display: inline-block;
+  margin-left: 0;
+  padding: 1px 6px;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--tw-muted);
+  background: var(--tw-toolbar-bg);
+  border: 1px solid var(--tw-border);
+  border-radius: 3px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.deploy-hint-quiet {
+  font-size: 0.82em;
+  color: var(--tw-muted);
+  font-style: italic;
+}
+
+/* Vetted Library products (liveReady) — quiet cue, not a banner */
+.library-live-ready {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 5px;
+  font-size: 0.68em;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #2f6b4f;
+  background: #e8f3ec;
+  border: 1px solid #c5ddd0;
+  border-radius: 2px;
+  vertical-align: middle;
+  line-height: 1.55;
+}
+
+tr.library-row-live td.info .title a {
+  color: inherit;
+}
+
+.start-point-pending {
+  color: #666;
+}
+
+.start-point-pending em {
+  font-style: normal;
+  color: #8a7040;
+}
+
+/* Listing project titles: black, unbold, ≥2pt under legacy 1.2em */
+table.projectListing .title a,
+table.projectListing td.info span.title a {
+  color: var(--tw-text);
+  text-decoration: none;
+  font-weight: normal;
+  font-size: 1em; /* was 1.2em in tawala-base */
+  line-height: 1.35;
+}
+
+table.projectListing .title a:hover,
+table.projectListing td.info span.title a:hover {
+  text-decoration: underline;
+  color: var(--tw-text);
+}
+
+/* Created / Updated / Access (last accessed) — compact dates */
+table.projectListing td.updated,
+table.projectListing td.date-created,
+table.projectListing td.last-accessed,
+table.projectListing .col-date {
+  font-size: 0.78em;
+  color: var(--tw-muted);
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+table.projectListing th.col-date,
+table.projectListing th.sortable-stub {
+  font-size: 0.88em;
+}
+
+table.projectListing th.sortable-stub {
+  color: var(--tw-muted);
+  cursor: default;
+  user-select: none;
+}
+
+table.projectListing td.clone-count {
+  text-align: center;
+  color: var(--tw-muted);
+  font-size: 0.85em;
+}
+
+.rating-stars {
+  display: inline-block;
+  margin-left: 0.45em;
+  vertical-align: middle;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.rating-stars .star {
+  color: #ccc;
+  font-size: 0.95em;
+  letter-spacing: 0;
+}
+
+.rating-stars .star.on {
+  color: #c90;
+}
+
+.library-empty {
+  padding: 1.5em;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  border: 1px dashed #d8d0c4;
+  background: #faf8f5;
+}
+
+.library-clear-search {
+  font-size: 0.9em;
+  font-weight: normal;
+}
+
+/* Collapsible Library groups — one shared CSS grid for header + every project row */
+.library-listing-frame {
+  /* Name + one-line blurb flex; Version/Updated compact; stacked action icons on the right */
+  --library-cols: minmax(0, 1fr) 3.1em 4.75em minmax(9.5rem, max-content);
+  --library-action-gap: 8px;
+  --library-action-slots: repeat(2, minmax(0, 1fr));
+  margin-top: 0;
+  width: 100%;
+  max-width: min(72rem, 100%);
+  box-sizing: border-box;
+}
+
+.library-cols {
+  display: grid;
+  grid-template-columns: var(--library-cols);
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  column-gap: 0;
+}
+
+.library-colhead-bar {
+  background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);
+  border-bottom: 1px solid var(--tw-border);
+  min-height: 2.4em;
+  font-size: 0.88em;
+}
+
+.library-colhead-bar .lib-col {
+  border-right: 1px solid #d8d8d8;
+  padding: 6px 8px 2px 6px;
+  vertical-align: bottom;
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--tw-text);
+  white-space: nowrap;
+  line-height: 1.15;
+  align-self: end;
+}
+
+.library-colhead-bar .lib-col:last-child {
+  border-right: none;
+}
+
+.library-colhead-bar .th-label {
+  display: inline-block;
+  vertical-align: bottom;
+  line-height: 1.15;
+}
+
+.library-colhead-bar .lib-col-used {
+  text-align: center;
+}
+
+.library-colhead-bar .lib-col-version {
+  text-align: center;
+  align-self: end;
+}
+
+.library-colhead-bar .lib-col-updated {
+  text-align: right;
+  align-self: end;
+  padding-right: 10px;
+}
+
+.library-colhead-bar .library-colhead-compact {
+  display: block;
+  font-size: 0.72em;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--tw-muted);
+}
+
+.library-colhead-bar .lib-col-version .library-colhead-compact {
+  text-align: center;
+}
+
+.library-colhead-bar .lib-col-updated .library-colhead-compact {
+  text-align: right;
+}
+
+.library-colhead-bar .lib-col-actions {
+  text-align: center;
+  padding: 4px 8px 3px;
+  letter-spacing: 0.01em;
+  cursor: default;
+  align-self: end;
+  white-space: nowrap;
+}
+
+.library-action-subheads,
+.library-row-actions {
+  display: grid;
+  grid-template-columns: var(--library-action-slots);
+  column-gap: var(--library-action-gap);
+  width: 100%;
+  align-items: start;
+  justify-items: center;
+}
+
+.library-action-subhead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+  font-size: 0.72em;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--tw-muted);
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.library-action-subhead-label {
+  flex: 0 0 auto;
+}
+
+.library-action-subhead-split {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  line-height: 1.05;
+  white-space: normal;
+}
+
+.library-action-metric-head {
+  display: block;
+  font-size: 0.88em;
+  font-weight: 600;
+  color: var(--tw-muted, #666);
+  line-height: 1.05;
+  margin-top: 1px;
+}
+
+.library-action-metric-head::before {
+  content: none;
+}
+
+.library-action-slot {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1px;
+  min-width: 0;
+  width: 100%;
+}
+
+.library-action-slot .pm-op-icon-btn,
+.library-action-slot .pm-icon-action {
+  flex: 0 0 20px;
+  height: 20px;
+}
+
+/* Reserve metric line height on every slot so icons stay on one horizontal row */
+.library-action-slot::after {
+  content: "";
+  display: block;
+  min-height: 0.85em;
+  width: 100%;
+}
+
+.library-action-slot:has(.library-action-metric)::after {
+  content: none;
+}
+
+.library-action-metric {
+  display: inline-block;
+  font-size: 0.72em;
+  font-weight: 600;
+  color: var(--tw-muted);
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.library-project-row.is-highlight {
+  outline: 2px solid var(--tw-accent);
+  outline-offset: -2px;
+  background: #eef4fc;
+}
+
+/* Guest My Tawala taste — static snapshots (not a live fake catalog) */
+.guest-demo-banner {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #c9a994;
+  background: linear-gradient(180deg, #fff8f4 0%, #f6ebe4 100%);
+  border-radius: 4px;
+}
+
+.guest-demo-banner p {
+  margin: 0 0 8px;
+}
+
+.guest-demo-banner p:last-child {
+  margin-bottom: 0;
+}
+
+.guest-demo-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.guest-snapshot {
+  margin: 0 0 24px;
+  padding: 0;
+}
+
+.guest-snapshot-link {
+  display: block;
+  cursor: pointer;
+}
+
+.guest-snapshot-img {
+  display: block;
+  width: 100%;
+  max-width: 960px;
+  height: auto;
+  border: 1px solid #c9a994;
+  border-radius: 4px;
+  background: #f3e8e0;
+  box-shadow: 0 1px 3px rgba(60, 30, 20, 0.12);
+}
+
+.guest-snapshot-img.is-missing {
+  min-height: 280px;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      #f6ebe4,
+      #f6ebe4 12px,
+      #ead9ce 12px,
+      #ead9ce 24px
+    );
+}
+
+.guest-snapshot-cap {
+  margin: 8px 0 0;
+  font-size: 0.92em;
+  color: #5a4a42;
+}
+
+.guest-snapshot-missing {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border: 1px dashed #c4896e;
+  background: #fffaf7;
+  font-size: 0.9em;
+  color: #5c2a1e;
+}
+
+.guest-snapshot-missing code {
+  font-size: 0.95em;
+}
+
+.guest-demo-row {
+  cursor: pointer;
+}
+
+.guest-demo-row:hover {
+  background: #fff8f4;
+}
+
+.guest-demo-starts {
+  margin: 4px 0 0;
+  padding-left: 1.2em;
+}
+
+.guest-demo-start-label {
+  font-weight: 600;
+}
+
+.guest-demo-footer-cta {
+  margin-top: 16px;
+}
+
+.guest-demo-detail .pm-detail-sidebar .pm-identity-row {
+  display: grid;
+  grid-template-columns: 5.5em 1fr;
+  gap: 4px 8px;
+  margin: 4px 0;
+}
+
+.guest-demo-detail .pm-collapsible {
+  margin: 12px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.guest-demo-detail .pm-collapsible > summary {
+  cursor: pointer;
+  padding: 8px 10px;
+  font-weight: 700;
+  background: #f7f3f0;
+}
+
+.guest-demo-detail .pm-collapsible-body {
+  padding: 10px 12px 12px;
+}
+
+.library-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 0;
+}
+
+details.library-category {
+  border: none;
+  border-bottom: none;
+  background: transparent;
+}
+
+details.library-category:last-child {
+  border-bottom: none;
+}
+
+/* Category headers — same subdued bands as My Tawala listing (collapsible for future nested IA) */
+details.library-category > summary.library-category-heading {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 8px 4px 6px;
+  cursor: pointer;
+  user-select: none;
+  background: linear-gradient(180deg, #f5f5f5 0%, #ececec 100%);
+  border-bottom: 1px solid var(--tw-border);
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--tw-text);
+  line-height: 1.3;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+details.library-category > summary.library-category-heading::-webkit-details-marker {
+  display: none;
+}
+
+/* Match designer-web .tree-collapse-toggle / .fields-tree-toggle */
+.library-category-toggle {
+  display: inline-block;
+  width: 20px;
+  flex: 0 0 20px;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 400;
+  color: #444;
+  text-align: left;
+  white-space: pre;
+  line-height: 1.2;
+}
+
+.library-category-toggle::before {
+  content: "[-]";
+}
+
+details.library-category:not([open]) > summary .library-category-toggle::before {
+  content: "[+]";
+}
+
+.library-category-name {
+  flex: 1 1 auto;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tw-text);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.library-category-count {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 10px;
+  color: var(--tw-muted);
+  background: #fff;
+  border: 1px solid var(--tw-border);
+  border-radius: 2px;
+  padding: 0 5px;
+  line-height: 1.5;
+}
+
+.library-category-body {
+  padding: 0;
+  background: #fff;
+}
+
+/* Library rows — name + one-line blurb; actions stacked on the right */
+.library-project-row {
+  font-size: 0.88em;
+  line-height: 1.25;
+  cursor: default;
+  min-height: 1.65em;
+  align-items: center;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.library-project-row:hover {
+  background: #f5f8fc;
+}
+
+.library-project-row .lib-col {
+  padding: 7px 8px 6px 6px;
+  min-width: 0;
+}
+
+.library-project-row .lib-col-name {
+  white-space: normal;
+  overflow: visible;
+}
+
+.library-name-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1px;
+  min-width: 0;
+  width: 100%;
+}
+
+.library-name-title {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 0.45em;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.library-name-title .title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+}
+
+.library-demo-badge {
+  flex-shrink: 0;
+  display: inline-block;
+  font-size: 0.68em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  padding: 1px 6px;
+  border: 1px solid #d4b878;
+  border-radius: 2px;
+  background: #faf3e4;
+  color: #6a4e16;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
+.library-email-badge {
+  border-color: #c47a4a;
+  background: #fbeee6;
+  color: #7a3b16;
+}
+
+.library-name-secondary {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 0.45em;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.library-name-secondary .rating-stars {
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.library-project-row .lib-col-name .title,
+.library-project-row .lib-col-name .title a {
+  color: var(--tw-text);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1em;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.library-project-row .lib-col-name .title a:hover {
+  text-decoration: underline;
+  color: var(--tw-accent);
+}
+
+.library-row-blurb {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--tw-muted);
+  font-size: 0.92em;
+  font-weight: normal;
+  line-height: 1.25;
+}
+
+.library-row-blurb.is-empty {
+  color: #a8a098;
+  font-style: italic;
+}
+
+.library-row-blurb[data-wired="edit-library-description"] {
+  cursor: text;
+}
+
+/* Reputation placeholders — quiet until the later ratings push */
+body[data-tawala-page="library"] .rating-stars {
+  opacity: 0.58;
+  margin-left: 0;
+  transform: scale(0.9);
+  transform-origin: left center;
+}
+
+body[data-tawala-page="library"] .rating-stars .star {
+  color: #cfc0b4;
+}
+
+body[data-tawala-page="library"] .rating-stars .star.on {
+  color: #c4a04a;
+}
+
+.library-project-row.library-cols {
+  align-items: start;
+}
+
+.library-project-row .lib-col-used,
+.library-project-row .lib-col-version,
+.library-project-row .lib-col-updated,
+.library-project-row .lib-col-actions {
+  padding-top: 6px;
+}
+
+.library-project-row .lib-col-used {
+  text-align: center;
+  color: #5a3a2e;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 0.95em;
+}
+
+.library-project-row .lib-col-version {
+  text-align: center;
+  color: var(--tw-muted);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 0.92em;
+}
+
+.library-project-row .lib-col-updated {
+  text-align: right;
+  padding-right: 10px;
+  font-size: 0.78em;
+  color: var(--tw-muted);
+  white-space: nowrap;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+
+.library-project-row .lib-col-actions {
+  text-align: center;
+  padding: 6px 6px 0;
+  white-space: nowrap;
+}
+
+.library-row-actions {
+  vertical-align: middle;
+}
+
+.library-row-actions .pm-op-icon-btn,
+.library-row-actions .pm-icon-action {
+  justify-self: center;
+  flex: 0 0 auto;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+a.pm-icon-action.library-row-action,
+a.pm-op-icon-btn.library-row-action,
+button.pm-icon-action.library-row-action,
+button.pm-op-icon-btn.library-row-action {
+  display: inline-flex;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+/* Library listing — CSS tooltips (native title is unreliable on 20px icons and disabled buttons). */
+body[data-tawala-page="library"] .library-project-row,
+body[data-tawala-page="library"] .library-project-row .lib-col-actions,
+body[data-tawala-page="library"] .library-action-slot,
+body[data-tawala-page="library"] .library-colhead-bar .lib-col-actions {
+  overflow: visible;
+}
+
+body[data-tawala-page="library"] [data-tooltip] {
+  position: relative;
+}
+
+/* width:max-content + max-width: the icon is ~20px; abspos shrink-to-fit was wrapping
+ * one word per line (a tall skinny column). Grow left from the icon so right-edge
+ * action columns stay on-screen. */
+body[data-tawala-page="library"] [data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  z-index: 80;
+  left: auto;
+  right: 0;
+  transform: none;
+  width: max-content;
+  max-width: min(22rem, calc(100vw - 24px));
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 1.35;
+  white-space: normal;
+  text-align: left;
+  color: #fff;
+  background: rgba(28, 32, 40, 0.94);
+  border-radius: 4px;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.1s ease 0.05s, visibility 0.1s ease 0.05s;
+}
+
+body[data-tawala-page="library"] .library-row-actions [data-tooltip]::after,
+body[data-tawala-page="library"] .library-action-metric[data-tooltip]::after {
+  bottom: calc(100% + 6px);
+}
+
+body[data-tawala-page="library"] .library-action-subhead[data-tooltip]::after {
+  top: calc(100% + 4px);
+  bottom: auto;
+}
+
+body[data-tawala-page="library"] [data-tooltip]:hover::after,
+body[data-tawala-page="library"] [data-tooltip]:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+body[data-tawala-page="library"] .library-row-actions .pm-op-icon-btn.is-scope-disabled,
+body[data-tawala-page="library"] .library-row-actions .pm-icon-action.is-scope-disabled {
+  opacity: 1;
+  color: var(--tw-muted);
+  cursor: default;
+  pointer-events: auto;
+}
+
+/* F2 Sep 2026 — Library actions use shared pm-op / pm-action tokens (same family as My Tawala). */
+
+#projectDetails h1 {
+  color: var(--tw-text);
+  margin-top: 0;
+}
+
+.project-heading {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.project-heading h1 {
+  margin: 0;
+}
+
+/* Library detail hero (when used) — subdued panel; red accent strip only */
+.library-detail-hero {
+  padding: 14px 16px 16px;
+  margin: 4px 0 18px;
+  background: var(--tw-panel);
+  border: 1px solid var(--tw-border);
+  border-left: 4px solid var(--lib-red, #c24322);
+  box-shadow: none;
+}
+
+.library-detail-hero h1 {
+  margin: 0 0 2px;
+  font-family: arial, helvetica, sans-serif;
+  font-size: 1.45em;
+  font-weight: bold;
+  color: var(--tw-text);
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.library-detail-hero .library-live-ready {
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.library-detail-hero .library-acquire-ctas {
+  margin-top: 4px;
+}
+
+.library-detail-blurb {
+  margin: 6px 0 12px;
+  color: var(--tw-muted);
+  font-size: 1em;
+  line-height: 1.4;
+  max-width: 40em;
+}
+
+.library-acquire-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 4px;
+}
+
+.library-acquire-ctas .pm-action {
+  margin: 0;
+  font-size: 12px;
+  padding: 7px 14px;
+}
+
+/* Sidebar catalog meta */
+.library-meta-dl {
+  margin: 0;
+  font-size: 0.92em;
+  line-height: 1.4;
+}
+
+.library-meta-dl dt {
+  margin: 8px 0 1px;
+  font-size: 0.78em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--tw-muted);
+}
+
+.library-meta-dl dt:first-child {
+  margin-top: 0;
+}
+
+.library-meta-dl dd {
+  margin: 0;
+  color: #2a201c;
+}
+
+.library-meta-dl dd .pm-hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.9em;
+}
+
+.library-meta-dl .rating-stars {
+  opacity: 0.5;
+}
+
+/* Letter-tile stand-ins removed from listings/detail — keep rule inert if markup reappears */
+.project-icon-tile {
+  display: none !important;
+}
+
+.start-points-heading {
+  margin-top: 10px;
+  font-weight: bold;
+  font-size: 0.92em;
+  color: #446787;
+}
+
+.test-drive-link {
+  display: block;
+  margin: 4px 0;
+  font-size: 0.92em;
+}
+
+.sectionHeading {
+  font-size: 14px;
+  color: var(--lib-red, #c24322);
+  border-bottom: 1px solid var(--lib-warm-border, #e0c4b4);
+  padding-bottom: 4px;
+}
+
+.testDriveBox {
+  background: linear-gradient(180deg, #fff9f0 0%, #fff3e0 100%);
+  border: 1px solid #e0c878;
+  border-left: 4px solid var(--lib-red, #c24322);
+  padding: 12px 14px;
+  margin: 16px 0;
+  line-height: 1.45;
+}
+
+.testDriveBox .button {
+  display: inline-block;
+  background: #a31c1c;
+  color: #fff;
+  padding: 8px 16px;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 3px;
+  margin-right: 8px;
+}
+
+.testDriveBox .button:hover {
+  background: #7a1414;
+  text-decoration: none;
+  color: #fff;
+}
+
+.startPointList {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.stub-page .content {
+  grid-column: 1 / -1;
+}
+
+.stub-form label {
+  display: block;
+  margin: 8px 0 4px;
+  font-weight: bold;
+}
+
+.stub-form input[type="text"],
+.stub-form input[type="password"] {
+  width: 100%;
+  max-width: 320px;
+  padding: 6px 8px;
+}
+
+.stub-form .note {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #666;
+}
+
+@media (max-width: 900px) {
+  #bd {
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 0 10px;
+  }
+
+  body[data-tawala-page="mytawala"] .content,
+  body[data-tawala-page="library"] .content,
+  .library-listing-frame,
+  .mytawala-listing-frame {
+    max-width: none;
+  }
+}
+
+@media (max-width: 800px) {
+  #doc {
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+    padding: 0 8px;
+  }
+
+  #hd {
+    height: auto;
+    min-height: 74px;
+    padding-bottom: 16px;
+  }
+
+  #bd,
+  #bd.home-layout {
+    grid-template-columns: 1fr;
+  }
+
+  #bd.home-layout .sidebar-left {
+    order: 3;
+  }
+
+  body[data-tawala-page="home"] #featuredApps #apps .webapp {
+    float: none;
+    width: auto;
+    max-width: 320px;
+    margin: 0 auto 12px;
+  }
+
+  #hd #headingMenu {
+    width: 100%;
+    float: none;
+    text-align: center;
+    margin-top: 0.5em;
+  }
+
+  #hd #headingStatus {
+    float: none;
+    width: 100%;
+    text-align: center;
+    padding-top: 0.4em;
+  }
+
+  #library #search {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .library-listing-controls {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 720px) {
+  #headingStatus {
+    position: static;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-left {
+    max-width: none;
+  }
+}
+
+/* My Tawala / Project Manager — lean listing + separate Project Details */
+.pm-submenu.sub-menu {
+  margin: 0 0 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid #d8d0c4;
+}
+
+.pm-submenu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.pm-submenu a,
+.pm-submenu .link-pending {
+  font-size: 0.92em;
+  font-weight: bold;
+}
+
+.pm-submenu a.selected,
+.pm-submenu .link-pending.selected {
+  color: var(--lib-red, #c24322);
+  text-decoration: underline;
+}
+
+/* Library sidebar picker + compact chrome stubs (expand/collapse, admin) */
+.library-picker {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.92em;
+}
+
+.library-picker li {
+  margin: 0.25em 0;
+}
+
+.library-picker a.selected {
+  font-weight: bold;
+  color: var(--lib-red, #c24322);
+  border-bottom: 2px solid var(--lib-red, #c24322);
+}
+
+.library-chrome-stubs {
+  margin: 0 0 8px;
+}
+
+.library-tree-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+  padding: 4px 6px;
+  background: #ddd;
+  border: 1px solid #ccc;
+}
+
+.library-admin-stubs {
+  margin: 6px 0 0;
+  gap: 4px;
+}
+
+.library-admin-stubs .pm-action {
+  font-size: 10px;
+  padding: 3px 7px;
+}
+
+.pageCtl {
+  font-size: 0.88em;
+  color: var(--tw-muted);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+}
+
+.pageCtl select:disabled,
+.pageCtl input:disabled {
+  opacity: var(--tw-disabled-opacity);
+  cursor: default;
+}
+
+.pageCtl .pm-action {
+  padding: 3px 10px;
+  font-size: 11px;
+}
+
+.pm-actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 14px;
+}
+
+/* Project Details — Backup / Restore / Publish flush right (no “Project Actions” heading) */
+.pm-detail-main > .pm-actions-bar.pm-detail-actions {
+  justify-content: flex-end;
+  align-items: center;
+  margin: 2px 0 2px;
+  gap: 0;
+}
+
+.pm-detail-actions-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.pm-detail-actions-danger {
+  display: flex;
+  align-items: center;
+  margin-left: 14px;
+  padding-left: 14px;
+  border-left: 1px solid #c9a0a0;
+}
+
+.pm-detail-header {
+  margin: 0 0 2px;
+}
+
+.pm-detail-main > .pm-section:first-of-type {
+  margin-top: 4px;
+}
+
+/* Instructional blue hint (My Tawala list + Project Details → Project Data).
+ * Color #0000ee — #000080 reads black on light grey; do not reuse .pm-hint
+ * (that class forces #555 later in cascade). */
+.mytawala-listing-nav-hint,
+.pm-detail-data-nav-hint {
+  margin: 0;
+  padding: 2px 6px 0;
+  max-width: none;
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+  color: #0000ee;
+  line-height: 1.2;
+}
+
+/* My Tawala listing — Get (always) · Refresh (linked) · Delete (selection) */
+.pm-listing-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin: 4px 0 10px;
+  max-width: min(56rem, 100%);
+  min-height: 2.15em;
+}
+
+.pm-listing-bar-hint {
+  font-size: 0.82em;
+  color: var(--tw-muted);
+  font-weight: normal;
+  margin-left: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* My Tawala listing — click / double-click affordance (owner Aug 10).
+ * Hint lives inside .mytawala-listing-frame as the table’s previous sibling
+ * (flush above the list). */
+#myProjectsListingBarHost:has(+ .mytawala-listing-frame) .pm-listing-bar {
+  margin-bottom: 2px;
+}
+
+.mytawala-listing-frame > table.projectListing.mytawala-listing {
+  margin-top: 0;
+}
+
+/* Project Details — expand-tree hint flush above Project Data section bar */
+.pm-detail-main > .pm-detail-data-nav-hint + .pm-section {
+  margin-top: 2px;
+}
+
+/*
+ * Same visual height for Get / Refresh / Delete (and any bar siblings).
+ * Mixed label lengths + <a> vs <button> were producing uneven rows.
+ */
+.pm-listing-bar .pm-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 28px;
+  padding: 0 12px;
+  line-height: 1.25;
+  vertical-align: middle;
+  text-decoration: none;
+}
+
+.pm-sidebar-ops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 12px;
+}
+
+.pm-sidebar-stack {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.pm-sidebar-stack .pm-action {
+  text-align: left;
+  width: 100%;
+}
+
+.pm-action,
+.pm-icon-action {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  padding: 5px 10px;
+  border: 1px solid #6b97c5;
+  border-radius: 3px;
+  /* Designer dialog / accent active control — not grey */
+  color: #1a3a5c;
+  background-color: #e8f0fa;
+  background-image: linear-gradient(180deg, #f5f9fd 0%, #dce8f6 48%, #c5d8ee 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 0 rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+.pm-action:hover:not(:disabled),
+.pm-icon-action:hover:not(:disabled) {
+  background-color: #d8e6f6;
+  background-image: linear-gradient(180deg, #f8fbfe 0%, #cfe0f4 48%, #b4cce8 100%);
+  border-color: var(--tw-accent);
+}
+
+.pm-action:active:not(:disabled),
+.pm-icon-action:active:not(:disabled) {
+  background-image: linear-gradient(180deg, #c8d0d8 0%, #e0e8f0 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.pm-action:disabled,
+.pm-icon-action:disabled {
+  opacity: var(--tw-disabled-opacity);
+  cursor: default;
+  color: var(--tw-muted);
+  border-color: var(--tw-border);
+  background-color: #e8e8e8;
+  background-image: none;
+  box-shadow: none;
+}
+
+.pm-listing-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-end;
+  min-width: 7em;
+  white-space: nowrap;
+}
+
+.pm-icon-action {
+  padding: 3px 6px;
+}
+
+/* —— My Tawala dense listing: flush rows, sortable + resizable columns, icon ops —— */
+body[data-tawala-page="mytawala"] .content {
+  /* Cap growth on wide screens; shrink fluidly with the viewport (Use + ops strip) */
+  max-width: min(58rem, 100%);
+}
+
+body[data-tawala-page="library"] .content {
+  /* Actions sub-labels: Test drive | Copy link | Save a copy */
+  max-width: min(58rem, 100%);
+}
+
+body[data-tawala-page="library"] .library-listing-frame {
+  /* Full content width — shared --library-cols grid; do not shrink-wrap to name text */
+  width: 100%;
+  max-width: min(58rem, 100%);
+}
+
+.mytawala-listing-frame {
+  margin: 0;
+  margin-left: -4px;
+  border: 1px solid var(--tw-border);
+  background: var(--tw-panel);
+  overflow-x: auto; /* last resort on tiny screens */
+  max-width: min(56rem, 100%);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.library-listing-frame {
+  margin: 0;
+  margin-left: -4px;
+  border: 1px solid var(--tw-border);
+  background: var(--tw-panel);
+  overflow-x: auto; /* last resort on tiny screens */
+  max-width: min(58rem, 100%);
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: none;
+}
+
+.library-listing-nav-hint {
+  margin: 0;
+  padding: 2px 6px 4px;
+}
+
+table.projectListing.mytawala-listing {
+  width: 100%;
+  /* auto + leftover Name: metric/Use columns hug content (1% + nowrap).
+   * fixed + 28% Name left a gap before Version and wrapped titles early. */
+  table-layout: auto;
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 0.88em;
+  line-height: 1.2;
+}
+
+/* Name takes leftover table width; wrap only when the title is longer than that. */
+table.projectListing.mytawala-listing col.col-name,
+table.projectListing.mytawala-listing thead th.col-name,
+table.projectListing.mytawala-listing thead th.left,
+table.projectListing.mytawala-listing tbody td.col-name,
+table.projectListing.mytawala-listing tbody td.info,
+table.projectListing.mytawala-listing tbody td.left {
+  width: auto;
+  min-width: 16em;
+}
+
+table.projectListing.mytawala-listing tbody td.col-name,
+table.projectListing.mytawala-listing tbody td.info,
+table.projectListing.mytawala-listing tbody td.left {
+  width: 100%;
+}
+
+table.projectListing.mytawala-listing col:not(.col-name),
+table.projectListing.mytawala-listing thead th:not(.col-name):not(.left),
+table.projectListing.mytawala-listing tbody td:not(.col-name):not(.info):not(.left) {
+  width: 1%;
+  white-space: nowrap;
+}
+
+table.projectListing.mytawala-listing th,
+table.projectListing.mytawala-listing td {
+  border: none;
+  border-bottom: 1px solid #e4e4e4;
+  padding: 1px 6px;
+  vertical-align: middle;
+  text-align: left;
+}
+
+table.projectListing.mytawala-listing thead th {
+  position: relative;
+  background: #e4e8f0;
+  border-bottom: 1px solid var(--tw-border);
+  padding: 6px 8px 2px 6px;
+  vertical-align: bottom;
+  height: 2.4em;
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--tw-text);
+  user-select: none;
+  white-space: nowrap;
+}
+
+table.projectListing.mytawala-listing thead th .th-label {
+  display: inline-block;
+  vertical-align: bottom;
+  line-height: 1.15;
+}
+
+table.projectListing.mytawala-listing thead th.sortable {
+  cursor: pointer;
+}
+
+table.projectListing.mytawala-listing thead th.sortable:hover {
+  color: var(--tw-accent);
+}
+
+table.projectListing.mytawala-listing thead th.sort-asc .th-label::after,
+table.projectListing.mytawala-listing thead th.sort-desc .th-label::after {
+  content: " ▲";
+  font-size: 0.75em;
+  color: var(--tw-accent);
+}
+
+table.projectListing.mytawala-listing thead th.sort-desc .th-label::after {
+  content: " ▼";
+}
+
+table.projectListing.mytawala-listing thead th.col-op {
+  text-align: center;
+  padding-left: 2px;
+  padding-right: 2px;
+  font-size: 0.72em;
+  letter-spacing: 0.01em;
+  cursor: default;
+}
+
+table.projectListing.mytawala-listing td.col-op {
+  text-align: center;
+  padding: 0 2px;
+  width: 1%;
+}
+
+/* Column groups: same 1px table border weight; extra pad marks group starts */
+table.projectListing.mytawala-listing thead th.col-group-start,
+table.projectListing.mytawala-listing tbody td.col-group-start {
+  border-left: 1px solid #d8d0c4;
+  padding-left: 10px;
+}
+
+table.projectListing.mytawala-listing thead th.col-group-info:not(.col-group-start),
+table.projectListing.mytawala-listing tbody td.col-group-info:not(.col-group-start) {
+  /* Use sits with Name/Created/Updated — slight right pad before the first group rule */
+  padding-right: 4px;
+}
+
+table.projectListing.mytawala-listing tbody tr[data-project-id] {
+  cursor: pointer;
+  user-select: none;
+}
+
+table.projectListing.mytawala-listing tbody tr:hover {
+  background: #eef3fa;
+}
+
+table.projectListing.mytawala-listing tbody tr.is-selected {
+  background: #dde8f6;
+  outline: 1px solid #8eb4d4;
+  outline-offset: -1px;
+}
+
+table.projectListing.mytawala-listing tbody tr.is-selected:hover {
+  background: #d2e0f4;
+}
+
+table.projectListing.mytawala-listing tbody tr:last-child td {
+  border-bottom: none;
+}
+
+table.projectListing.mytawala-listing td.info {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 6px;
+}
+
+table.projectListing.mytawala-listing .listing-project-name {
+  font-weight: 700;
+  color: #004392;
+  /* Use the leftover Name cell — no inner max-width / ellipsis cap. */
+  display: inline;
+  max-width: none;
+  white-space: normal;
+}
+
+table.projectListing.mytawala-listing .col-date {
+  font-size: 0.85em;
+}
+
+.col-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 2;
+}
+
+.col-resize-handle:hover,
+body.col-resizing .col-resize-handle {
+  background: rgba(49, 106, 197, 0.35);
+}
+
+body.col-resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.pm-op-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 20px;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  border-radius: 2px;
+}
+
+.pm-op-icon-btn .pm-op-icon {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.pm-op-icon-btn.is-active:not(:disabled) {
+  color: #1a3a5c;
+  border-color: var(--tw-accent);
+  background-color: #e8f0fa;
+  background-image: linear-gradient(180deg, #f5f9fd 0%, #dce8f6 48%, #c5d8ee 100%);
+}
+
+/* Destructive (Purge / Delete): solid red fill — not a thin outline that is easy to miss */
+.pm-op-icon-btn.is-destructive:not(:disabled),
+.pm-op-icon-btn.is-active.is-destructive:not(:disabled) {
+  color: #fff;
+  border-color: #9b1c1c;
+  background-color: #c0392b;
+  background-image: linear-gradient(180deg, #e05748 0%, #c0392b 48%, #a93226 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.pm-op-icon-btn.is-destructive:hover:not(:disabled),
+.pm-op-icon-btn.is-active.is-destructive:hover:not(:disabled) {
+  color: #fff;
+  border-color: #7a1515;
+  background-color: #a93226;
+  background-image: linear-gradient(180deg, #d44a3b 0%, #a93226 48%, #8b1a1a 100%);
+}
+
+.pm-op-icon-btn.is-destructive:active:not(:disabled) {
+  color: #fff;
+  background-image: linear-gradient(180deg, #8b1a1a 0%, #c0392b 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.28);
+}
+
+.pm-op-icon-btn.is-destructive:disabled {
+  color: #a07070;
+  border-color: #c9a0a0;
+  background-color: #f0e4e4;
+  background-image: none;
+}
+
+/* Action bars — red destructive for PURGE (Details) and DELETE (listing selection bar) */
+.pm-action.is-destructive:not(:disabled) {
+  color: #fff;
+  border-color: #9b1c1c;
+  background-color: #c0392b;
+  background-image: linear-gradient(180deg, #e05748 0%, #c0392b 48%, #a93226 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.pm-action.is-destructive:hover:not(:disabled) {
+  color: #fff;
+  border-color: #7a1515;
+  background-color: #a93226;
+  background-image: linear-gradient(180deg, #d44a3b 0%, #a93226 48%, #8b1a1a 100%);
+}
+
+.pm-action.is-destructive:active:not(:disabled) {
+  color: #fff;
+  background-image: linear-gradient(180deg, #8b1a1a 0%, #c0392b 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.28);
+}
+
+table.projectListing.mytawala-listing td.col-records,
+table.projectListing.mytawala-listing td.col-times-used,
+table.projectListing.mytawala-listing td.col-version {
+  text-align: right;
+  font-size: 0.9em;
+  color: #445;
+  padding-right: 10px;
+  white-space: nowrap;
+}
+
+table.projectListing.mytawala-listing thead th.col-records,
+table.projectListing.mytawala-listing thead th.col-times-used,
+table.projectListing.mytawala-listing thead th.col-version {
+  text-align: right;
+  padding-right: 10px;
+}
+
+table.projectListing.mytawala-listing td.col-last-used {
+  text-align: right;
+  font-size: 0.85em;
+  color: #445;
+  padding-right: 8px;
+  white-space: nowrap;
+}
+
+table.projectListing.mytawala-listing thead th.col-last-used {
+  text-align: right;
+  padding-right: 8px;
+}
+
+table.projectListing.mytawala-listing .listing-details-cue {
+  margin-left: 0.55em;
+  font-size: 0.78em;
+  font-weight: normal;
+  color: #6a7a8a;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+table.projectListing.mytawala-listing .listing-details-cue:hover {
+  color: var(--tw-accent);
+  text-decoration: underline;
+}
+
+.pm-op-icon-btn:disabled {
+  color: var(--tw-muted);
+}
+
+body[data-tawala-page="mytawala"] .sidebar-left .block,
+body[data-tawala-page="mytawala"] .content > .block {
+  background: var(--tw-panel);
+  border-color: var(--tw-border);
+}
+
+body[data-tawala-page="mytawala"] .sidebar-left .block h3,
+body[data-tawala-page="mytawala"] .content .block h3 {
+  color: var(--tw-accent);
+  border-bottom-color: var(--tw-border);
+}
+
+body[data-tawala-page="mytawala"] .pageTitle h1 {
+  color: var(--tw-accent);
+  border-bottom-color: var(--tw-accent);
+}
+
+body[data-tawala-page="mytawala"] .pm-submenu.sub-menu {
+  border-bottom-color: var(--tw-border);
+}
+
+body[data-tawala-page="mytawala"] .pm-submenu a.selected,
+body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
+  color: var(--tw-accent);
+}
+
+.pm-hint {
+  font-size: 0.85em;
+  color: #555;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.pm-back {
+  margin: 0 0 6px;
+  font-size: 0.9em;
+}
+
+.pm-detail-bd,
+.pm-review-bd {
+  grid-template-columns: 1fr;
+}
+
+.pm-detail-content,
+.pm-review-content {
+  grid-column: 1 / -1;
+}
+
+/* Wider left rail (options + identity); main column carries title + Project Data up-fold */
+.pm-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+  gap: 0 18px;
+  align-items: start;
+  margin-top: 0;
+}
+
+/* No My Tawala sub-menu bar — content starts under primary chrome.
+ * Listing `.content` is capped at 58rem; Details must not inherit that or
+ * Project Data (sidebar + Records / Times used / Last used + controls)
+ * stays under the 48rem squeeze query and those stats never paint. */
+body[data-tawala-page="mytawala"] .pm-detail-content {
+  padding-top: 8px;
+  max-width: none;
+}
+
+.pm-detail-header h2,
+.pm-detail-header .pm-detail-title {
+  margin: 0 0 6px;
+  font-size: 1.35em;
+  color: #333;
+}
+
+.pm-detail-title[data-wired="rename-project"] {
+  cursor: pointer;
+  user-select: none;
+  display: inline;
+}
+
+.pm-detail-title[data-wired="rename-project"]:hover {
+  color: #1a4a7a;
+}
+
+.pm-detail-title[data-wired="rename-project"]:focus-visible {
+  outline: 2px solid #4a7ab0;
+  outline-offset: 2px;
+}
+
+/* Left-rail Source — quiet “from … in Library” / “from Designer: …” (main header no longer repeats this). */
+.pm-identity-source,
+.pm-identity-source a,
+.pm-identity-source a:visited {
+  color: #6a7a8a;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.pm-identity-source a:hover {
+  color: #3a5a7a;
+  text-decoration: none;
+}
+
+.pm-detail-meta {
+  margin: 0 0 6px;
+  font-size: 0.92em;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* Description under title — double-click to edit (no hint text; empty shows muted placeholder on hover). */
+.pm-detail-meta[data-wired="edit-description"] {
+  cursor: text;
+  min-height: 1.4em;
+  max-width: 42em;
+  border-radius: 2px;
+}
+
+.pm-detail-meta[data-wired="edit-description"]:hover {
+  color: #333;
+}
+
+.pm-detail-meta[data-wired="edit-description"]:focus-visible {
+  outline: 2px solid #4a7ab0;
+  outline-offset: 2px;
+}
+
+.pm-detail-meta.is-empty .pm-detail-meta-ph {
+  color: #a8a098;
+  opacity: 0;
+  user-select: none;
+  transition: opacity 0.12s ease;
+}
+
+.pm-detail-meta.is-empty:hover .pm-detail-meta-ph,
+.pm-detail-meta.is-empty:focus-visible .pm-detail-meta-ph {
+  opacity: 1;
+}
+
+/* Details identity / ops rail (Published, author, version, Active, Theme, Edit in Designer) */
+.pm-identity-rail {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #d8d0c4;
+  background: #faf8f4;
+}
+
+.pm-identity-grid {
+  margin: 0;
+  display: grid;
+  gap: 6px 14px;
+}
+
+.pm-identity-row {
+  display: grid;
+  grid-template-columns: 9.5em 1fr;
+  gap: 4px 10px;
+  align-items: baseline;
+  font-size: 0.92em;
+}
+
+.pm-identity-row dt {
+  margin: 0;
+  color: #6a5e52;
+  font-weight: bold;
+}
+
+.pm-identity-row dd {
+  margin: 0;
+  color: #333;
+  line-height: 1.35;
+}
+
+.pm-identity-muted {
+  color: #7a7268;
+}
+
+.pm-identity-row.pm-identity-uniqueid dt {
+  font-weight: normal;
+  color: #7a7268;
+}
+
+.pm-identity-liveid {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+  color: #5a5046;
+  word-break: break-all;
+}
+
+.pm-identity-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.pm-status-badge {
+  display: inline-block;
+  font-size: 0.78em;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  padding: 1px 7px;
+  border: 1px solid #c4b8a8;
+  background: #efe9df;
+  color: #5a5046;
+  vertical-align: middle;
+}
+
+.pm-status-badge.is-active {
+  border-color: #8aaa7a;
+  background: #e8f2e4;
+  color: #2f5a28;
+}
+
+.pm-status-badge.is-offline {
+  border-color: #c4a060;
+  background: #f7efd8;
+  color: #6a4e16;
+}
+
+.pm-status-badge.is-from-library {
+  border-color: #8aa0b8;
+  background: #e8eef5;
+  color: #2f4a66;
+  font-weight: normal;
+}
+
+.pm-acquire-success {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #8aaa7a;
+  background: #eef6ea;
+  color: #2f5a28;
+}
+
+.pm-acquire-success p {
+  margin: 0 0 6px;
+}
+
+.pm-acquire-success p:last-child {
+  margin-bottom: 0;
+}
+
+.pm-acquire-success .pm-hint {
+  color: #3d5a38;
+}
+
+.pm-identity-actions {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.pm-designer-open-fallback {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border: 1px solid #c4a35a;
+  background: #fff8e8;
+}
+
+.pm-identity-action {
+  font-size: 0.85em;
+  padding: 2px 10px;
+}
+
+.pm-theme-select {
+  max-width: 16em;
+  font: inherit;
+  font-size: 0.95em;
+  min-width: 10em;
+}
+
+.pm-theme-label {
+  display: inline;
+}
+
+/* Light Details chrome cue — selected themePath on the identity rail (not :8080 CSS). */
+.pm-identity-rail[data-theme-path]:not([data-theme-path=""]) .pm-theme-select {
+  border-color: #9a8f7e;
+}
+
+.listing-project-name .pm-status-badge {
+  margin-left: 6px;
+  font-weight: normal;
+}
+
+.pm-detail-sidebar {
+  background: #f8f6f2;
+  border: 1px solid #d8d0c4;
+  padding: 10px 12px;
+  /* First grid child = left rail */
+  order: 0;
+}
+
+.pm-detail-main {
+  order: 1;
+  min-width: 0;
+}
+
+.pm-detail-sidebar h3 {
+  margin: 0 0 8px;
+  font-size: 1em;
+  color: #bb4343;
+  border-bottom: 1px solid #d8d0c4;
+  padding-bottom: 4px;
+}
+
+/* Identity / Project options stack fills the left rail (Invite/Include sit under Theme) */
+.pm-sidebar-identity {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.pm-detail-sidebar .pm-identity-rail .pm-sidebar-ops {
+  margin: 10px 0 0;
+}
+
+.pm-detail-sidebar .pm-identity-rail {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.pm-detail-sidebar .pm-identity-row {
+  grid-template-columns: 1fr;
+  gap: 2px 0;
+  margin-bottom: 2px;
+}
+
+.pm-detail-sidebar .pm-identity-row dt {
+  font-size: 0.82em;
+}
+
+.pm-detail-sidebar .pm-identity-row dd {
+  font-size: 0.9em;
+}
+
+/* Version: number sits on the label line; blurb is a flush second line (no hanging indent). */
+.pm-identity-version dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.35em;
+}
+
+.pm-identity-version dt .pm-version-num {
+  color: #333;
+  font-weight: bold;
+}
+
+.pm-identity-version .pm-version-desc {
+  margin: 0;
+  padding: 0;
+  padding-inline-start: 0;
+  text-indent: 0;
+}
+
+.pm-identity-version .pm-version-desc-empty {
+  display: none;
+}
+
+.pm-detail-sidebar .pm-identity-version .pm-version-desc {
+  font-size: 0.9em;
+  color: #333;
+  line-height: 1.35;
+}
+
+.pm-detail-sidebar .pm-identity-actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.pm-detail-sidebar .pm-identity-action,
+.pm-detail-sidebar .pm-identity-actions .pm-action {
+  width: 100%;
+  text-align: left;
+}
+
+.pm-detail-sidebar .pm-theme-select {
+  max-width: 100%;
+  width: 100%;
+}
+
+.pm-section {
+  margin: 8px 0;
+  border: 1px solid #d8d0c4;
+  background: #fff;
+}
+
+.pm-section > summary {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.95em;
+  color: #446787;
+  padding: 8px 10px;
+  background: #f0ebe3;
+  list-style: none;
+}
+
+/* Comments / reputation stub — greyed at bottom of Details sections (Aug 9) */
+.pm-section.is-stub-greyed {
+  opacity: 0.72;
+  border-color: #ddd6cc;
+}
+
+.pm-section.is-stub-greyed > summary {
+  color: var(--tw-muted, #8a8a8a);
+  background: #f3f1ec;
+  cursor: default;
+}
+
+.pm-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.pm-section > summary::before {
+  content: "▸ ";
+  color: #8a7a68;
+}
+
+.pm-section[open] > summary::before {
+  content: "▾ ";
+}
+
+.pm-section-body {
+  padding: 10px 12px;
+  border-top: 1px solid #d8d0c4;
+}
+
+/* Project Data: absorb top padding into the project band so full-height vrules
+   run from under the brown section summary through the blue name banner. */
+.pm-section-body:has(> .pm-data-tree),
+.pm-section-body:has(> #pmDataTree) {
+  padding-top: 0;
+}
+
+.pm-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.pm-detail-version {
+  margin: 4px 0 0;
+  font-size: 0.92em;
+  color: #555;
+}
+
+.pm-versions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  margin: 0 0 8px;
+}
+
+.pm-versions-table th,
+.pm-versions-table td {
+  border: 1px solid #d8d0c4;
+  padding: 5px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.pm-versions-table th {
+  background: #f8f6f2;
+  font-weight: bold;
+  color: #444;
+}
+
+.pm-versions-table tr.pm-version-current {
+  background: #eef5fc;
+}
+
+.pm-versions-table .pm-version-pick {
+  width: 1.5em;
+  text-align: center;
+}
+
+.pm-versions-table .pm-version-num {
+  width: 2.5em;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.pm-versions-table .pm-version-date,
+.pm-versions-table .pm-version-status {
+  white-space: nowrap;
+  color: #555;
+}
+
+.pm-versions-table .pm-version-desc {
+  min-width: 12em;
+}
+
+.pm-versions-table .pm-version-desc-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 3px 6px;
+  border: 1px solid #cfc7bb;
+  border-radius: 2px;
+  background: #fff;
+  font: inherit;
+  color: #222;
+}
+
+.pm-versions-table .pm-version-desc-input:focus {
+  outline: 2px solid #6a9cc9;
+  outline-offset: 1px;
+  border-color: #6a9cc9;
+}
+
+.pm-versions-table tr.pm-version-current .pm-version-desc-input {
+  background: #f7fbfe;
+}
+
+/* Project Data — unified list (Aug 9): 0 closed → 1 starts ▶ → 2 all forms */
+.pm-data-subblock {
+  margin: 0 0 14px;
+}
+
+.pm-data-subblock:last-child {
+  margin-bottom: 0;
+}
+
+.pm-data-subhead {
+  margin: 0 0 6px;
+  font-size: 0.95em;
+  font-weight: 700;
+  color: #333;
+}
+
+.pm-data-tree {
+  font-size: 0.9em;
+  color: #222;
+  /*
+   * Shared column recipe used identically by banner + every form row:
+   * toggle/cue | name | Records | Times | Last | controls/spacer.
+   *
+   * Space priority when tight (owner Aug 9; Details packing Aug 25):
+   *   1) Controls hug their buttons (max-content — never clip Purge).
+   *   2) Keep Records visible; Times used / Last used drop only below 32rem
+   *      (not crush — heads stay readable/aligned with dashes while visible).
+   *   3) Form/project names use leftover 1fr; project title wraps only if that
+   *      track is still too short. ~12ch is only the grid min when very tight.
+   */
+  /* Stat + control tracks hug content so the name 1fr gets leftover width.
+   * A fixed 26em control column left a gap and starved long project titles
+   * once Times used / Last used stayed visible (details13). */
+  --pm-data-records-w: max-content;
+  --pm-data-extra-stat-w: max-content; /* Times used / Last used — drop below 32rem only */
+  --pm-data-ctrl-w: max-content; /* Use · Copy link | Export·form Import·form | Purge·form */
+  --pm-data-name-min: 6ch; /* last-resort floor when viewport is tight — leftover still goes here */
+  --pm-data-gap: 6px;
+  --pm-data-vrule: #6e5c45;
+  --pm-data-pad-inline-start: 2px;
+  --pm-data-pad-inline-end: 4px;
+  container-type: inline-size;
+  container-name: pm-data;
+  overflow-x: auto; /* safety; controls also sticky-right if scroll appears */
+}
+
+/*
+ * ONE grid for banner + every form row (subgrid). Separate per-row grids let
+ * the banner control track drift from form spacers — RECORDS head vs form "—"
+ * misaligned. Scroll on this same box so a list scrollbar cannot narrow form
+ * rows alone. --pm-data-cols lives here so container queries re-resolve tracks.
+ */
+.pm-data-grid {
+  display: grid;
+  grid-template-columns: var(--pm-data-cols);
+  column-gap: var(--pm-data-gap);
+  align-items: center;
+  min-width: 0;
+  width: 100%;
+  --pm-data-cols:
+    20px minmax(var(--pm-data-name-min), 1fr) var(--pm-data-records-w)
+    var(--pm-data-extra-stat-w) var(--pm-data-extra-stat-w) var(--pm-data-ctrl-w);
+}
+
+/*
+ * Squeeze: drop Times / Last only on very narrow stacked layouts.
+ * Do not shrink tracks below header width (that jammed TIMES USED / LAST USED
+ * into overlapping glyphs). Records stays; name keeps 1fr.
+ *
+ * 48rem was too high: Details Project Data (even after lifting the listing
+ * 58rem cap) is often ~36–42rem beside the options rail, so Times used /
+ * Last used were in the DOM but never visible. 32rem is below two-column
+ * Details; phones may still drop them.
+ */
+@container pm-data (max-width: 32rem) {
+  .pm-data-grid {
+    --pm-data-extra-stat-w: 0px;
+  }
+
+  .pm-data-stat-times,
+  .pm-data-stat-last {
+    visibility: hidden;
+    overflow: hidden;
+    pointer-events: none;
+  }
+}
+
+/* Details Project Data: always paint Times used / Last used on the project row.
+ * The squeeze query above used to match every two-column Details layout
+ * (listing 58rem cap + options rail). Higher specificity beats the query.
+ *
+ * Spell max-content on the template (not only via custom props) so leftover
+ * width goes to the title 1fr instead of stretching the button track. */
+.pm-detail-main .pm-data-grid {
+  --pm-data-extra-stat-w: max-content;
+  --pm-data-ctrl-w: max-content;
+  --pm-data-gap: 4px;
+  grid-template-columns:
+    20px minmax(var(--pm-data-name-min), 1fr)
+    max-content max-content max-content max-content;
+}
+
+.pm-detail-main .pm-data-stat-times,
+.pm-detail-main .pm-data-stat-last {
+  visibility: visible;
+  pointer-events: auto;
+  min-width: min-content;
+  max-width: none;
+  overflow: visible;
+}
+
+/* Title uses leftover 1fr after stats+buttons hug the right.
+ * One line when it fits; ellipsis only if the title is still longer than
+ * that leftover. Wrapping to two lines left a ragged hole beside line 2. */
+.pm-detail-main .pm-data-tree-project-name {
+  justify-self: stretch;
+  width: 100%;
+  max-width: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-spacing: normal; /* tawala-base html * { word-spacing: 0.05em } inflates long titles */
+}
+
+.pm-detail-main .pm-data-project-controls {
+  /* Hug the button cluster on the right; do not stretch a leftover hole. */
+  justify-self: end;
+  min-width: min-content;
+  width: max-content;
+  max-width: none;
+}
+
+.pm-detail-main .pm-data-ctrl-group {
+  min-width: min-content;
+}
+
+.pm-data-grid.is-scrollable {
+  /* sticky banner (~2 lines + pad) + ~10 form rows */
+  max-height: calc(3.4em + 10 * 1.35em + 14px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border-bottom: 1px solid #e8e0d4;
+}
+
+.pm-data-tree-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* contents → form <li> cells participate in .pm-data-grid tracks */
+.pm-data-forms-list {
+  display: contents;
+  margin: 0;
+  padding: 0;
+}
+
+.pm-data-forms-list.is-collapsed,
+.pm-data-tree[data-expand-level="0"] .pm-data-forms-list,
+.pm-data-tree[data-project-open="0"] .pm-data-forms-list {
+  display: none;
+}
+
+/* Level 1: start points only (same row chrome as full list). */
+.pm-data-tree[data-expand-level="1"] .pm-data-tree-form:not([data-pm-is-start="1"]),
+.pm-data-tree[data-forms-open="0"][data-expand-level="1"] .pm-data-tree-form:not([data-pm-is-start="1"]) {
+  display: none;
+}
+
+/* Banner + form rows: subgrid of .pm-data-grid (one shared column recipe). */
+.pm-data-line,
+.pm-data-tree-row,
+.pm-data-project-block {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
+  box-sizing: border-box;
+  min-width: 0;
+  line-height: 1.1;
+  padding-left: var(--pm-data-pad-inline-start);
+  padding-right: var(--pm-data-pad-inline-end);
+  margin: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pm-data-line,
+.pm-data-tree-row {
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/*
+ * Project banner = 2-row subgrid of .pm-data-grid (same tracks as form rows).
+ * Controls nest in the last track; vrules stretch inside that nest.
+ */
+.pm-data-project-block {
+  grid-template-rows: auto auto;
+  /* Top pad replaces section-body pad so vrules span that band */
+  padding-top: 10px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #e4ddd2;
+  border-radius: 0 0 2px 2px;
+  background: #f7f4ef;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.pm-data-col-spacer {
+  min-width: 0;
+}
+
+.pm-data-tree-form {
+  padding-top: 0;
+  padding-bottom: 0;
+  min-height: 1.2em;
+}
+
+.pm-data-line:hover,
+.pm-data-tree-row:hover,
+.pm-data-project-block:hover {
+  background: #f3efe7;
+}
+
+.pm-data-project-block.is-selected,
+.pm-data-line.is-selected,
+.pm-data-tree-row.is-selected {
+  background: #d9e7f5;
+  outline: 1px solid #8eb4d4;
+}
+
+/* Start ◀ selected — same selection chrome, slight green wash so Use affordance reads. */
+.pm-data-tree-form.is-start.is-selected {
+  background: #dceee3;
+  outline-color: #7ab892;
+}
+
+/* Project expand caret — same ▸ family as .pm-section; larger/darker; rotates open. */
+.pm-data-tree-toggle {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  color: #3a3228;
+  justify-self: center;
+  grid-row: 1;
+}
+
+.pm-data-tree-toggle:hover {
+  color: #004392;
+}
+
+.pm-data-tree-toggle-glyph {
+  display: inline-block;
+  width: 1em;
+  text-align: center;
+  transform: rotate(0deg);
+  transition: transform 0.12s ease;
+}
+
+.pm-data-tree-toggle.is-expanded .pm-data-tree-toggle-glyph,
+.pm-data-tree-toggle[aria-expanded="true"] .pm-data-tree-toggle-glyph {
+  transform: rotate(90deg);
+}
+
+.pm-data-tree-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pm-data-project-block > .pm-data-tree-label {
+  grid-row: 1;
+}
+
+/* Form + project names share the 1fr name track; ellipsis only when that track is tight. */
+.pm-data-tree-form > .pm-data-tree-label,
+.pm-data-tree-project-name {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.pm-data-tree-project-name {
+  font-weight: 700;
+  color: #004392;
+}
+
+/* Start cue: ◀ (points left — starting-point marker, not an expand ▸). */
+.pm-data-tree-play,
+.pm-data-tree-play-spacer {
+  width: 14px;
+  justify-self: end;
+  font-size: 0.62em;
+  line-height: 1;
+  color: #9a8b78;
+}
+
+.pm-data-tree-play {
+  display: inline-block;
+  color: #2a7a4a;
+  font-weight: 700;
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.pm-data-tree-form.is-start > .pm-data-tree-label {
+  font-weight: 600;
+}
+
+.pm-data-tree-play-spacer {
+  visibility: hidden;
+}
+
+.pm-data-project-block > .pm-data-stat-head {
+  grid-row: 1;
+  justify-self: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
+.pm-data-project-block > .pm-data-stat-val {
+  grid-row: 2;
+  justify-self: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
+.pm-data-project-block > .pm-data-col-spacer {
+  grid-row: 2;
+}
+
+/* Heads + cells: same centered track (shared grid — no extra padding wrappers). */
+.pm-data-stat-head {
+  font-size: 0.68em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #7a6a58;
+  white-space: nowrap;
+  text-align: center;
+  justify-self: stretch;
+  align-self: center;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* never paint into a neighbor column */
+  text-overflow: clip;
+  box-sizing: border-box;
+}
+
+.pm-data-stat-val {
+  font-size: 0.82em;
+  color: #5a4a3a;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  justify-self: stretch;
+  align-self: center;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.pm-data-tree-form > .pm-data-stat-val {
+  justify-self: stretch;
+  text-align: center;
+}
+
+.pm-data-stat-placeholder {
+  color: #a09080;
+}
+
+.pm-data-stat-empty {
+  min-width: 0;
+  visibility: hidden;
+}
+
+/*
+ * Banner commands occupy the shared last track (same width as form-row spacer).
+ * Nested flex keeps full-height vrules while buttons sit on the heads row.
+ */
+.pm-data-project-controls {
+  grid-column: 6;
+  grid-row: 1 / -1;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 6px;
+  /*
+   * Track is max-content: contribute the button cluster width so leftover
+   * goes to the project title. (min-width:0 collapsed that track and left
+   * a hole between Last used and Use, with the title ellipsizing.)
+   */
+  min-width: min-content;
+  width: max-content;
+  max-width: none;
+  overflow: visible;
+  align-self: stretch;
+  cursor: default;
+  /* If the tree still scrolls horizontally, keep actions in the visible right edge. */
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background: #f7f4ef;
+}
+
+.pm-data-project-block.is-selected > .pm-data-project-controls {
+  background: #d9e7f5;
+}
+
+.pm-data-tree-row > .pm-data-col-spacer {
+  min-width: 0;
+}
+
+/* Full-height vertical rules across the project banner band (into block padding) */
+.pm-data-vrule {
+  width: 2px;
+  flex: 0 0 2px;
+  align-self: stretch;
+  margin: -10px 0 -3px;
+  background: var(--pm-data-vrule);
+  border-radius: 1px;
+}
+
+.pm-data-ctrl-group {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  /* Top of banner band (heads row) — not vertically centered across values row */
+  align-self: flex-start;
+  cursor: default;
+  flex-shrink: 0;
+  min-width: 0; /* do not force the shared control track wider than template */
+}
+
+.pm-data-banner-controls {
+  /* first group also carries toolbar role; keep class for older selectors */
+  cursor: default;
+}
+
+/* Same chrome family as .pm-action (Backup/Restore/Publish) — raised, not flat text. */
+.pm-data-ctrl {
+  display: inline-block;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: 3px 8px;
+  border: 1px solid #6b97c5;
+  border-radius: 3px;
+  color: #1a3a5c;
+  background-color: #e8f0fa;
+  background-image: linear-gradient(180deg, #f5f9fd 0%, #dce8f6 48%, #c5d8ee 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 0 rgba(0, 0, 0, 0.06);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 1.25;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.pm-data-ctrl:hover:not(:disabled):not(.is-scope-disabled) {
+  border-color: var(--tw-accent, #4a8bc2);
+  background-color: #d8e6f6;
+  background-image: linear-gradient(180deg, #f8fbfe 0%, #cfe0f4 48%, #b4cce8 100%);
+}
+
+.pm-data-ctrl:active:not(:disabled):not(.is-scope-disabled) {
+  background-image: linear-gradient(180deg, #c8d0d8 0%, #e0e8f0 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+/* Use: muted when greyed; solid green when a start point is selected (keep accent). */
+a.pm-data-ctrl-use {
+  color: #6a7a8a;
+  font-weight: bold;
+}
+
+a.pm-data-ctrl-use.is-active:not(.is-scope-disabled) {
+  color: #fff;
+  border-color: #246b42;
+  background-color: #2a7a4a;
+  background-image: linear-gradient(180deg, #3a9a5a 0%, #2a7a4a 48%, #246b42 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+a.pm-data-ctrl-use.is-active:not(.is-scope-disabled):hover {
+  color: #fff;
+  border-color: #1e5a38;
+  background-color: #246b42;
+  background-image: linear-gradient(180deg, #349050 0%, #246b42 48%, #1e5a38 100%);
+}
+
+a.pm-data-ctrl-use.is-active:not(.is-scope-disabled):active {
+  color: #fff;
+  background-image: linear-gradient(180deg, #1e5a38 0%, #2a7a4a 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.28);
+}
+
+/* Purge — solid red like Details DELETE / legacy destructive actions */
+.pm-data-ctrl.is-destructive:not(:disabled):not(.is-scope-disabled) {
+  color: #fff;
+  border-color: #9b1c1c;
+  background-color: #c0392b;
+  background-image: linear-gradient(180deg, #e05748 0%, #c0392b 48%, #a93226 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.pm-data-ctrl.is-destructive:hover:not(:disabled):not(.is-scope-disabled) {
+  color: #fff;
+  border-color: #7a1515;
+  background-color: #a93226;
+  background-image: linear-gradient(180deg, #d44a3b 0%, #a93226 48%, #8b1a1a 100%);
+}
+
+.pm-data-ctrl.is-destructive:active:not(:disabled):not(.is-scope-disabled) {
+  color: #fff;
+  background-image: linear-gradient(180deg, #8b1a1a 0%, #c0392b 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.28);
+}
+
+.pm-data-ctrl-sep {
+  color: #b0a090;
+  padding: 0 1px;
+  font-weight: 700;
+}
+
+.pm-data-ctrl.is-scope-disabled,
+.pm-data-ctrl:disabled {
+  opacity: 1;
+  cursor: default;
+  color: var(--tw-muted, #888);
+  border-color: var(--tw-border, #c0c0c0);
+  background-color: #e8e8e8;
+  background-image: none;
+  box-shadow: none;
+  /* Keep pointer-events so grey title tooltips remain hoverable. */
+  pointer-events: auto;
+}
+
+.pm-data-ctrl.is-scope-disabled:hover,
+.pm-data-ctrl:disabled:hover {
+  color: var(--tw-muted, #888);
+  border-color: var(--tw-border, #c0c0c0);
+  background-color: #e8e8e8;
+  background-image: none;
+  box-shadow: none;
+}
+
+.pm-data-tree-badge {
+  font-size: 0.72em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #6a7a8a;
+  background: #eef2f6;
+  border: 1px solid #d0d8e0;
+  border-radius: 2px;
+  padding: 0 5px;
+  line-height: 1.4;
+}
+
+.pm-data-tree-count {
+  font-size: 0.8em;
+  color: #7a6a58;
+  min-width: 1.6em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Online Exam offline demo Records — shown only when counts come from mock-seed. */
+.pm-demo-records-tools {
+  margin: 6px 0 0;
+  font-size: 0.85em;
+  color: #5a4a38;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55em;
+}
+
+.pm-demo-records-tools[hidden] {
+  display: none !important;
+}
+
+.pm-demo-records-badge {
+  display: inline-block;
+  padding: 0.1em 0.45em;
+  border: 1px solid #c4b49a;
+  border-radius: 2px;
+  background: #f7f1e6;
+  color: #5a4a38;
+  font-size: 0.92em;
+  letter-spacing: 0.02em;
+}
+
+.pm-demo-reseed {
+  margin: 0;
+  padding: 0.15em 0.55em;
+  border: 1px solid #8a7a62;
+  border-radius: 2px;
+  background: #fffdf8;
+  color: #2c2418;
+  font: inherit;
+  font-size: 0.95em;
+  cursor: pointer;
+}
+
+.pm-demo-reseed:hover {
+  background: #f0e8d8;
+}
+
+.pm-data-forms-list > .pm-data-tree-empty {
+  grid-column: 1 / -1;
+}
+
+.pm-data-tree-empty {
+  margin-left: 22px;
+  padding: 1px 6px;
+  color: #888;
+  font-style: italic;
+  line-height: 1.25;
+  font-size: 0.92em;
+}
+
+.pm-action.is-scope-disabled,
+.pm-action:disabled.is-scope-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+.pm-start-points {
+  margin: 0 0 8px;
+  padding-left: 18px;
+  font-size: 0.92em;
+}
+
+.pm-start-points a {
+  color: #bb4343;
+}
+
+/* Ops archive review page */
+.pm-review-intro {
+  font-size: 0.95em;
+  line-height: 1.45;
+  color: #444;
+  max-width: 52em;
+  margin: 0 0 16px;
+}
+
+.pm-catalog .pm-archive-source {
+  font-size: 0.88em;
+  color: #666;
+  line-height: 1.45;
+  margin-bottom: 14px;
+  max-width: 56em;
+}
+
+.pm-catalog-toc {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  background: #f8f6f2;
+  border: 1px solid #d8d0c4;
+}
+
+.pm-catalog-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+
+.pm-catalog-toc a {
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.pm-catalog-section {
+  margin: 0 0 22px;
+}
+
+.pm-catalog-section h2 {
+  margin: 0 0 4px;
+  font-size: 1.15em;
+  color: #bb4343;
+  border-bottom: 1px solid #d8d0c4;
+  padding-bottom: 4px;
+}
+
+.pm-catalog-where {
+  margin: 0 0 8px;
+  font-size: 0.85em;
+  color: #666;
+  line-height: 1.35;
+}
+
+.pm-catalog-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88em;
+  background: #fff;
+}
+
+.pm-catalog-table th,
+.pm-catalog-table td {
+  border: 1px solid #d8d0c4;
+  padding: 5px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.pm-catalog-table thead th {
+  background: #e8e2d8;
+}
+
+.pm-catalog-table code {
+  font-size: 0.95em;
+}
+
+.pm-cat-title,
+.pm-cat-src {
+  color: #555;
+}
+
+.pm-cat-wired {
+  white-space: nowrap;
+  color: #664;
+  font-size: 0.95em;
+}
+
+/* Anchor styled as Designer action chip (sidebar transfer links) */
+a.pm-action {
+  display: inline-block;
+  text-decoration: none;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+a.pm-action.is-active {
+  color: #1a3a5c;
+}
+
+/* Library category editor (Edit Categories) */
+.library-category-editor {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--tw-border);
+  background: #f7f9fc;
+}
+
+.library-category-editor-inner h3 {
+  margin: 0 0 6px;
+  font-size: 1.05em;
+  color: var(--tw-accent);
+}
+
+.library-category-edit-table {
+  width: 100%;
+  margin-top: 8px;
+  font-size: 0.9em;
+}
+
+.library-category-edit-table th,
+.library-category-edit-table td {
+  padding: 4px 6px;
+  border-bottom: 1px solid #e4e4e4;
+  vertical-align: middle;
+}
+
+.library-cat-select {
+  font-size: 12px;
+  padding: 2px 4px;
+  max-width: 100%;
+}
+
+.library-cat-overridden {
+  margin-left: 4px;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #6b5a2e;
+  background: #f5efd8;
+  border: 1px solid #e0d4a8;
+  padding: 0 4px;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+/* My Tawala — Designer deploy inbox */
+.deploy-inbox {
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--tw-border);
+  border-left: 4px solid var(--tw-accent);
+  background: #f0f4fa;
+}
+
+.deploy-inbox-inner h3 {
+  margin: 0 0 4px;
+  font-size: 1em;
+  color: var(--tw-accent);
+}
+
+.deploy-inbox-inner ul {
+  margin: 6px 0;
+  padding-left: 1.2em;
+}
+
+.deploy-inbox-inner li {
+  margin: 2px 0;
+  font-size: 0.92em;
+}
+
+/*
+ * Owner Aug 9: below ~screenshot two-column width (1024px), hide the identity
+ * rail so Project Data (fluid names + controls + Records) keeps the width.
+ */
+@media (max-width: 1024px) {
+  .pm-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pm-detail-sidebar {
+    display: none;
+  }
+}
+
+/* Library admin — category management + drag/drop board (library-admin.html) */
+.lib-admin-name-cell {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lib-admin-actions {
+  white-space: nowrap;
+}
+
+.lib-admin-actions .pm-action {
+  font-size: 10px;
+  padding: 3px 7px;
+  margin: 1px 2px 1px 0;
+}
+
+.library-admin-cat-add input[type="text"] {
+  width: 100%;
+  padding: 5px 7px;
+  border: 1px solid var(--tw-border);
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.library-admin-board {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.library-admin-cat-col {
+  flex: 1 1 200px;
+  min-width: 180px;
+  max-width: 260px;
+  border: 1px solid var(--tw-border);
+  background: #fafafa;
+  border-radius: 3px;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.library-admin-cat-col.drag-over {
+  background: #e8f0fa;
+  border-color: var(--tw-accent);
+}
+
+.library-admin-cat-col-head {
+  padding: 6px 8px;
+  font-size: 0.85em;
+  font-weight: bold;
+  color: var(--tw-accent);
+  background: #eef1f6;
+  border-bottom: 1px solid var(--tw-border);
+}
+
+.library-admin-cat-count {
+  font-weight: normal;
+  color: var(--tw-muted);
+}
+
+.library-admin-cat-col-body {
+  min-height: 48px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.library-admin-cat-col-body .pm-hint {
+  margin: 4px 2px;
+  font-style: italic;
+}
+
+.library-admin-proj-row {
+  background: #fff;
+  border: 1px solid #d8d0c4;
+  border-radius: 2px;
+  padding: 4px 6px;
+  cursor: grab;
+  font-size: 0.85em;
+  user-select: none;
+}
+
+.library-admin-proj-row:active,
+.library-admin-proj-row.is-dragging {
+  cursor: grabbing;
+}
+
+.library-admin-proj-row.is-dragging {
+  opacity: 0.45;
+}
+
+.library-admin-proj-name {
+  display: block;
+  margin-bottom: 3px;
+  word-break: break-word;
+}
+
+.library-admin-proj-move {
+  width: 100%;
+  font-size: 11px;
+  padding: 2px 3px;
+  cursor: pointer;
+  user-select: auto;
+}
+
+.library-admin-td-table select {
+  max-width: 100%;
+  font-size: 12px;
+}
+
+/* Publish / Pull dialogs (My Tawala) — plain DOM modal, no framework. */
+.tawala-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 24, 32, 0.45);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4vh 16px 16px;
+  z-index: 500;
+  overflow-y: auto;
+  overflow-anchor: none;
+}
+
+.tawala-modal {
+  background: #fff;
+  border: 1px solid var(--tw-border);
+  border-top: 4px solid var(--tw-accent);
+  border-radius: 3px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+  width: 100%;
+  max-width: 440px;
+  padding: 16px 18px 14px;
+}
+
+/* Publish: wider + shallower so Cancel/Publish stay on-screen (owner Aug 1, 2026). */
+.tawala-modal--publish {
+  max-width: 720px;
+  max-height: min(92vh, 560px);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 18px 10px;
+  box-sizing: border-box;
+}
+
+.tawala-modal--publish > h3 {
+  flex-shrink: 0;
+  margin: 0 0 4px;
+}
+
+.tawala-modal--publish > .tawala-modal-lede {
+  flex-shrink: 0;
+  margin: 0 0 8px;
+}
+
+.tawala-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.tawala-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  align-items: start;
+}
+
+.tawala-modal-grid .tawala-modal-field {
+  margin: 0;
+}
+
+.tawala-modal-field--full {
+  grid-column: 1 / -1;
+}
+
+.tawala-modal-code {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 4px;
+  padding: 6px 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.35;
+  border: 1px solid var(--tw-border);
+  border-radius: 2px;
+  background: #f7f8fa;
+  resize: vertical;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.tawala-modal-inline-actions {
+  margin: 4px 0 10px;
+}
+
+.tawala-modal--deploy-share {
+  max-width: 640px;
+  max-height: min(92vh, 640px);
+}
+
+.tawala-modal--deploy-share .tawala-modal-body {
+  overflow-anchor: none;
+}
+
+.tawala-modal--deploy-share:focus {
+  outline: none;
+}
+
+.tawala-modal--deploy-share .tawala-modal-field {
+  margin: 8px 0 2px;
+}
+
+.tawala-modal--deploy-share .tawala-modal-hint-tight {
+  margin: 4px 0 0;
+}
+
+.tawala-modal--deploy-share .tawala-modal-inline-actions {
+  margin: 2px 0 8px;
+}
+
+.tawala-modal--deploy-share .tawala-modal-code {
+  min-height: 0;
+}
+
+.tawala-modal--deploy-share #deployShareLink.tawala-modal-code {
+  min-height: 2.6em;
+}
+
+.tawala-modal--deploy-share #deployShareEmbed.tawala-modal-code {
+  min-height: 3.6em;
+}
+
+.tawala-modal-start-one {
+  margin: 2px 0 6px;
+  font-size: 0.92em;
+  line-height: 1.4;
+}
+
+.tawala-modal--deploy-share code {
+  font-size: 0.92em;
+}
+
+.tawala-modal--testdrive-pick {
+  max-width: 420px;
+}
+
+/* Multi-start Library Test Drive / Copy — hot links only (no faint dropdown caret). */
+.testdrive-pick-list {
+  list-style: none;
+  margin: 4px 0 10px;
+  padding: 0;
+}
+
+.testdrive-pick-list li {
+  margin: 0;
+  padding: 0;
+}
+
+.testdrive-pick-list li + li {
+  margin-top: 2px;
+}
+
+a.testdrive-pick-link {
+  display: block;
+  padding: 10px 12px;
+  font-size: 1.05em;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--tw-accent, #0b5cab);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  border-radius: 4px;
+}
+
+a.testdrive-pick-link:hover,
+a.testdrive-pick-link:focus {
+  background: rgba(11, 92, 171, 0.08);
+  outline: none;
+}
+
+a.testdrive-pick-link:focus-visible {
+  box-shadow: 0 0 0 2px rgba(11, 92, 171, 0.35);
+}
+
+a.testdrive-pick-link.is-open {
+  background: rgba(11, 92, 171, 0.12);
+  box-shadow: inset 3px 0 0 var(--tw-accent, #0b5cab);
+}
+
+.tawala-modal-hint-tight {
+  margin: 6px 0 0;
+  font-size: 0.8em;
+  line-height: 1.35;
+}
+
+.tawala-modal h3 {
+  margin: 0 0 8px;
+  color: var(--tw-accent);
+  font-size: 1.1em;
+}
+
+.tawala-modal-field {
+  display: block;
+  margin: 12px 0 4px;
+  font-size: 0.86em;
+  font-weight: 600;
+  color: #333;
+}
+
+.tawala-modal-field input[type="text"],
+.tawala-modal-field select,
+.tawala-modal-field textarea {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 5px 7px;
+  font-size: 0.95em;
+  font-weight: normal;
+  border: 1px solid var(--tw-border);
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.tawala-modal-field textarea {
+  resize: vertical;
+  min-height: 4.5em;
+  line-height: 1.35;
+  font-family: inherit;
+}
+
+.tawala-modal-field input[type="text"]:focus,
+.tawala-modal-field select:focus,
+.tawala-modal-field textarea:focus {
+  outline: none;
+  border-color: var(--tw-accent);
+  box-shadow: 0 0 0 2px rgba(49, 106, 197, 0.18);
+}
+
+.tawala-modal--desc {
+  max-width: 28em;
+}
+
+.tawala-modal #publishModalError,
+.tawala-modal #pullModalError,
+.tawala-modal #saveCopyModalError,
+.tawala-modal #getLibModalError,
+.tawala-modal #renameModalError,
+.tawala-modal #descModalError {
+  color: #a5271f;
+  margin: 6px 0 0;
+}
+
+/* Get from Library — acquire picker (My Tawala listing) */
+.tawala-modal--get-library {
+  max-width: min(36rem, 96vw);
+}
+
+.get-lib-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: min(22rem, 55vh);
+  overflow-y: auto;
+  padding: 2px;
+  border: 1px solid var(--tw-border, #c8c2b6);
+  background: #faf9f6;
+}
+
+.get-lib-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.get-lib-row:hover {
+  background: #eef3f8;
+}
+
+.get-lib-row:has(input:checked) {
+  background: #e3eef8;
+  outline: 1px solid #7aa0c4;
+}
+
+.get-lib-row input {
+  margin-top: 3px;
+  flex: 0 0 auto;
+}
+
+.get-lib-row-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.get-lib-name {
+  font-weight: 600;
+  color: #1a3a5c;
+}
+
+.get-lib-live {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 5px;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #1a6b3c;
+  background: #e4f5ea;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+.get-lib-meta {
+  font-size: 0.88em;
+  color: #666;
+}
+
+.get-lib-blurb {
+  font-size: 0.88em;
+  color: #444;
+  line-height: 1.35;
+}
+
+.tawala-modal-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0 4px;
+  font-size: 0.86em;
+  font-weight: 600;
+  color: #333;
+}
+
+.tawala-modal--publish .tawala-modal-checkbox {
+  margin: 10px 0 2px;
+}
+
+.tawala-modal-checkbox input[type="checkbox"] {
+  margin: 0;
+}
+
+.tawala-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.tawala-modal--publish .tawala-modal-actions {
+  flex-shrink: 0;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--tw-border);
+}
+
+@media (max-width: 560px) {
+  .tawala-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tawala-modal--publish {
+    max-height: min(94vh, 640px);
+  }
+}
+
+/* Site docs (docs.html) — quiet maintainer guide */
+.site-docs-toc {
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: 0.9em;
+  line-height: 1.55;
+}
+
+.site-docs-toc a {
+  text-decoration: none;
+}
+
+.site-docs-toc a:hover {
+  text-decoration: underline;
+}
+
+.site-docs-pre {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  font-size: 0.82em;
+  line-height: 1.45;
+  background: #f6f6f6;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.site-docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+  margin: 6px 0 0;
+}
+
+.site-docs-table th,
+.site-docs-table td {
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.site-docs-table th {
+  background: #f3f3f3;
+  font-weight: bold;
+}
+
+body[data-tawala-page="docs"] .content > .block {
+  scroll-margin-top: 12px;
+}

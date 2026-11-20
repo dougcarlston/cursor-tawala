@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>window.TAWALA_PUBLIC_SITE=true;window.TAWALA_JAVA_ORIGIN=location.origin;</script>
+  <meta charset="utf-8" />
+  <title>Tawala - Sign Up</title>
+  <link rel="stylesheet" href="css/tawala-mock.css?v=20260809-chrome1" />
+</head>
+<body data-tawala-page="home" class="stub-page">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+    <div id="bd">
+      <div class="content">
+        <div class="pageTitle"><h1>Sign Up</h1></div>
+        <div class="block stub-form">
+          <p>
+            Please register for your <b>FREE</b> account.
+          </p>
+          <p>
+            Registration creates your own private space in My Tawala, where you can deploy, push, and manage projects.
+          </p>
+          <p style="margin:20px 0;">
+            <button type="button" class="pm-action is-active" id="signupWithClerk" style="font-size:1.1em;padding:12px 24px;background:#316ac5;color:#fff;border-color:#1c4b91;font-weight:bold;">
+              Sign Up with Clerk (Free Account)
+            </button>
+          </p>
+          <p class="note">Secure registration via <b>Clerk</b>. Already have an account? <a href="login.html">Login here</a>.</p>
+        </div>
+      </div>
+    </div>
+    <div id="tawala-chrome-footer"></div>
+  </div>
+  <script src="js/chrome.js?v=20260809-chrome1"></script>
+  <script>
+    TawalaChrome.mount();
+    document.getElementById("signupWithClerk").onclick = function () {
+      if (typeof TawalaChrome !== "undefined" && typeof TawalaChrome.openSignUp === "function") {
+        TawalaChrome.openSignUp();
+      }
+    };
+  </script>
+</body>
+</html>

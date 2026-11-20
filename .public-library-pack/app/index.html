@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>window.TAWALA_PUBLIC_SITE=true;window.TAWALA_JAVA_ORIGIN=location.origin;</script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tawala - Home</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/homepage.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-examtd1" />
+  <script src="js/demo-urls.js?v=20260915-dup4"></script>
+  <script src="js/transfer.js?v=20260915-dup4"></script>
+</head>
+<body data-tawala-page="home">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="subheading">
+      <div id="tagLine"><span>Surveys, Sign Ups, Event Planning — all in seconds and for FREE</span></div>
+      <div id="subtagline">
+        A wide set of easy-to-use email and Web tools that you can put to work immediately with absolutely no technical knowledge.
+      </div>
+    </div>
+
+    <div id="featuredApps">
+      <div id="featuredFree">
+        <p><b>Tawala Featured Solutions</b>&nbsp;&nbsp; All absolutely free. No registration required!</p>
+      </div>
+      <div id="apps"></div>
+      <div class="featuredLinks">
+        <div class="link1"><a href="library.html">Browse the Project Library →</a></div>
+        <div class="link2"><a href="mytawala.html">Open My Tawala (deployed projects) →</a></div>
+      </div>
+    </div>
+
+    <div id="bd" class="home-layout">
+      <div id="yui-main">
+        <div class="content">
+          <div class="block">
+            <h4>More Solutions</h4>
+            <div id="featuredList"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-left">
+        <div class="block">
+          <h3>Your account</h3>
+          <p>Not logged in. <a href="signup.html">Sign up free</a> to save customized apps.</p>
+        </div>
+        <div class="block">
+          <h3>Quick test drive</h3>
+          <p class="test-drive-note">Clears this shared Library demo when you start (not when you close the tab).</p>
+          <div id="homeTestDriveLinks"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+  <script src="js/chrome.js?v=20260810-guest2"></script>
+  <script>
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    const arrow = '<img src="images/template/red-bullet-arrow-right.gif" alt="" width="8" height="8" />';
+
+    TawalaChrome.mount();
+
+    const apps = document.getElementById("apps");
+    apps.innerHTML = TawalaDemo.featured()
+      .map(
+        (p) => `<div class="webapp">
+          <a href="library.html?highlight=${encodeURIComponent(p.id)}" class="icon-tile" title="${escapeHtml(TawalaDemo.displayName(p.name))}">
+            <span class="icon-label">${escapeHtml(p.iconLabel || "?")}</span>
+          </a>
+          <div class="title"><a href="library.html?highlight=${encodeURIComponent(p.id)}">${escapeHtml(TawalaDemo.displayName(p.name))}</a></div>
+          <p>${escapeHtml(p.shortDescription)}</p>
+          <div class="links"><a href="library.html?highlight=${encodeURIComponent(p.id)}">Open in Library…</a></div>
+        </div>`
+      )
+      .join("");
+
+    const list = document.getElementById("featuredList");
+    const more = TawalaDemo.moreSolutions();
+    list.innerHTML = more.length
+      ? more
+          .map(
+            (p) => {
+              const blurb = p.shortDescription || p.longDescription || "";
+              return `<div class="webapp">
+              <div class="title"><a href="library.html?highlight=${encodeURIComponent(p.id)}">${escapeHtml(TawalaDemo.displayName(p.name))}</a></div>
+              <p>${escapeHtml(blurb)}</p>
+              <div class="links"><a href="library.html?highlight=${encodeURIComponent(p.id)}">Open in Library… ${arrow}</a></div>
+            </div>`;
+            }
+          )
+          .join("")
+      : "<p class=\"note\">All library projects are featured above.</p>";
+
+    const honesty =
+      (typeof TawalaDemo !== "undefined" && TawalaDemo.TEST_DRIVE_HONESTY) || {};
+    const homeNote = document.querySelector(".test-drive-note");
+    if (homeNote && honesty.homeNote) homeNote.textContent = honesty.homeNote;
+    const tdTitle =
+      honesty.tooltipSingle ||
+      "No account. Opens a private try-out in this browser. Other visitors cannot see what you enter.";
+
+    const td = document.getElementById("homeTestDriveLinks");
+    td.innerHTML = TawalaDemo.featured()
+      .filter((p) => TawalaDemo.isDeployed(p))
+      .filter((p) => !(typeof TawalaDemo.isDataDrivenProject === "function" && TawalaDemo.isDataDrivenProject(p)))
+      .map((p) => {
+        const url =
+          typeof TawalaDemo.libraryTestDriveUrl === "function"
+            ? TawalaDemo.libraryTestDriveUrl(p)
+            : p.testDriveUrl;
+        return `<a class="test-drive-link js-testdrive" href="${url}" data-testdrive-url="${url}" target="_blank" rel="noopener" title="${escapeHtml(
+          tdTitle
+        )}">${escapeHtml(
+          TawalaDemo.displayName(p.name).replace(/ Template$/, "")
+        )}</a>`;
+      })
+      .join("");
+  </script>
+</body>
+</html>

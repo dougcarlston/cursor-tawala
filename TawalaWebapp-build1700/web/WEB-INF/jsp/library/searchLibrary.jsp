@@ -90,6 +90,7 @@
 	                        	</a>
 	                        </span><br />
 	                        <span class="description"><c:out value="${project.shortDescription}" /></span>
+	                        <span class="author" hidden><c:out value="${project.authorId}" /></span>
                     </td>
                     <td class="rating left"><img src="/images/${project.rating}star.gif" alt="${project.rating}" "border="none"></td>
                     <c:if test="${currentLibrary.showCloneCount}">

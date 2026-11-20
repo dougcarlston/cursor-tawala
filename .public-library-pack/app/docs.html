@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>window.TAWALA_PUBLIC_SITE=true;window.TAWALA_JAVA_ORIGIN=location.origin;</script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tawala - Website mock docs</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/library.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-chrome1" />
+</head>
+<body data-tawala-page="docs" data-tawala-status="compact">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="bd">
+      <div class="sidebar-left">
+        <div class="block">
+          <h3>On this page</h3>
+          <ul class="site-docs-toc">
+            <li><a href="#away">While you were away</a></li>
+            <li><a href="#publish">Publish</a></li>
+            <li><a href="#library-admin">Library admin</a></li>
+            <li><a href="#export-import">Export / Import</a></li>
+            <li><a href="#backup-restore">Backup / Restore</a></li>
+            <li><a href="#purge-delete">Purge / Delete</a></li>
+            <li><a href="#glossary">Glossary</a></li>
+            <li><a href="#use-it">Use / Library Actions</a></li>
+            <li><a href="#smoke">Smoke order</a></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>Full README</h3>
+          <p class="pm-hint">
+            Served as plain text on this static host:
+            <a href="README.md">README.md</a>
+          </p>
+          <p class="pm-hint">
+            Or open the file in the repo:
+            <code>website-mock/README.md</code>
+          </p>
+        </div>
+        <div class="block">
+          <h3>Quick links</h3>
+          <p><a href="library.html">Library</a></p>
+          <p><a href="mytawala.html">My Tawala</a></p>
+          <p><a href="library-admin.html">Library admin</a></p>
+          <p><a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a></p>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="pageTitle"><h1>Website mock docs</h1></div>
+
+        <div class="block">
+          <p>
+            Lightweight guide for the owner working on
+            <a href="http://localhost:5500/">http://localhost:5500/</a>.
+            This page summarizes the README sections you need most often.
+            For the full narrative, open <a href="README.md">README.md</a>.
+          </p>
+        </div>
+
+        <div class="block" id="away">
+          <h3>While you were away</h3>
+          <p>
+            Aug 1, 2026 session fixed a hard break on the designer-web API
+            (<code>:3001</code>) and a silent Restore/Import no-op in the shell scripts.
+          </p>
+          <ul>
+            <li>
+              <b>API start failure:</b>
+              <code>projectResponses.mjs</code> was missing the named exports that
+              <code>server/index.mjs</code> imported — Node refused to start the whole
+              server (Deploy, Preview, Purge, Export/Import).
+            </li>
+            <li>
+              <b>Restore stdin race:</b>
+              a preflight <code>psql</code> call drained the real SQL piped into
+              <code>psql -f -</code>. Fixed with <code>&lt;/dev/null</code> on checks
+              that do not need stdin.
+            </li>
+            <li>
+              <b>Gotcha:</b>
+              <code>ensure-dev-api.sh</code> only restarts when health is down.
+              After pulling server changes, hard-restart if a stale process is still listening:
+            </li>
+          </ul>
+          <pre class="site-docs-pre">lsof -nP -tiTCP:3001 -sTCP:LISTEN | xargs kill
+cd designer-web &amp;&amp; ./scripts/ensure-dev-api.sh
+curl -s http://localhost:3001/api/health</pre>
+          <p class="pm-hint">Full write-up: README § While you were away.</p>
+        </div>
+
+        <div class="block" id="publish">
+          <h3>Publish (My Tawala → Library)</h3>
+          <p>
+            Deliberate bridge from private My Tawala into the one public Library.
+            Entry points: Project Details <b>PUBLISH</b>
+            (listing Publish removed Aug 9 — lean list), or
+            <a href="library-admin.html">library-admin.html</a>.
+          </p>
+          <ul>
+            <li>Rename on the way in (strips any <code>" (stub)"</code> suffix by default).</li>
+            <li>Optional replace target: stub → retires to My Tawala (kept marked stub); non-stub → in-place overlay.</li>
+            <li>Duplicate Library product is refused unless you are the listed author updating that overlay (before the empty Library clone).</li>
+            <li>The Library copy is a separate live form with no saved responses. Your My Tawala project and its data are not changed.</li>
+            <li>Mock storage only (<code>localStorage</code>). Shipping into
+              <code>js/demo-urls.js</code> + <code>liveReady: true</code> is a separate maintainer step.</li>
+          </ul>
+          <p>
+            <b>Smoke:</b>
+            <a href="mytawala.html">mytawala.html</a> → open a project →
+            <b>PUBLISH</b> on Project Details → confirm → check
+            <a href="library.html">library.html</a> and My Tawala for the expected add / retire / replace outcome.
+            Library copy is empty; My Tawala Records stay.
+          </p>
+        </div>
+
+        <div class="block" id="library-admin">
+          <h3>Library admin</h3>
+          <p>
+            Maintainer tools so rename / overwrite / delete do not require an agent.
+            Open <a href="library-admin.html">library-admin.html</a>.
+          </p>
+          <ul>
+            <li>Enable once via <a href="library-admin.html?admin=1"><code>?admin=1</code></a> or the on-page button (sets <code>tawala.mock.libraryAdmin</code>).</li>
+            <li><b>Publish / overwrite</b> from any My Tawala project (Library copy empty; My Tawala data unchanged).</li>
+            <li><b>Rename</b> any Library display name in place.</li>
+            <li><b>Delete</b> removes a listing with no successor. No My Tawala copy. The name is free for a later Publish. Live uniqueIds also vacate the :8080 display name.</li>
+            <li><b>Free a live :8080 name</b> — paste an occupant uniqueId (for example a name that is not even a Library row).</li>
+          </ul>
+          <p class="pm-hint">Quiet links also live in the Library and My Tawala sidebars (Maintainer tools).</p>
+        </div>
+
+        <div class="block" id="export-import">
+          <h3>Export / Import</h3>
+          <p>
+            <b>Data only</b> — Excel-shaped response submissions for the current project.
+            Import restores messed-up data; field mismatch fails; Import does
+            <em>not</em> roll back the project definition.
+          </p>
+          <ul>
+            <li><b>Export</b> — downloads <code>&lt;slug&gt;.export.json</code> (no confirm).</li>
+            <li><b>Import</b> — pick that file → field check → confirm → replace submissions.</li>
+            <li>Needs designer-web API on <code>:3001</code> and a project with a resolvable <code>uniqueId</code>.</li>
+          </ul>
+          <p>
+            UI: My Tawala listing or Project Details. API smoke (with a real uniqueId):
+          </p>
+          <pre class="site-docs-pre">curl -s -X POST http://localhost:3001/api/export-responses \
+  -H 'Content-Type: application/json' \
+  -d '{"uniqueId":"&lt;uniqueId&gt;","credentials":{"user":"dev","password":"dev"}}' \
+  &gt; /tmp/export.json</pre>
+          <p class="pm-hint">Full round-trip script: README § My Tawala layout → Smoke Export/Import.</p>
+        </div>
+
+        <div class="block" id="backup-restore">
+          <h3>Backup / Restore</h3>
+          <p>
+            <b>Paired snapshot</b> — mock <code>.backup.json</code> carries catalog properties +
+            response data + (when available) project definition JSON from
+            <code>website-mock/projects/</code>. Distinct from Export/Import.
+          </p>
+          <ul>
+            <li><b>Backup</b> — download, no confirm.</li>
+            <li><b>Restore</b> — confirm → re-apply properties, then data. Does not push definition into a live Designer session (<code>:5173</code> and <code>:5500</code> do not share storage).</li>
+          </ul>
+          <p class="pm-hint">Real Java Backup is a <code>.backup</code> ZIP; this mock uses JSON for local ops.</p>
+        </div>
+
+        <div class="block" id="purge-delete">
+          <h3>Purge / Delete</h3>
+          <table class="site-docs-table">
+            <thead>
+              <tr><th>Verb</th><th>What it clears</th><th>What it keeps</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Purge</b></td>
+                <td>All <code>:8080</code> submissions for that project’s uniqueId (via <code>:3001</code>)</td>
+                <td>My Tawala row, Library catalog, Tomcat project XML</td>
+              </tr>
+              <tr>
+                <td><b>Delete</b></td>
+                <td>Private My Tawala row (overlay + inbox receipt; seed rows stay hidden)</td>
+                <td>Library / liveReady catalog, submissions (use Purge), Tomcat XML</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            <b>Smoke Purge:</b> Deploy → Show in My Tawala → Purge → alert shows deleted count.
+            Library primary Test Drive still purge-on-start (not on leave); honesty copy says so. Project Details start-point links do not purge.
+          </p>
+          <p>
+            <b>Smoke Delete:</b>
+            <a href="mytawala.html">mytawala.html</a> → select row → Delete → reload → row still gone; Library twin unchanged.
+          </p>
+        </div>
+
+        <div class="block" id="glossary">
+          <h3>Save / Deploy / Publish glossary (short)</h3>
+          <table class="site-docs-table">
+            <thead>
+              <tr><th>Verb</th><th>Meaning</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Copy to MyTawala</b> (Library)</td><td>Empty private clone of the public Library project (does not copy catalog submissions). ≠ Make a Copy ≠ Use ≠ open in Designer.</td></tr>
+              <tr><td><b>Make a Copy</b> (My Tawala)</td><td>Fork your own project; copies all response data onto a new live form. Owner Purges for a clean slate.</td></tr>
+              <tr><td><b>Use</b> (My Tawala)</td><td>Single-start: open the :8080 runtime URL. Multi-start: open Project Details to choose Setup vs Exam (etc.). Not on Library. Not legacy CloneAndCustomize. Grey when no deploy URL. Does not purge-on-start (unlike Library Test drive).</td></tr>
+              <tr><td><b>Open in Designer</b></td><td>Author/customize definition in Designer — required for some starters; most users avoid this path.</td></tr>
+              <tr><td><b>EXPORT / IMPORT</b></td><td>Response data only. Not definition versioning; not Backup.</td></tr>
+              <tr><td><b>BACKUP / RESTORE</b></td><td>Paired definition + data snapshot. Distinct from Import.</td></tr>
+              <tr><td><b>Deploy</b></td><td>Mints / deploys a My Tawala definition version (Designer → runtime).</td></tr>
+              <tr><td><b>Publish</b></td><td>Private My Tawala → public Library catalog.</td></tr>
+              <tr><td><b>Pull</b></td><td>Refresh My Tawala descriptive fields from a Library project (not deploy identity).</td></tr>
+              <tr><td><b>Designer Save</b></td><td>Local authoring only (File → Save).</td></tr>
+            </tbody>
+          </table>
+          <p class="pm-hint">
+            Pillars: tenancy · data ops · paired backup · versioning · Deploy vs Publish.
+            Do not fill My Tawala listing with version piles until Delete/Purge and ops are trustworthy.
+            Listing column groups + red Purge/Delete are done (see README § Parked / backlog item 1).
+            Still parked as look &amp; feel / organization: sticky icon headings, user folders,
+            complete-private archive list
+            (see <a href="README.md">README.md</a> § Parked / backlog).
+          </p>
+        </div>
+
+        <div class="block" id="use-it">
+          <h3>Library Actions + Use on My Tawala (Aug 1, 2026)</h3>
+          <p>
+            <b>Library</b> Actions = discovery / acquire:
+            <b>Test drive</b> | <b>Copy to MyTawala</b> only (no Use).
+            <b>My Tawala</b> = operate — listing + Details have <b>Use</b>
+            (single-start → :8080 when deployed; multi-start → Project Details to pick an entry point; no purge-on-start).
+            Prefer runnable / admin-from-runtime Library projects (or clearly label Designer-required).
+            Designer-only starters (Sign-up Sheet, Sign-up Sheet w Email) live on
+            File → New Project — not in the public Library catalog seed (Aug 10 / Aug 1, 2026).
+            Full write-up: <a href="README.md">README.md</a> § Library vs New Project templates.
+          </p>
+        </div>
+
+        <div class="block" id="smoke">
+          <h3>Suggested smoke order when you’re back</h3>
+          <ol>
+            <li>Confirm <code>:3001</code> is current — <code>curl -s http://localhost:3001/api/health</code> (hard-restart if stale).</li>
+            <li>Smoke Export/Import (API round-trip is fastest).</li>
+            <li>Smoke Purge (must-not-break).</li>
+            <li>Smoke Pull.</li>
+            <li>Backup/Restore through the UI.</li>
+          </ol>
+          <p>
+            Serve this folder only:
+            <code>cd website-mock &amp;&amp; ./serve.sh</code>
+            → <a href="http://localhost:5500/">http://localhost:5500/</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+  <script src="js/chrome.js?v=20260809-chrome1"></script>
+  <script>TawalaChrome.mount();</script>
+</body>
+</html>

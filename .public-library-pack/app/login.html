@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>window.TAWALA_PUBLIC_SITE=true;window.TAWALA_JAVA_ORIGIN=location.origin;</script>
+  <meta charset="utf-8" />
+  <title>Tawala - Login</title>
+  <link rel="stylesheet" href="css/tawala-mock.css?v=20260914-login3" />
+</head>
+<body data-tawala-page="home" class="stub-page">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+    <div id="bd">
+      <div class="content">
+        <div class="pageTitle"><h1>Login</h1></div>
+        <div class="block stub-form">
+          <p>This local mock does not check www.tawala.com passwords. For Library / My Tawala work here, use the one-click dev session.</p>
+          <p style="margin:16px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <button type="button" class="pm-action is-active" id="loginAsDev" style="font-size:1.1em;padding:10px 20px;background:#316ac5;color:#fff;border-color:#1c4b91;font-weight:bold;">
+              Log in as dev (one-click)
+            </button>
+            <button type="button" class="pm-action" id="loginWithClerk" style="font-size:1.1em;padding:10px 18px;">
+              Sign In with Clerk (separate test account)
+            </button>
+          </p>
+          <hr style="border:none;border-top:1px solid #ddd;margin:16px 0;" />
+          <form id="mockLoginForm" action="mytawala.html" method="get">
+            <label for="userId">User ID</label>
+            <input type="text" id="userId" name="userId" value="dev" autocomplete="username" />
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" value="dev" autocomplete="current-password" />
+            <p style="margin-top:12px;">
+              <button type="submit" id="loginSubmit">Login</button>
+            </p>
+          </form>
+          <p class="note" id="forgotPasswordHelp">
+            <b>Forgot your password?</b> There is no recovery on this local site.
+            Clerk’s “wrong password” is a <i>different</i> test login (not your password-minder account for tawala.com).
+            Click <b>Log in as dev</b> above, or open
+            <a href="login.html?next=library.html&amp;devlogin=1">this one-click link</a>.
+            The mock form accepts any password — it only stores the User ID.
+            <a href="signup.html">Need an account? Register</a>
+            · <a href="mytawala-demo.html">Browse guest My Tawala preview</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id="tawala-chrome-footer"></div>
+  </div>
+  <script src="js/chrome.js?v=20260914-login3"></script>
+  <script>
+    function goNext() {
+      var params = new URLSearchParams(location.search);
+      var next = params.get("next") || "mytawala.html";
+      /* Avoid open redirects — stay on this mock site. */
+      if (!/^[a-zA-Z0-9._\-]+\.html(\?.*)?$/.test(next) && next.indexOf("mytawala") !== 0) {
+        next = "mytawala.html";
+      }
+      location.href = next;
+    }
+
+    function doLogin(user) {
+      if (typeof TawalaChrome === "undefined" || typeof TawalaChrome.setSession !== "function") {
+        alert("Login script failed to load. Hard-refresh this page and try again.");
+        return;
+      }
+      TawalaChrome.setSession(user || "dev");
+      goNext();
+    }
+
+    TawalaChrome.mount();
+
+    (function checkAutoDevLogin() {
+      var params = new URLSearchParams(location.search);
+      if (params.get("devlogin") === "1" || params.get("login") === "dev") {
+        doLogin("dev");
+      }
+    })();
+
+    document.getElementById("loginWithClerk").onclick = function () {
+      if (typeof TawalaChrome !== "undefined" && typeof TawalaChrome.openSignIn === "function") {
+        TawalaChrome.openSignIn();
+      }
+    };
+
+    document.getElementById("loginAsDev").onclick = function () {
+      doLogin("dev");
+    };
+
+    document.getElementById("mockLoginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var user = (document.getElementById("userId").value || "dev").trim() || "dev";
+      doLogin(user);
+    });
+  </script>
+</body>
+</html>

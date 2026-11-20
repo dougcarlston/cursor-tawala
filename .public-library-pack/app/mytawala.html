@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>window.TAWALA_PUBLIC_SITE=true;window.TAWALA_JAVA_ORIGIN=location.origin;</script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tawala - My Tawala</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/library.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260909-desc1" />
+  <script src="js/demo-urls.js?v=20260915-dup4"></script>
+  <script src="js/transfer.js?v=20260915-dup4"></script>
+  <script src="js/project-ops.js?v=20260915-dup4"></script>
+  <script src="js/data-ops.js?v=20260826-pubpriv1"></script>
+</head>
+<body data-tawala-page="mytawala">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="bd">
+      <div class="sidebar-left">
+        <div class="block">
+          <h3>Your account</h3>
+          <p>Logged in as <b id="mytawalaUserLabel">dev</b> (mock session).</p>
+          <p class="pm-hint"><b>My Tawala</b> = your private projects. Public templates live in <a href="library.html">Library</a>.</p>
+        </div>
+        <div class="block">
+          <h3>Web Designer</h3>
+          <p><a href="http://localhost:5173" target="_blank" rel="noopener">Open browser Designer</a> (localhost:5173)</p>
+        </div>
+        <div class="block" id="sidebarMaintainerToolsBlock" style="display:none;">
+          <h3>Maintainer tools</h3>
+          <p><a href="library-admin.html?v=20261119-admin8">Library Admin Tools</a></p>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="listing-identity" role="status">
+          <span class="listing-where">Private</span>
+          <span class="listing-pile">Your private projects — Get from Library… (Copy to MyTawala), or Make a Copy. Select a linked row to Refresh; select any row to Make a Copy or Delete.</span>
+          <span class="listing-switch">Looking for the public catalog? <a href="library.html">Library</a></span>
+        </div>
+        <div id="deployInboxHost" class="deploy-inbox" hidden></div>
+
+        <div id="projectManager" class="section">
+          <div class="status">
+            <form onsubmit="return false;">
+              <div class="pageCtl">
+                <select disabled title="Filter projects"><option>All</option><option>Active</option></select> projects,
+                <input type="text" class="text" value="25" size="3" disabled title="Projects per page" /> per page
+                <button type="submit" class="pm-action" disabled title="Apply listing filter">View</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="myProjectsListingBarHost"></div>
+
+          <div class="mytawala-listing-frame">
+            <p class="mytawala-listing-nav-hint" id="mytawalaListingNavHint">
+              Click any project name to highlight, double-click to go to that project's details page.
+            </p>
+            <table
+              id="myProjectsTable"
+              class="projectListing mytawala-listing stripe"
+              aria-label="My Projects — private My Tawala list"
+            >
+              <colgroup id="myProjectsCols">
+                <col class="col-name col-group-info" />
+                <col class="col-version col-group-info" />
+                <col class="col-created col-group-info" />
+                <col class="col-updated col-group-info" />
+                <col class="col-records col-group-info" />
+                <col class="col-times-used col-group-info" />
+                <col class="col-last-used col-group-info" />
+                <col class="col-op col-group-info" />
+              </colgroup>
+              <thead>
+                <tr id="myProjectsHead">
+                  <th class="left sortable col-name col-group-info" scope="col" data-sort="name" title="Sort by name">
+                    <span class="th-label">Name</span>
+                  </th>
+                  <th
+                    class="col-version sortable col-group-info"
+                    scope="col"
+                    data-sort="version"
+                    title="Current definition version (Push / Show in My Tawala; acquires &amp; forks start at 1)"
+                  >
+                    <span class="th-label">Version</span>
+                  </th>
+                  <th class="col-date sortable col-group-info" scope="col" data-sort="created" title="Sort by created">
+                    <span class="th-label">Created</span>
+                  </th>
+                  <th class="col-date sortable col-group-info" scope="col" data-sort="updated" title="Sort by updated">
+                    <span class="th-label">Updated</span>
+                  </th>
+                  <th
+                    class="col-records col-group-info"
+                    scope="col"
+                    title="Records (Responses) — project-wide submission count via :3001 when uniqueId + Docker/Postgres are available; otherwise —"
+                  >
+                    <span class="th-label">Records</span>
+                  </th>
+                  <th
+                    class="col-times-used sortable col-group-info"
+                    scope="col"
+                    data-sort="timesUsed"
+                    title="Times used — mock My Tawala Use clicks (not Library Test Drive; not live telemetry). Unused = —. Sort by count."
+                  >
+                    <span class="th-label">Times used</span>
+                  </th>
+                  <th
+                    class="col-last-used sortable col-group-info"
+                    scope="col"
+                    data-sort="lastUsed"
+                    title="Last used — most recent My Tawala Use in this browser. Unused = —. Sort by date."
+                  >
+                    <span class="th-label">Last used</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="projectRows"></tbody>
+            </table>
+          </div>
+
+          <div class="status" style="margin-top:12px;">
+            <div class="stats">Total Projects: <span id="projectCount">0</span> — private My Tawala pile (not WebLibrary / public Library)</div>
+            <p class="pm-hint" id="pmOpStatus" role="status"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+
+  <script src="js/chrome.js?v=20261119-admin8"></script>
+  <script>
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    /**
+     * Sort key → epoch ms. Accepts ISO, ms number, or catalog `M/D/YY`.
+     * Date-only strings resolve to local midnight (fine for seed rows).
+     */
+    function parseListDate(s) {
+      if (s == null || s === "" || s === "—") return 0;
+      if (typeof s === "number" && Number.isFinite(s)) return s > 0 ? s : 0;
+      const str = String(s).trim();
+      if (!str) return 0;
+      const day = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (day) return new Date(Number(day[1]), Number(day[2]) - 1, Number(day[3])).getTime();
+      if (/^\d{4}-\d{2}-\d{2}/.test(str) || str.includes("T")) {
+        const t = Date.parse(str);
+        return Number.isNaN(t) ? 0 : t;
+      }
+      if (/^\d{10,13}$/.test(str)) {
+        const n = Number(str);
+        return n < 1e12 ? n * 1000 : n;
+      }
+      const m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+      if (!m) {
+        const t = Date.parse(str);
+        return Number.isNaN(t) ? 0 : t;
+      }
+      let y = Number(m[3]);
+      if (y < 100) y += 2000;
+      return new Date(y, Number(m[1]) - 1, Number(m[2])).getTime();
+    }
+
+    /** Prefer real ISO fields; fall back to short listing dates. */
+    function updatedSortMs(p) {
+      return Math.max(
+        parseListDate(p.updatedAt),
+        parseListDate(p.lastDeployAt),
+        parseListDate(p.pulledAt),
+        parseListDate(p.publishedAt),
+        parseListDate(p.updated)
+      );
+    }
+
+    function createdSortMs(p) {
+      const direct = parseListDate(p.createdAt) || parseListDate(p.created);
+      return direct || updatedSortMs(p);
+    }
+
+    /** Keep listing cells as `M/D/YY` even when the source value is ISO. */
+    function displayListDate(s) {
+      if (!s || s === "—") return "—";
+      const str = String(s);
+      if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(str)) return str;
+      const ms = parseListDate(str);
+      if (!ms) return "—";
+      const dt = new Date(ms);
+      return `${dt.getMonth() + 1}/${dt.getDate()}/${String(dt.getFullYear()).slice(-2)}`;
+    }
+
+    const SORT_STATE = { key: "name", dir: 1 };
+    let projects = [];
+    /** Selected project id for listing Pull / Delete (row highlight). */
+    let selectedProjectId = "";
+
+    let publicProjectsLoaded = false;
+
+    function refreshProjects() {
+      if (publicProjectsLoaded) return;
+      projects = TawalaDemo.myTawalaEntries();
+    }
+    refreshProjects();
+
+    function setListingSelection(projectId) {
+      selectedProjectId = projectId ? String(projectId) : "";
+      TawalaProjectOps.syncListingSelectionBar(selectedProjectId);
+      document.querySelectorAll("#projectRows tr[data-project-id]").forEach((tr) => {
+        const on = tr.dataset.projectId === selectedProjectId;
+        tr.classList.toggle("is-selected", on);
+        tr.setAttribute("aria-selected", on ? "true" : "false");
+      });
+    }
+
+    function projectDetailsHref(projectId) {
+      const found = projects.find((p) => p && p.id === projectId);
+      if (found && found.detailUrl) return found.detailUrl;
+      return `mytawala-project.html?project=${encodeURIComponent(projectId || "")}`;
+    }
+
+    /** Mock Times used / Last used — same store as Project Data (`tawala.mock.usageStats`). */
+    function usageForProject(p) {
+      if (
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.getUsageStats === "function"
+      ) {
+        return TawalaTransfer.getUsageStats(p && p.id);
+      }
+      return { timesUsed: 0, lastUsedAt: null, lastUsed: null };
+    }
+
+    function sortValue(p, key) {
+      if (key === "name") {
+        return TawalaDemo.displayName(p.name).toLowerCase();
+      }
+      if (key === "version") {
+        const n =
+          p && p.versionNumber != null && Number.isFinite(Number(p.versionNumber))
+            ? Number(p.versionNumber)
+            : NaN;
+        return Number.isFinite(n) ? n : -1;
+      }
+      if (key === "created") {
+        return createdSortMs(p);
+      }
+      if (key === "updated") {
+        return updatedSortMs(p);
+      }
+      if (key === "timesUsed") {
+        const n = Number(usageForProject(p).timesUsed);
+        return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+      }
+      if (key === "lastUsed") {
+        const u = usageForProject(p);
+        return parseListDate(u.lastUsedAt) || parseListDate(u.lastUsed) || 0;
+      }
+      return "";
+    }
+
+    function sortedProjects() {
+      const { key, dir } = SORT_STATE;
+      return projects.slice().sort((a, b) => {
+        const va = sortValue(a, key);
+        const vb = sortValue(b, key);
+        if (va < vb) return -1 * dir;
+        if (va > vb) return 1 * dir;
+        const na = TawalaDemo.displayName(a.name).toLowerCase();
+        const nb = TawalaDemo.displayName(b.name).toLowerCase();
+        if (na < nb) return -1;
+        if (na > nb) return 1;
+        return 0;
+      });
+    }
+
+    function updateSortIndicators() {
+      document.querySelectorAll("#myProjectsHead th.sortable").forEach((th) => {
+        th.classList.remove("sort-asc", "sort-desc");
+        th.removeAttribute("aria-sort");
+        if (th.dataset.sort === SORT_STATE.key) {
+          const asc = SORT_STATE.dir === 1;
+          th.classList.add(asc ? "sort-asc" : "sort-desc");
+          th.setAttribute("aria-sort", asc ? "ascending" : "descending");
+        }
+      });
+    }
+
+    /** Session cache: uniqueId → { status, count?, error? } */
+    const RECORD_COUNT_CACHE = Object.create(null);
+    let recordsHydrateGen = 0;
+
+    /** Records / Responses — sync seed values first; hydrateListingRecordCounts fills live totals. */
+    function displayRecords(p) {
+      if (p && (p.recordCount != null || p.responseCount != null || p.records != null)) {
+        const n = p.recordCount != null ? p.recordCount : p.responseCount != null ? p.responseCount : p.records;
+        if (n !== "" && n != null && !Number.isNaN(Number(n))) return String(n);
+      }
+      return "—";
+    }
+
+    function projectRowHtml(p) {
+      const title = TawalaDemo.displayName(p.name);
+      const version =
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.formatCurrentVersion === "function"
+          ? TawalaTransfer.formatCurrentVersion(p)
+          : p && p.versionNumber != null
+            ? String(p.versionNumber)
+            : "—";
+      const created = displayListDate(p.created || p.createdAt || p.updated || p.updatedAt || "");
+      const updated = displayListDate(p.updated || p.updatedAt || p.lastDeployAt || "");
+      const uid =
+        typeof TawalaDemo.resolvePurgeUniqueId === "function"
+          ? TawalaDemo.resolvePurgeUniqueId(p.id)
+          : null;
+      const cached = uid ? RECORD_COUNT_CACHE[uid] : null;
+      let records = displayRecords(p);
+      let recordsTitle =
+        records === "—"
+          ? uid
+            ? "Records (Responses) — loading…"
+            : "Records (Responses) — no uniqueId (Deploy → Show in My Tawala)"
+          : `Records (Responses): ${records}`;
+      if (cached && cached.status === "success") {
+        records = String(cached.count);
+        recordsTitle = `Records (Responses): ${cached.count}`;
+      } else if (cached && cached.status === "failure") {
+        records = "—";
+        recordsTitle = `Records unavailable: ${cached.error || "API/Docker not reachable"}`;
+      }
+      const selected = selectedProjectId === p.id;
+      const offline =
+        p.inactive === true || p.libraryActive === false
+          ? ` <span class="pm-status-badge is-offline" title="Offline — hidden from public Library">Offline</span>`
+          : "";
+      const fromLib =
+        typeof TawalaProjectOps !== "undefined" &&
+        typeof TawalaProjectOps.fromLibraryAcquireBadge === "function"
+          ? TawalaProjectOps.fromLibraryAcquireBadge(p)
+          : "";
+      const usage = usageForProject(p);
+      const timesUsed = p.publicAccount
+        ? "—"
+        : typeof TawalaTransfer !== "undefined" &&
+            typeof TawalaTransfer.formatUsageTimesUsed === "function"
+          ? TawalaTransfer.formatUsageTimesUsed(usage)
+          : Number(usage.timesUsed) > 0
+            ? String(Math.floor(Number(usage.timesUsed)))
+            : "—";
+      const lastUsed = p.publicAccount
+        ? displayListDate(p.lastAccessed)
+        : typeof TawalaTransfer !== "undefined" &&
+            typeof TawalaTransfer.formatUsageLastUsed === "function"
+          ? TawalaTransfer.formatUsageLastUsed(usage)
+          : usage.lastUsed || "—";
+      const timesTitle =
+        "Times used — mock count of My Tawala Use clicks that open a start URL (not Test Drive; not live telemetry)" +
+        (timesUsed !== "—" ? `: ${timesUsed}` : "");
+      const lastTitle = usage.lastUsed
+        ? `Last used — ${usage.lastUsed} (most recent My Tawala Use)`
+        : "Last used — no My Tawala Use recorded yet in this browser";
+      const versionTitle =
+        version === "—"
+          ? "Version — none yet (Push → Show in My Tawala, or Copy to MyTawala / Make a Copy starts at 1)"
+          : `Current definition version: ${version}`;
+      return `<tr data-project-id="${escapeHtml(p.id)}" role="row" tabindex="0" aria-selected="${
+        selected ? "true" : "false"
+      }"${selected ? ' class="is-selected"' : ""} title="Click to select · Double-click for Project Details">
+        <td class="info left col-name col-group-info">
+          <span class="title listing-project-name">${
+            p.detailUrl
+              ? `<a href="${escapeHtml(p.detailUrl)}">${escapeHtml(title)}</a>`
+              : escapeHtml(title)
+          }${fromLib}${offline}</span>
+        </td>
+        <td class="col-version col-group-info" title="${escapeHtml(versionTitle)}">${escapeHtml(version)}</td>
+        <td class="date-created col-date col-group-info">${escapeHtml(created)}</td>
+        <td class="updated col-date col-group-info">${escapeHtml(updated)}</td>
+        <td class="col-records col-group-info" data-records-cell="1" title="${escapeHtml(recordsTitle)}">${escapeHtml(records)}</td>
+        <td class="col-times-used col-group-info" title="${escapeHtml(timesTitle)}">${escapeHtml(timesUsed)}</td>
+        <td class="col-last-used col-date col-group-info" title="${escapeHtml(lastTitle)}">${escapeHtml(lastUsed)}</td>
+        ${TawalaProjectOps.renderListingControlCells(p.id)}
+      </tr>`;
+    }
+
+    async function hydrateListingRecordCounts() {
+      const gen = ++recordsHydrateGen;
+      const rows = document.querySelectorAll("#projectRows tr[data-project-id]");
+      if (!rows.length || typeof TawalaDemo.countResponses !== "function") return;
+      const jobs = [];
+      rows.forEach((tr) => {
+        const id = tr.dataset.projectId;
+        const cell = tr.querySelector("[data-records-cell]");
+        if (!id || !cell) return;
+        const uid =
+          typeof TawalaDemo.resolvePurgeUniqueId === "function"
+            ? TawalaDemo.resolvePurgeUniqueId(id)
+            : null;
+        if (!uid) {
+          if (cell.textContent && cell.textContent !== "—") return;
+          cell.textContent = "—";
+          cell.title = "Records (Responses) — no uniqueId (Deploy → Show in My Tawala)";
+          return;
+        }
+        if (RECORD_COUNT_CACHE[uid] && RECORD_COUNT_CACHE[uid].status === "success") {
+          cell.textContent = String(RECORD_COUNT_CACHE[uid].count);
+          cell.title = `Records (Responses): ${RECORD_COUNT_CACHE[uid].count}`;
+          return;
+        }
+        jobs.push(
+          TawalaDemo.countResponses(uid).then((r) => {
+            if (gen !== recordsHydrateGen || !document.contains(cell)) return;
+            if (r && r.status === "success") {
+              RECORD_COUNT_CACHE[uid] = { status: "success", count: r.count };
+              cell.textContent = String(r.count);
+              cell.title = `Records (Responses): ${r.count}`;
+            } else {
+              RECORD_COUNT_CACHE[uid] = {
+                status: "failure",
+                error: (r && r.error) || "count failed",
+              };
+              cell.textContent = "—";
+              cell.title =
+                "Records unavailable: " + ((r && r.error) || "API/Docker not reachable");
+            }
+          })
+        );
+      });
+      await Promise.all(jobs);
+    }
+
+    function renderRows() {
+      const list = sortedProjects();
+      if (selectedProjectId && !list.some((p) => p.id === selectedProjectId)) {
+        selectedProjectId = "";
+      }
+      document.getElementById("projectRows").innerHTML = list.map(projectRowHtml).join("");
+      document.getElementById("projectCount").textContent = String(list.length);
+      updateSortIndicators();
+      TawalaProjectOps.syncListingSelectionBar(selectedProjectId);
+      void hydrateListingRecordCounts();
+      if (publicProjectsLoaded) {
+        document.querySelectorAll("#projectRows button").forEach((el) => {
+          el.disabled = true;
+          el.title = "Open the project from its name. Account tools stay on the project details page.";
+        });
+      }
+    }
+
+    function enableColumnResize(table) {
+      const cols = table.querySelectorAll("colgroup col");
+      const headRow = table.querySelector("thead tr");
+      if (!headRow || !cols.length) return;
+
+      headRow.querySelectorAll("th").forEach((th, index) => {
+        if (index >= cols.length - 1) return;
+        const handle = document.createElement("span");
+        handle.className = "col-resize-handle";
+        handle.title = "Drag to resize column";
+        handle.setAttribute("aria-hidden", "true");
+        th.appendChild(handle);
+
+        handle.addEventListener("mousedown", (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const startX = ev.pageX;
+          const startW = th.getBoundingClientRect().width;
+          const tableW = table.getBoundingClientRect().width || 1;
+          const nextTh = headRow.children[index + 1];
+          const nextStartW = nextTh ? nextTh.getBoundingClientRect().width : 0;
+
+          function onMove(e) {
+            const dx = e.pageX - startX;
+            const min = 36;
+            let w = Math.max(min, startW + dx);
+            let nextW = nextStartW ? Math.max(min, nextStartW - dx) : 0;
+            if (nextStartW && startW + dx < min) {
+              w = min;
+              nextW = nextStartW + (startW - min);
+            }
+            if (nextStartW && nextStartW - dx < min) {
+              nextW = min;
+              w = startW + (nextStartW - min);
+            }
+            cols[index].style.width = ((w / tableW) * 100).toFixed(2) + "%";
+            if (nextTh && cols[index + 1]) {
+              cols[index + 1].style.width = ((nextW / tableW) * 100).toFixed(2) + "%";
+            }
+          }
+
+          function onUp() {
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", onUp);
+            document.body.classList.remove("col-resizing");
+          }
+
+          document.body.classList.add("col-resizing");
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", onUp);
+        });
+      });
+    }
+
+    if (!window.TAWALA_PUBLIC_SITE && typeof TawalaChrome !== "undefined" && !TawalaChrome.isLoggedIn()) {
+      location.replace("mytawala-demo.html");
+    }
+
+    TawalaChrome.mount();
+    const userLabel = document.getElementById("mytawalaUserLabel");
+    if (userLabel && typeof TawalaChrome.currentUser === "function") {
+      userLabel.textContent = TawalaChrome.currentUser() || "dev";
+    }
+    TawalaProjectOps.bind(document);
+
+    if (typeof TawalaTransfer !== "undefined") {
+      const ingested = TawalaTransfer.ingestDeployReceiptFromUrl(location.search);
+      if (ingested) refreshProjects();
+    }
+
+    /* Save a copy / Get from Library → listing with new row selected (?highlight=id). */
+    (function applyHighlightFromQuery() {
+      const params = new URLSearchParams(location.search);
+      const highlightId = (params.get("highlight") || params.get("select") || "").trim();
+      if (!highlightId) return;
+      selectedProjectId = highlightId;
+      params.delete("highlight");
+      params.delete("select");
+      const next = params.toString();
+      const path = location.pathname + (next ? "?" + next : "") + (location.hash || "");
+      if (typeof history !== "undefined" && history.replaceState) {
+        history.replaceState(null, "", path);
+      }
+    })();
+
+    document.getElementById("myProjectsListingBarHost").innerHTML =
+      TawalaProjectOps.renderListingSelectionBar();
+
+    function renderDeployInbox() {
+      const host = document.getElementById("deployInboxHost");
+      if (!host || typeof TawalaTransfer === "undefined") return;
+      const inbox = TawalaTransfer.getDeployInbox();
+      if (!inbox.length) {
+        host.hidden = true;
+        host.innerHTML = "";
+        return;
+      }
+      host.hidden = false;
+      host.innerHTML =
+        '<div class="deploy-inbox-inner">' +
+        "<h3>From Web Designer</h3>" +
+        '<p class="pm-hint">Recent Push receipts. Each also adds/updates a <b>My Projects</b> row (browser overlay on top of the catalog).</p>' +
+        "<ul>" +
+        inbox
+          .map((e) => {
+            const first = (e.startpoints && e.startpoints[0]) || null;
+            const when = e.at ? escapeHtml(String(e.at).replace("T", " ").slice(0, 19)) : "";
+            const detail =
+              e.id
+                ? `<a href="mytawala-project.html?project=${encodeURIComponent(e.id)}">Details</a>`
+                : "";
+            const link = first && first.url
+              ? `<a href="${escapeHtml(first.url)}" target="_blank" rel="noopener">${escapeHtml(
+                  first.form || "Start"
+                )}</a>`
+              : "<span class=\"deploy-hint-quiet\">No start URL</span>";
+            return (
+              `<li><b>${escapeHtml(e.name)}</b> · ${link}` +
+              (detail ? ` · ${detail}` : "") +
+              (when ? ` <span class="deploy-hint-quiet">${when}</span>` : "") +
+              "</li>"
+            );
+          })
+          .join("") +
+        "</ul>" +
+        '<p class="pm-hint"><button type="button" class="pm-action" id="clearDeployInbox">Clear inbox</button> · ' +
+        '<a href="library.html">Browse Library</a></p>' +
+        "</div>";
+    }
+
+    renderDeployInbox();
+    document.addEventListener("click", (ev) => {
+      if (ev.target.id === "clearDeployInbox" && typeof TawalaTransfer !== "undefined") {
+        if (!window.confirm("Are you sure you want to clear the Push inbox?")) return;
+        TawalaTransfer.clearDeployInbox();
+        renderDeployInbox();
+      }
+    });
+
+    const headRow = document.getElementById("myProjectsHead");
+    headRow.insertAdjacentHTML("beforeend", TawalaProjectOps.renderListingActionHeaders());
+
+    headRow.addEventListener("click", (ev) => {
+      const th = ev.target.closest("th.sortable");
+      if (!th || ev.target.closest(".col-resize-handle")) return;
+      const key = th.dataset.sort;
+      if (!key) return;
+      if (SORT_STATE.key === key) {
+        SORT_STATE.dir *= -1;
+      } else {
+        SORT_STATE.key = key;
+        // Name A→Z; Version/Created/Updated/Times/Last newest-or-highest-first (dir -1).
+        SORT_STATE.dir = key === "name" ? 1 : -1;
+      }
+      renderRows();
+    });
+
+    renderRows();
+    if (window.TAWALA_PUBLIC_SITE && TawalaChrome.syncPublicAccount) {
+      TawalaChrome.syncPublicAccount().then(async () => {
+        if (!TawalaChrome.isLoggedIn()) {
+          location.replace("/login?r=" + encodeURIComponent("/app/mytawala.html"));
+          return;
+        }
+        const label = document.getElementById("mytawalaUserLabel");
+        if (label) {
+          label.textContent = TawalaChrome.currentUser();
+          const note = label.parentElement;
+          if (note) note.innerHTML = "Logged in as <b>" + label.textContent + "</b>.";
+        }
+        document.querySelectorAll('a[href="http://localhost:5173"]').forEach((a) => {
+          const block = a.closest(".block");
+          if (block) block.remove();
+        });
+        try {
+          const res = await fetch("/projectmanager/view", {
+            credentials: "same-origin",
+            cache: "no-store",
+          });
+          const html = await res.text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          projects = [...doc.querySelectorAll("a[id^='projectDetailsLink']")].map((a) => {
+            const tr = a.closest("tr");
+            const cells = tr ? [...tr.querySelectorAll("td")] : [];
+            const cell = (i) => (cells[i] ? cells[i].textContent.trim() : "");
+            const name = a.textContent.trim();
+            const id =
+              "acct-" +
+              name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-|-$/g, "");
+            return {
+              id: id || "acct-project",
+              name,
+              created: cell(2),
+              updated: cell(3),
+              responseCount: cell(4),
+              lastAccessed: cell(5),
+              detailUrl:
+                "/app/mytawala-project.html?name=" + encodeURIComponent(name) + "&v=20261119-publish8",
+              publicAccount: true,
+            };
+          });
+        } catch {
+          projects = [];
+        }
+        publicProjectsLoaded = true;
+        renderRows();
+      });
+    }
+    enableColumnResize(document.getElementById("myProjectsTable"));
+
+    if (selectedProjectId) {
+      document.querySelectorAll("#projectRows tr[data-project-id]").forEach((tr) => {
+        if (tr.dataset.projectId !== selectedProjectId) return;
+        if (typeof tr.scrollIntoView === "function") {
+          tr.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }
+      });
+    }
+
+    const projectRows = document.getElementById("projectRows");
+    /*
+     * Row highlight selection (owner Aug 9 addenda):
+     *   single click → select only (enables Pull / Delete)
+     *   double-click → Project Details
+     * Delay selection so the first click of a double-click does not restyle the
+     * row (or grow the listing bar) before the second click, which used to open
+     * the project one row away.
+     */
+    let listingClickTimer = 0;
+    projectRows.addEventListener("click", (ev) => {
+      if (ev.target.closest("a, button, .pm-icon-action, .pm-op-icon-btn")) return;
+      const tr = ev.target.closest("tr[data-project-id]");
+      if (!tr) return;
+      const id = tr.dataset.projectId;
+      window.clearTimeout(listingClickTimer);
+      listingClickTimer = window.setTimeout(() => {
+        listingClickTimer = 0;
+        setListingSelection(id);
+      }, 280);
+    });
+    projectRows.addEventListener("dblclick", (ev) => {
+      if (ev.target.closest("a, button, .pm-icon-action, .pm-op-icon-btn")) return;
+      const tr = ev.target.closest("tr[data-project-id]");
+      if (!tr || !tr.dataset.projectId) return;
+      ev.preventDefault();
+      window.clearTimeout(listingClickTimer);
+      listingClickTimer = 0;
+      setListingSelection(tr.dataset.projectId);
+      location.href = projectDetailsHref(tr.dataset.projectId);
+    });
+    projectRows.addEventListener("keydown", (ev) => {
+      const tr = ev.target.closest("tr[data-project-id]");
+      if (!tr) return;
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        setListingSelection(tr.dataset.projectId);
+        location.href = projectDetailsHref(tr.dataset.projectId);
+      } else if (ev.key === " " || ev.key === "Spacebar") {
+        ev.preventDefault();
+        setListingSelection(tr.dataset.projectId);
+      }
+    });
+
+    document.addEventListener("tawala:project-deleted", (ev) => {
+      const id = ev.detail && ev.detail.projectId;
+      if (!id) return;
+      if (selectedProjectId === id) selectedProjectId = "";
+      refreshProjects();
+      renderRows();
+      renderDeployInbox();
+    });
+
+    document.addEventListener("tawala:project-pulled", () => {
+      refreshProjects();
+      renderRows();
+    });
+
+    document.addEventListener("tawala:project-published", () => {
+      // Publish can add a new My Tawala safety-net row (a retired Library stub) — refresh.
+      refreshProjects();
+      renderRows();
+    });
+
+    document.addEventListener("tawala:project-active-changed", () => {
+      refreshProjects();
+      renderRows();
+    });
+
+    document.addEventListener("tawala:usage-updated", () => {
+      renderRows();
+    });
+  </script>
+</body>
+</html>

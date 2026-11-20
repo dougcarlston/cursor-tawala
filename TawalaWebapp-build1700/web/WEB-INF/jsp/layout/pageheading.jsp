@@ -86,10 +86,16 @@
 
 <%-- menu order reversed from display --%>
 <div id="headingMenu">
+	<%@ include file="/WEB-INF/jsp/admin/administrator-access.jspf" %>
 	<ul>
 		<c:if test="${user.administrator}">
 			<li class="<c:out value="${adminClass}" />" >
 				<a href="/administration/users">ADMIN</a>
+			</li>
+		</c:if>
+		<c:if test="${administratorAllowed}">
+			<li>
+				<a href="/app/administrator.jsp">Administrator</a>
 			</li>
 		</c:if>
 

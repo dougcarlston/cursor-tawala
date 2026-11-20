@@ -1,0 +1,33 @@
+<%--
+  Sets administratorAllowed when the signed-in account may open the
+  Administrator page: tawalamundo while nobody is an administrator, or any
+  signed-in administrator after that. Everyone else gets no link.
+--%>
+<%
+  boolean administratorAllowed = false;
+  com.tawala.domain.User administratorUser = null;
+  boolean administratorAny = false;
+  try {
+    com.tawala.domain.User sessionUser =
+        com.tawala.web.controller.UserInfoPreparationInterceptor.getSessionUser(request);
+    if (sessionUser != null && sessionUser.getId() != null) {
+      administratorUser = com.tawala.web.WorldInitializer.getDefaultWorld()
+          .domain().users().get(sessionUser.getId());
+      if (administratorUser != null && administratorUser.getId() != null) {
+        java.util.List administratorAdmins = com.tawala.UsersHibernateImpl.getAllAdminUsers();
+        administratorAny = administratorAdmins != null && !administratorAdmins.isEmpty();
+        boolean bootstrap = !administratorAny
+            && "tawalamundo".equals(
+                com.tawala.domain.User.normalizeUserName(administratorUser.getId()));
+        administratorAllowed = administratorUser.isAdministrator() || bootstrap;
+      }
+    }
+  } catch (RuntimeException ignored) {
+    administratorAllowed = false;
+    administratorUser = null;
+    administratorAny = false;
+  }
+  request.setAttribute("administratorAllowed", Boolean.valueOf(administratorAllowed));
+  request.setAttribute("administratorUser", administratorUser);
+  request.setAttribute("administratorAny", Boolean.valueOf(administratorAny));
+%>

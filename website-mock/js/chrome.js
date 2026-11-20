@@ -184,6 +184,8 @@
     if (!isLoggedIn()) return false;
     const auth = currentAuthUser();
     if (!auth) return false;
+    /* Public site: only the account's Administrator flag, seen as the ADMIN link. */
+    if (isPublicSite()) return auth.isAdmin === true;
     const user = String(auth.user || "").trim().toLowerCase();
     const email = String(auth.email || "").trim().toLowerCase();
     const username = String(auth.username || "").trim().toLowerCase();
@@ -322,7 +324,7 @@
   function resolveHref(key) {
     if (key === "mytawala") return myTawalaHref();
     if (isPublicSite() && key === "home") return "/home";
-    if (isPublicSite() && key === "library") return "/app/library.html";
+    if (isPublicSite() && key === "library") return "/app/library.html?v=20261119-admin2";
     const item = LINKS[key];
     return item ? item.href : "#";
   }
@@ -358,8 +360,14 @@
 
   function renderAccountMenu(user) {
     const isClerk = clerkInstance && clerkInstance.user;
+    const auth = currentAuthUser();
+    const administratorLink =
+      isPublicSite() && auth && auth.administratorPage === true
+        ? `<li><a href="/app/administrator.jsp">Administrator</a></li>`
+        : "";
     const items = user
       ? [
+          administratorLink,
           isClerk
             ? `<li><a href="#" class="clerk-profile-action" title="Manage your Clerk profile &amp; security">Manage Account</a></li>`
             : `<li>${anchor("changePassword")}</li>`,
@@ -585,9 +593,11 @@
           /Welcome back,\s*<span class="userName">([^<]*)<\/span>/
         );
         const name = match ? match[1].trim() : "";
+        const admin = /href\s*=\s*["']\/administration\/users["']/.test(html);
+        const administratorPage = /href\s*=\s*["']\/app\/administrator\.jsp["']/.test(html);
         try {
           if (name) {
-            setSession(name, { authProvider: "java" });
+            setSession(name, { authProvider: "java", isAdmin: admin, administratorPage: administratorPage });
           } else {
             localStorage.removeItem(SESSION_KEY);
             localStorage.removeItem(GUEST_KEY);

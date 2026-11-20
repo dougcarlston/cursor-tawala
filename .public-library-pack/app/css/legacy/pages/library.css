@@ -1,0 +1,31 @@
+dl.faq {
+	margin-left: 1.5em;
+	margin-right: 2.5em;
+	text-align: justify;
+}
+
+dl.faq dt {
+	font-size: 1.1em;
+	font-weight: bold;
+    color: #666666;
+	padding-bottom: .5em;
+}
+
+dl.faq dd {
+	margin: 0 1em 1em 1em;
+}
+
+.content {
+    margin: 0;
+    padding: 0em 1em 1em 1.5em;
+}
+
+    .yui-b.last .content {
+        padding: 0em 1em 0em 0em;
+    }
+
+table.myProjects td {
+    font-size: 1.1em;
+    padding: 0em 0 0em 0;
+   	overflow: hidden;
+}

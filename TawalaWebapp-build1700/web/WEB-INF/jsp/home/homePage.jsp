@@ -66,11 +66,15 @@
 				</div>
 
                 <div id="headingMenu">
+					<%@ include file="/WEB-INF/jsp/admin/administrator-access.jspf" %>
 					<c:choose>
 						<c:when test="${empty domain.title}">
 		                	<ul>
 								<c:if test="${user.administrator}">
 									<li><a href="/administration/users">ADMIN</a></li>
+								</c:if>
+								<c:if test="${administratorAllowed}">
+									<li><a href="/app/administrator.jsp">Administrator</a></li>
 								</c:if>
 		                        <li><a href="/info">ABOUT</a></li>
 								<c:if test="${! empty user}">
