@@ -116,12 +116,12 @@
 		</li>
 
 		<li class="<c:out value="${libraryPageClass}" />" >
-			<a href="/app/library.html">LIBRARY</a>
+			<a href="/app/library.html?v=20261120-admin12">LIBRARY</a>
 		</li>
 
 		<c:if test="${! empty user}">
 			<li class="<c:out value="${mytawalaPageClass}" />" >
-				<a href="/app/mytawala.html">MY TAWALA</a>
+				<a href="/app/mytawala.html?v=20261120-makecopy1">MY TAWALA</a>
 			</li>
 		</c:if>
 

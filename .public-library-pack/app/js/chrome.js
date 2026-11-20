@@ -265,7 +265,7 @@
 
   /** Guest taste My Tawala; logged-in users get the real private pile. */
   function myTawalaHref() {
-    if (isPublicSite()) return "/app/mytawala.html";
+    if (isPublicSite()) return "/app/mytawala.html?v=20261120-makecopy1";
     return isLoggedIn() ? "mytawala.html" : "mytawala-demo.html";
   }
 
@@ -324,7 +324,7 @@
   function resolveHref(key) {
     if (key === "mytawala") return myTawalaHref();
     if (isPublicSite() && key === "home") return "/home";
-    if (isPublicSite() && key === "library") return "/app/library.html?v=20261119-admin8";
+    if (isPublicSite() && key === "library") return "/app/library.html?v=20261120-admin12";
     const item = LINKS[key];
     return item ? item.href : "#";
   }

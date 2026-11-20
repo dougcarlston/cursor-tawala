@@ -83,9 +83,9 @@
 				                    </c:if>
 		                        </c:if>
 		                        <li><a href="${urls.faq}">FAQ</a></li>
-		                        <li><a href="/app/library.html">LIBRARY</a></li>
+		                        <li><a href="/app/library.html?v=20261120-admin12">LIBRARY</a></li>
 								<c:if test="${! empty user}">
-			                        <li><a href="/app/mytawala.html">MY TAWALA</a></li>
+			                        <li><a href="/app/mytawala.html?v=20261120-makecopy1">MY TAWALA</a></li>
 			                    </c:if>
 		                        <li><a href="/home">HOME</a></li>
 		                	</ul>

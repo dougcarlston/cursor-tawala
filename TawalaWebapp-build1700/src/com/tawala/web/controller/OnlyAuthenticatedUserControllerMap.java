@@ -11,6 +11,7 @@ import com.tawala.web.email.ViewUserProjectEmail;
 import com.tawala.web.email.ViewUserProjectEmailBody;
 import com.tawala.web.library.AddVersionToRelatedProjectController;
 import com.tawala.web.library.AddVersionToUnrelatedProjectController;
+import com.tawala.web.library.CopyPublicCatalogToAccountController;
 import com.tawala.web.library.DeleteCommentController;
 import com.tawala.web.library.DeleteProjectController;
 import com.tawala.web.library.DeleteVersionController;
@@ -222,6 +223,8 @@ public class OnlyAuthenticatedUserControllerMap extends
 				new DeleteThemeController());
 		registerHandler(WellKnown.urls.getLibraryProjectDeployToMyTawala(),
 				new DeployToMyTawalaController());
+		registerHandler("/library/copy-to-my-tawala",
+				new CopyPublicCatalogToAccountController());
 		registerHandler(WellKnown.urls
 				.getProjectManagerUpgradeWithNewerVersionFromLibrary(),
 				new UpgradeWithNewerVersionController());

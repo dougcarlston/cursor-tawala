@@ -8,6 +8,126 @@
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css?v=20260911-tdpick1" />
+  <style>
+    .sidebar-left .block p.pm-hint {
+      white-space: normal;
+      text-align: left;
+    }
+    #adminBodyHost .sectionHeading {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 2px 0 8px;
+    }
+    #adminPublishSection .admin-pub-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 3px 0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    #adminPublishSection .admin-pub-row span {
+      flex: 0 0 230px;
+    }
+    #adminPublishSection .admin-pub-row select,
+    #adminPublishSection .admin-pub-row input {
+      box-sizing: border-box;
+      flex: 0 1 440px;
+      width: 440px;
+      max-width: 440px;
+      min-width: 0;
+      margin: 0;
+      padding: 3px 6px;
+      font-size: 13px;
+      font-weight: 400;
+    }
+    #adminPublishSection .pm-hint {
+      margin: 4px 0 6px;
+    }
+    #adminBodyHost .admin-library-scroll {
+      overflow-x: auto;
+      max-width: 100%;
+    }
+    #adminBodyHost table.admin-library-table {
+      font-size: 0.88em;
+      line-height: 1.2;
+      table-layout: fixed;
+      width: 100%;
+    }
+    #adminBodyHost table.admin-library-table th,
+    #adminBodyHost table.admin-library-table td {
+      padding: 2px 6px;
+      vertical-align: middle;
+    }
+    #adminBodyHost table.admin-library-table td.lib-admin-name-cell {
+      overflow: hidden;
+    }
+    #adminBodyHost table.admin-library-table th:nth-child(2),
+    #adminBodyHost table.admin-library-table td:nth-child(2) {
+      width: 8.5em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #adminBodyHost table.admin-library-table td:nth-child(2) code {
+      display: inline-block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: bottom;
+    }
+    #adminBodyHost table.admin-library-table th:nth-child(3),
+    #adminBodyHost table.admin-library-table td:nth-child(3) {
+      width: 10.5em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #adminBodyHost table.admin-library-table th:nth-child(4),
+    #adminBodyHost table.admin-library-table td:nth-child(4) {
+      width: 5.5em;
+      white-space: nowrap;
+    }
+    #adminBodyHost table.admin-library-table th:nth-child(5),
+    #adminBodyHost table.admin-library-table td.lib-admin-actions {
+      width: 28em;
+      white-space: nowrap;
+    }
+    #adminBodyHost table.admin-library-table .lib-admin-titleline {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      min-width: 0;
+      overflow: hidden;
+    }
+    #adminBodyHost table.admin-library-table .lib-admin-name {
+      font-weight: 700;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #adminBodyHost table.admin-library-table .lib-admin-flags {
+      flex: 0 0 auto;
+    }
+    #adminBodyHost table.admin-library-table .lib-admin-desc {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #666;
+      font-size: 0.92em;
+      font-weight: 400;
+      line-height: 1.2;
+      margin: 0;
+    }
+    #adminBodyHost table.admin-library-table .lib-admin-actions .pm-action {
+      padding: 1px 6px;
+      line-height: 1.25;
+      margin: 0 1px 0 0;
+    }
+  </style>
   <script src="js/demo-urls.js?v=20261119-admin6"></script>
   <script src="js/transfer.js?v=20261119-admin6"></script>
   <script src="js/project-ops.js?v=20261119-admin8"></script>
@@ -26,12 +146,7 @@
         </div>
         <div class="block">
           <h3>What this page is</h3>
-          <p class="pm-hint">
-            Maintainer-only tools so the public Library can be kept up to date without an
-            agent: rename an entry, overwrite one from a My Tawala project, or delete a
-            listing (name is free for a later Publish — no My Tawala safety copy). See
-            <code>README.md</code> § Library admin path for the full how-to.
-          </p>
+          <p class="pm-hint">Maintainer-only tools so the public Library can be kept up to date without an agent: rename an entry, overwrite one from a My Tawala project, or delete a listing (name is free for a later Publish — no My Tawala safety copy). See <code>README.md</code> § Library admin path for the full how-to.</p>
         </div>
       </div>
 
@@ -45,7 +160,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20261119-admin8"></script>
+  <script src="js/chrome.js?v=20261120-admin12"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -209,16 +324,16 @@
         '<p class="pm-hint">Same operation as the My Tawala <b>Publish</b> action, run from here so a ' +
         "maintainer doesn’t have to open each project individually. Matching an existing entry ignores " +
         "the “ (stub)” suffix on both sides.</p>" +
-        '<label class="tawala-modal-field" for="adminSourceProject">My Tawala source project' +
+        '<label class="admin-pub-row" for="adminSourceProject"><span>My Tawala source project</span>' +
         `<select id="adminSourceProject">${myTawalaSourceOptionsHtml()}</select>` +
         "</label>" +
-        '<label class="tawala-modal-field" for="adminPublishName">Library name' +
+        '<label class="admin-pub-row" for="adminPublishName"><span>Library name</span>' +
         '<input type="text" id="adminPublishName" />' +
         "</label>" +
-        '<label class="tawala-modal-field" for="adminPublishTarget">Overwrite target (optional)' +
+        '<label class="admin-pub-row" for="adminPublishTarget"><span>Overwrite target (optional)</span>' +
         `<select id="adminPublishTarget">${libraryTargetOptionsHtml(defaultTargetId || "")}</select>` +
         "</label>" +
-        '<label class="tawala-modal-field" for="adminPublishCategory">Library category (required)' +
+        '<label class="admin-pub-row" for="adminPublishCategory"><span>Library category (required)</span>' +
         `<select id="adminPublishCategory">${categoryOptionsHtml(defaultCategoryFor(initialTarget, firstSource))}</select>` +
         "</label>" +
         '<p class="pm-hint tawala-modal-hint-tight">The Library copy is a separate live form with no saved responses. Your My Tawala project and its data are not changed. A copy of an existing Library product is refused unless you are that listing’s author and are updating it.</p>' +
@@ -250,17 +365,20 @@
         .map((p) => {
           return (
             `<tr data-lib-id="${escapeHtml(p.id)}">` +
-            `<td class="left lib-admin-name-cell"><span class="lib-admin-name">${escapeHtml(
+            `<td class="left lib-admin-name-cell">` +
+            `<div class="lib-admin-titleline"><span class="lib-admin-name">${escapeHtml(
               TawalaDemo.displayName(p.name)
-            )}</span> ${libraryRowFlags(p)}` +
-            `<div class="pm-hint">${escapeHtml(p.shortDescription || "No description")}</div></td>` +
-            `<td><code>${escapeHtml(p.id)}</code></td>` +
-            `<td>${escapeHtml(p.category || "")}</td>` +
+            )}</span><span class="lib-admin-flags">${libraryRowFlags(p)}</span></div>` +
+            `<div class="lib-admin-desc" title="${escapeHtml(p.shortDescription || "No description")}">${escapeHtml(
+              p.shortDescription || "No description"
+            )}</div></td>` +
+            `<td title="${escapeHtml(p.id)}"><code>${escapeHtml(p.id)}</code></td>` +
+            `<td title="${escapeHtml(p.category || "")}">${escapeHtml(p.category || "")}</td>` +
             `<td>${escapeHtml(p.updated || "—")}</td>` +
             `<td class="lib-admin-actions">` +
             `<button type="button" class="pm-action" data-admin-op="describe" data-lib-id="${escapeHtml(p.id)}">Description</button> ` +
             `<button type="button" class="pm-action" data-admin-op="rename" data-lib-id="${escapeHtml(p.id)}">Rename</button> ` +
-            `<button type="button" class="pm-action" data-admin-op="overwrite-target" data-lib-id="${escapeHtml(p.id)}">Use as overwrite target ↑</button> ` +
+            `<button type="button" class="pm-action" data-admin-op="overwrite-target" data-lib-id="${escapeHtml(p.id)}">Use as overwrite target ↓</button> ` +
             `<button type="button" class="pm-action" data-admin-op="delete-listing" data-lib-id="${escapeHtml(p.id)}" title="Remove from public Library. The name can be used again.">Delete</button>` +
             "</td></tr>"
           );
@@ -273,10 +391,11 @@
         '<p class="pm-hint">Delete removes a listing with no successor. It does not copy anything to My Tawala. ' +
         "A later Publish can reuse the same name. If the row has a live uniqueId, Delete also frees the :8080 " +
         "display name so a new Push can occupy it.</p>" +
-        '<table class="projectListing stripe" style="width:100%;">' +
+        '<div class="admin-library-scroll">' +
+        '<table class="projectListing stripe admin-library-table" style="width:100%;">' +
         "<thead><tr><th class=\"left\">Name</th><th>Id</th><th>Category</th><th>Updated</th><th>Actions</th></tr></thead>" +
         `<tbody id="adminLibraryRows">${rows}</tbody>` +
-        "</table>" +
+        "</table></div>" +
         '<p class="pm-hint" id="adminOpStatus" role="status"></p>' +
         "</div></div>"
       );
@@ -546,13 +665,13 @@
     function renderAdminBody() {
       const host = document.getElementById("adminBodyHost");
       host.innerHTML =
-        renderPublishForm(pendingOverwriteTarget) +
         renderLibraryTable() +
-        renderVacateNameSection() +
         renderHiddenSection() +
         renderCategoryAdminSection() +
         renderCategoryBoard() +
-        renderTestDriveDoorSection();
+        renderTestDriveDoorSection() +
+        renderPublishForm(pendingOverwriteTarget) +
+        renderVacateNameSection();
       const sourceSel = document.getElementById("adminSourceProject");
       const targetSel = document.getElementById("adminPublishTarget");
       const nameInput = document.getElementById("adminPublishName");

@@ -65,7 +65,7 @@
   var holder = document.getElementById("pmJavaProjectName");
   var name = holder ? holder.textContent.replace(/^\s+|\s+$/g, "") : "";
   if (!name) return;
-  location.replace("/app/mytawala-project.html?name=" + encodeURIComponent(name) + "&openStarts=1&v=20261119-publish8");
+  location.replace("/app/mytawala-project.html?name=" + encodeURIComponent(name) + "&v=20261120-makecopy1");
 })();
 </script>
 

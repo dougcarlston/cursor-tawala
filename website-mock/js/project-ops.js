@@ -3164,9 +3164,16 @@
     }
   }
 
+  /** The one start form, when the project has exactly one live start. */
+  function soleUsableStart(project) {
+    const starts = startPointsWithUrls(project);
+    return starts.length === 1 ? starts[0] : null;
+  }
+
   /**
    * Enable/disable Project Data banner + Details Backup/Restore/Publish from highlight.
-   * Owner matrix A/B/C — see PROJECT_ACTIONS comment. Collapsed tree ⇒ rule A.
+   * Owner matrix A/B/C — see PROJECT_ACTIONS comment. Collapsed tree ⇒ rule A,
+   * except a project with one start: Use opens that form without expanding.
    */
   function syncProjectActionsForDataSelection(tree) {
     const detail = document.getElementById("pmDetail");
@@ -3258,19 +3265,26 @@
       const wired = el.dataset.wired || "";
 
       if (wired === "use-project" || op === "use") {
-        /* B only: start-point highlight with a real :8080 URL. Empty Save-a-copy rows stay honest. */
+        /* A highlighted start, or the only start while the project row is closed. */
         const project = resolveMyTawalaProject(projectId);
         const hasRuntime = projectHasUseRuntime(project);
-        if (startReady && hasRuntime) {
+        const sole = sel.kind === "project" ? soleUsableStart(project) : null;
+        const useUrl = startReady ? sel.url : sole && sole.url ? sole.url : "";
+        if (useUrl && hasRuntime) {
+          const href = shareableStartUrl(useUrl);
           setCtrlEnabled(el, true);
           if (el.tagName === "A") {
-            el.href = sel.url;
+            el.href = href;
             el.target = "_blank";
             el.rel = "noopener";
             el.dataset.useMode = "runtime";
           }
-          el.title =
-            "Use the highlighted start point on :8080 (needs Java runtime). Offline Purge: select project/form → Purge — not Use.";
+          const startName = sole
+            ? sole.label || sole.form || "the start form"
+            : sel.formName || "the highlighted start";
+          el.title = window.TAWALA_PUBLIC_SITE
+            ? "Open " + startName
+            : "Use " + startName + " on :8080 (needs Java runtime). Offline Purge: select project/form → Purge — not Use.";
           el.classList.add("is-active");
         } else {
           let offTitle = USE_NEEDS_DEPLOY_TITLE;
@@ -5379,6 +5393,9 @@
       typeof TawalaTransfer.suggestUniqueMyTawalaName === "function"
         ? TawalaTransfer.suggestUniqueMyTawalaName(sourceName)
         : TawalaTransfer.stripStubSuffix(sourceName);
+    const nameHint = window.TAWALA_PUBLIC_SITE
+      ? "If this account already has that name, the copy is saved with a number after it. The project you already have stays."
+      : "If the name matches an existing My Tawala project (not case-sensitive), you’ll be asked to confirm before replacing it.";
 
     const backdrop = document.createElement("div");
     backdrop.className = "tawala-modal-backdrop";
@@ -5394,7 +5411,7 @@
       '<label class="tawala-modal-field" for="saveCopyNameInput">Your project name' +
       `<input type="text" id="saveCopyNameInput" value="${escapeHtml(defaultName)}" autocomplete="off" />` +
       "</label>" +
-      '<p class="pm-hint tawala-modal-hint-tight">If the name matches an existing My Tawala project (not case-sensitive), you’ll be asked to confirm before replacing it.</p>' +
+      `<p class="pm-hint tawala-modal-hint-tight">${escapeHtml(nameHint)}</p>` +
       '<p class="pm-hint" id="saveCopyModalError" role="alert" style="display:none;"></p>' +
       "</div>" +
       '<div class="tawala-modal-actions">' +
@@ -5438,6 +5455,42 @@
       if (!nameVal) {
         showErr("Enter a name for your My Tawala copy.");
         nameInput.focus();
+        return;
+      }
+      if (window.TAWALA_PUBLIC_SITE) {
+        if (backdrop.dataset.copying === "1") return;
+        backdrop.dataset.copying = "1";
+        const confirmBtn = backdrop.querySelector("#saveCopyModalConfirm");
+        if (confirmBtn) {
+          confirmBtn.disabled = true;
+          confirmBtn.textContent = "Copying…";
+        }
+        showErr("");
+        let copied;
+        try {
+          copied = await copyPublicProjectToAccount(
+            {
+              uniqueId: project.uniqueId,
+              javaLibraryId: project.javaLibraryId,
+            },
+            nameVal
+          );
+        } catch (e) {
+          copied = { ok: false, error: String((e && e.message) || e) };
+        }
+        if (!copied || copied.redirected) return;
+        if (!copied.ok) {
+          delete backdrop.dataset.copying;
+          if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = COPY_TO_MYTAWALA_LABEL;
+          }
+          showErr(copied.error || "The project was not copied.");
+          nameInput.focus();
+          return;
+        }
+        closeSaveCopyModal();
+        location.assign("/app/mytawala.html?v=20261120-get1&copied=1");
         return;
       }
       if (backdrop.dataset.copying === "1") return;
@@ -7994,6 +8047,179 @@
     setStatus("");
   }
 
+  function publicProjectName(projectId, btn) {
+    const project = accountProject(projectId);
+    if (project && project.name) return String(project.name).replace(/\s+/g, " ").trim();
+    const row =
+      (btn && btn.closest && btn.closest("tr[data-project-id]")) ||
+      (projectId
+        ? document.querySelector(
+            '#projectRows tr[data-project-id="' + String(projectId).replace(/"/g, "") + '"]'
+          )
+        : null);
+    const label =
+      row &&
+      (row.querySelector(".listing-project-name a") ||
+        row.querySelector(".listing-project-name"));
+    return label ? label.textContent.replace(/\s+/g, " ").trim() : "";
+  }
+
+  /**
+   * Fork a project already on this account. The name must be new.
+   * Responses stay on the original unless the box is checked.
+   */
+  function openPublicMakeCopyDialog(sourceName) {
+    const prior = document.getElementById("tawalaMakeCopyModal");
+    if (prior) prior.remove();
+    const suggested = ("Copy of " + sourceName).slice(0, 100);
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = "tawalaMakeCopyModal";
+    backdrop.innerHTML =
+      '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="makeCopyModalTitle">' +
+      '<h3 id="makeCopyModalTitle">Make a Copy</h3>' +
+      `<p class="pm-hint tawala-modal-lede">Make a new project from “${escapeHtml(sourceName)}”. ` +
+      "The original stays as it is. The copy has its own address, so people you send it to do not see the original’s responses.</p>" +
+      '<div class="tawala-modal-body">' +
+      '<label class="tawala-modal-field" for="makeCopyNameInput">Name for the copy' +
+      `<input type="text" id="makeCopyNameInput" maxlength="100" value="${escapeHtml(suggested)}" autocomplete="off" />` +
+      "</label>" +
+      '<label class="tawala-modal-field" for="makeCopyResponses">' +
+      '<input type="checkbox" id="makeCopyResponses" /> ' +
+      "Also copy the responses already stored on this project. Leave this off to start empty. You can purge the copy later." +
+      "</label>" +
+      '<p class="pm-hint tawala-modal-hint-tight">The name has to be new on this account. A name you already have is refused.</p>' +
+      '<p class="pm-hint" id="makeCopyModalError" role="alert" style="display:none;"></p>' +
+      "</div>" +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action" id="makeCopyCancel">Cancel</button>' +
+      '<button type="button" class="pm-action is-active" id="makeCopyConfirm">Make a Copy</button>' +
+      "</div></div>";
+    document.body.appendChild(backdrop);
+    const nameInput = backdrop.querySelector("#makeCopyNameInput");
+    const errEl = backdrop.querySelector("#makeCopyModalError");
+    function showErr(msg) {
+      if (!errEl) return;
+      errEl.textContent = msg || "";
+      errEl.style.display = msg ? "" : "none";
+    }
+    function closeDialog() {
+      backdrop.remove();
+      document.removeEventListener("keydown", onKey, true);
+    }
+    function onKey(ev) {
+      if (ev.key === "Escape") closeDialog();
+    }
+    async function confirmCopy() {
+      const nameVal = nameInput.value.replace(/\s+/g, " ").trim();
+      if (!nameVal) {
+        showErr("Enter a name for the copy.");
+        nameInput.focus();
+        return;
+      }
+      if (nameVal.toLowerCase() === sourceName.toLowerCase()) {
+        showErr("Choose a name that is different from the original.");
+        nameInput.focus();
+        return;
+      }
+      if (backdrop.dataset.copying === "1") return;
+      backdrop.dataset.copying = "1";
+      const confirmBtn = backdrop.querySelector("#makeCopyConfirm");
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Copying…";
+      }
+      showErr("");
+      const body = new URLSearchParams();
+      body.set("projectName", sourceName);
+      body.set("action", "Copy");
+      body.set("newName", nameVal);
+      if (backdrop.querySelector("#makeCopyResponses").checked) {
+        body.set("copyResponses", "1");
+      }
+      let res;
+      try {
+        res = await fetch("/projectmanager/projectdetail", {
+          method: "POST",
+          credentials: "same-origin",
+          cache: "no-store",
+          redirect: "follow",
+          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+          body: body.toString(),
+        });
+      } catch (e) {
+        delete backdrop.dataset.copying;
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Make a Copy";
+        }
+        showErr("The copy was not made.");
+        return;
+      }
+      let path = "";
+      try {
+        path = new URL(res.url, location.origin).pathname;
+      } catch (e) {
+        path = "";
+      }
+      if (/\/login$/.test(path)) {
+        location.assign("/login?r=" + encodeURIComponent(location.pathname + location.search));
+        return;
+      }
+      if (res.status === 409) {
+        delete backdrop.dataset.copying;
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Make a Copy";
+        }
+        showErr("This account already has a project with that name. Choose another.");
+        nameInput.focus();
+        return;
+      }
+      if (!res.ok) {
+        delete backdrop.dataset.copying;
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Make a Copy";
+        }
+        showErr("The copy was not made.");
+        return;
+      }
+      closeDialog();
+      let nextName = nameVal;
+      try {
+        const landed = new URL(res.url, location.origin);
+        nextName =
+          landed.searchParams.get("name") ||
+          landed.searchParams.get("projectName") ||
+          nameVal;
+      } catch (e) {
+        nextName = nameVal;
+      }
+      location.assign(
+        "/app/mytawala-project.html?name=" +
+          encodeURIComponent(nextName) +
+          "&v=20261120-makecopy1"
+      );
+    }
+    document.addEventListener("keydown", onKey, true);
+    backdrop.addEventListener("click", (ev) => {
+      if (ev.target === backdrop) closeDialog();
+    });
+    backdrop.querySelector("#makeCopyCancel").addEventListener("click", closeDialog);
+    backdrop.querySelector("#makeCopyConfirm").addEventListener("click", confirmCopy);
+    nameInput.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        confirmCopy();
+      }
+    });
+    setTimeout(() => {
+      nameInput.focus();
+      nameInput.select();
+    }, 0);
+  }
+
   /**
    * Public-site Project Details buttons that already have a Java account page.
    * Returns true when this click was handled.
@@ -8006,6 +8232,17 @@
     const formScope = btn.dataset.dataScope === "form" && btn.dataset.formName
       ? String(btn.dataset.formName)
       : "";
+
+    if (wired === "make-copy-mytawala" || op === "make-copy") {
+      ev.preventDefault();
+      const sourceName = publicProjectName(projectId, btn);
+      if (!sourceName) {
+        setStatus("Select a project to copy.");
+        return true;
+      }
+      openPublicMakeCopyDialog(sourceName);
+      return true;
+    }
 
     if (wired === "deploy-share" || op === "deploy") {
       ev.preventDefault();
@@ -8109,6 +8346,65 @@
     return "That control is not connected to this account yet.";
   }
 
+  let copyToAccountInFlight = false;
+
+  /**
+   * Public Library copy. Catalog rows go by unique id (the seven live
+   * projects). User submissions go by library id. The server makes a new
+   * project on this account and does not copy responses.
+   */
+  async function copyPublicProjectToAccount(submission, preferredName) {
+    const body = new URLSearchParams();
+    body.set("project_name", preferredName || "Project");
+    if (submission.javaLibraryId) {
+      body.set("app_id", String(submission.javaLibraryId));
+    } else if (submission.uniqueId) {
+      body.set("unique_id", String(submission.uniqueId));
+    } else {
+      return { ok: false, error: "This listing has no project to copy." };
+    }
+    const posted = await fetch("/library/copy-to-my-tawala", {
+      method: "POST",
+      credentials: "same-origin",
+      cache: "no-store",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
+      redirect: "follow",
+    });
+    let path = "";
+    try {
+      path = new URL(posted.url, location.origin).pathname;
+    } catch (e) {
+      path = "";
+    }
+    if (/\/login$/.test(path)) {
+      location.assign("/login?r=" + encodeURIComponent("/app/library.html"));
+      return { ok: false, redirected: true };
+    }
+    const html = await posted.text();
+    if (
+      posted.ok &&
+      (/\/projectmanager\/detail$/.test(path) ||
+        /id="pmJavaProjectName"/i.test(html))
+    ) {
+      return { ok: true };
+    }
+    if (posted.status === 404) {
+      return {
+        ok: false,
+        error:
+          "This listing is not a public Library project that can be copied onto an account.",
+      };
+    }
+    if (posted.status === 409) {
+      return {
+        ok: false,
+        error: "This account already has too many projects with that name.",
+      };
+    }
+    return { ok: false, error: "The project was not copied." };
+  }
+
   async function handleOpClick(ev) {
     const btn = ev.target.closest("[data-op], .pm-action, .pm-icon-action");
     if (!btn || !btn.dataset) return;
@@ -8167,6 +8463,13 @@
       }
       const href = btn.tagName === "A" ? btn.getAttribute("href") || "" : "";
       const mode = btn.dataset.useMode || "";
+      const openUrl = shareableStartUrl(href);
+      if (window.TAWALA_PUBLIC_SITE && openUrl && openUrl !== href) {
+        ev.preventDefault();
+        window.open(openUrl, "_blank", "noopener");
+        setStatus("Opening the start form…");
+        return;
+      }
       if (mode === "details" || (href && !isLocalJavaRuntimeUrl(href))) {
         return;
       }
@@ -8222,25 +8525,58 @@
 
     if (wired === "save-copy-library") {
       ev.preventDefault();
+      if (window.TAWALA_PUBLIC_SITE) {
+        if (!isMockLoggedIn()) {
+          location.assign("/login?r=" + encodeURIComponent("/app/library.html"));
+          return;
+        }
+        if (copyToAccountInFlight) return;
+        copyToAccountInFlight = true;
+        const submission =
+          (window.TAWALA_USER_SUBMISSIONS &&
+            window.TAWALA_USER_SUBMISSIONS[projectId]) ||
+          resolveLibraryProject(projectId);
+        const name = submission
+          ? typeof TawalaDemo !== "undefined" && TawalaDemo.displayName
+            ? TawalaDemo.displayName(submission.name)
+            : submission.name
+          : "";
+        if (!submission) {
+          copyToAccountInFlight = false;
+          window.alert("That Library project could not be found.");
+          return;
+        }
+        try {
+          const copied = await copyPublicProjectToAccount(
+            submission,
+            name || "Project"
+          );
+          if (copied.redirected) return;
+          if (!copied.ok) {
+            window.alert(
+              "Couldn't copy “" +
+                (name || "that project") +
+                "” to My Tawala.\n\n" +
+                (copied.error || "The project was not copied.")
+            );
+            return;
+          }
+          location.assign("/app/mytawala.html?v=20261120-copy1");
+        } catch (err) {
+          window.alert(
+            "Couldn't copy “" +
+              (name || "that project") +
+              "” to My Tawala.\n\n" +
+              (err && err.message ? err.message : "The project was not copied.")
+          );
+        } finally {
+          copyToAccountInFlight = false;
+        }
+        return;
+      }
       if (!isMockLoggedIn()) {
         window.alert(
           "Copy to MyTawala requires a free account.\n\nLog in or Register, then try again."
-        );
-        return;
-      }
-      const submission = resolveLibraryProject(projectId);
-      if (
-        window.TAWALA_PUBLIC_SITE &&
-        submission &&
-        submission.javaLibraryId &&
-        !submission.jsonFile &&
-        submission.versionId
-      ) {
-        window.location.assign(
-          "/library/download?project_id=" +
-            encodeURIComponent(submission.javaLibraryId) +
-            "&version_id=" +
-            encodeURIComponent(submission.versionId)
         );
         return;
       }
