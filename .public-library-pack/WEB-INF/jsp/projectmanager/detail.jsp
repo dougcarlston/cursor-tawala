@@ -31,6 +31,8 @@
 <%-- Browser visits use the 2026 Project Details layout. Fetch from that page still reads this JSP. --%>
 <style>#bd { visibility: hidden; }</style>
 <div id="pmJavaProjectName" hidden><c:out value="${projectInfo.project.name}" /></div>
+<div id="pmJavaTheme" hidden><c:out value="${projectInfo.project.project.theme.themeId}" /></div>
+<div id="pmJavaOffline" hidden><c:out value="${projectInfo.project.offline}" /></div>
 <%-- Explicit startPoint="true" only. An omitted attribute is Java's default, not a start mark. --%>
 <%
 	StringBuilder tawalaMarkedStarts = new StringBuilder();
@@ -65,7 +67,7 @@
   var holder = document.getElementById("pmJavaProjectName");
   var name = holder ? holder.textContent.replace(/^\s+|\s+$/g, "") : "";
   if (!name) return;
-  location.replace("/app/mytawala-project.html?name=" + encodeURIComponent(name) + "&v=20261120-makecopy1");
+  location.replace("/app/mytawala-project.html?name=" + encodeURIComponent(name) + "&v=20261120-vercheck1");
 })();
 </script>
 

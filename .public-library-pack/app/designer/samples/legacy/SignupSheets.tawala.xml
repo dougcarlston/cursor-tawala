@@ -1,0 +1,949 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="SignupSheets" themePath="mvsc" format="1.13" designerBuild="228">
+<pageHeader></pageHeader><forms>
+<form name="Setup" startPoint="false" themePath="mvsc" process="Post-Setup" preProcess="Pre-Setup">
+<items>
+<heading label="H1" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Setup</font></paragraph></heading>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="A40000"><b><i><field name="Message"/></i></b></font></paragraph></text>
+<fib label="Q1" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Header for all Signup Sheets: </font><blank label="a" length="61" required="false" alternateLabel="Header"/></paragraph></fib>
+<fib label="Q2" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Instructions to appear at top of all Signup Sheets: </font><blank label="a" length="61" height="5" required="false" alternateLabel="Instructions"/></paragraph></fib>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>Individual Signup Sheet Names: </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="Signup Sheets"/>
+</header><contents><field name="Record:Sheet:SheetName" /></contents></column><conditions><form name="Sheet" /></conditions></itemization-table></font></paragraph></text>
+<mc label="Q3" onlyone="false" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">check here to add,edit or delete signup sheets</font></paragraph></choice></mc>
+<fib label="Q4" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Max signups per sheet </font><font face="Arial" size="200" color="000000"><i>(leave blank if no limit):</i></font><sp/><blank label="a" length="20" required="false" alternateLabel="Max"/></paragraph></fib>
+<text label="T3" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Add as many other fields as you want to request from people signing up.  Note: If you don't select Email Address, the signups will not receive email confirmation of their selection.</font></paragraph></text>
+<mc label="Q5" alternateLabel="OptionParentName" onlyone="false" required="false" style="vertical" paddingBottom="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Indicate fields to be asked on signup sheet in addition to Player Name:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Parent Name</font></paragraph></choice></mc>
+<mc label="Q6" alternateLabel="OptionEmail" onlyone="false" required="false" style="vertical" paddingBottom="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Email Address</font></paragraph></choice></mc>
+<mc label="Q7" alternateLabel="OptionPhone" onlyone="false" required="false" style="vertical" paddingBottom="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Best Phone Number</font></paragraph></choice></mc>
+<mc label="Q8" alternateLabel="OptionDesiredDivision" onlyone="false" required="false" style="vertical" paddingBottom="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Division Desired</font></paragraph></choice></mc>
+<mc label="Q9" alternateLabel="OptionPreviousDivision" onlyone="false" required="false" style="vertical" paddingBottom="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Last played in Division</font></paragraph></choice></mc>
+<mc label="Q10" alternateLabel="OptionAge" onlyone="false" required="false" style="vertical" paddingBottom="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Age</font></paragraph></choice></mc>
+<mc label="Q11" alternateLabel="OptionGrade" onlyone="false" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Grade</font></paragraph></choice></mc>
+<fib label="Q12" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">If you want to add a custom question for the signup sheet, enter it here: </font><blank label="a" length="52" required="false" alternateLabel="CustomQ"/></paragraph></fib>
+<fib label="Q13" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Administrator Name: </font><font face="Arial" size="200" color="000000"><i>(for confirmation letters to signups)</i></font><sp/><blank label="a" length="20" required="false" alternateLabel="AdminName"/></paragraph></fib>
+<fib label="Q14" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Administrator Email: </font><blank label="a" length="20" required="false" alternateLabel="AdminEmail"/></paragraph></fib>
+<fib label="Q15" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Re-enter Administrator Email: </font><blank label="a" length="20" required="false" alternateLabel="AdminEmailConfirm"/></paragraph></fib>
+<skipInstructions>
+<if>
+<conditions>
+<doesNotEqual field="Setup:AdminEmail">
+<string field="Setup:AdminEmailConfirm"/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="true">
+<string value="Email and Re-enter Email Addresses do not match!"/>
+</set>
+<skip to="H1"/>
+</trueSet>
+</if>
+</skipInstructions>
+</items>
+</form>
+<form name="ManageSheets" startPoint="false" themePath="mvsc" process="Post-ManageSheets">
+<items>
+<heading label="H1" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Add/Edit/Delete Signup Sheets</font></paragraph></heading>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Current Sheet Names:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="Name"/>
+</header><contents><field name="Record:Sheet:SheetName" /></contents></column><conditions><form name="Sheet" /></conditions></itemization-table></font></paragraph></text>
+<mc label="Q1" alternateLabel="Action" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Add a new sheet</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit an existing sheet</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Delete a sheet</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Return</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<and>
+<mcDoesNotEqual field="ManageSheets:Action" value="b"/>
+<mcDoesNotEqual field="ManageSheets:Action" value="c"/>
+</and>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<mc label="Q2" alternateLabel="SelectSheet" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Please select the sheet to edit or delete:</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:Sheet:SheetName"/>
+</display-expression><value-expression><field name="Record:Sheet:SheetName"/>
+</value-expression><sort-expression><field name="Record:Sheet:SheetName"/>
+</sort-expression><record-selector><form name="Sheet" /></record-selector></dynamic-mcq></data-provider></mc>
+</items>
+</form>
+<form name="Administrator" startPoint="true" themePath="mvsc" process="Post-Administrator" preProcess="GetSetupParameters">
+<items>
+<heading label="H1" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Signup Sheets</font></paragraph></heading>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">View all signup sheets</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">View specific signup sheet</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Search for specific player</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Set up signup sheets</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Administrator:Q1" value="c"/>
+</conditions>
+<trueSet>
+<skip to="Q3"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcDoesNotEqual field="Administrator:Q1" value="b"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<mc label="Q2" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Which sheet do you wish to view?</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:Sheet:SheetName"/>
+</display-expression><value-expression><field name="Record:Sheet:SheetName"/>
+</value-expression><sort-expression></sort-expression><record-selector><form name="Sheet" /></record-selector></dynamic-mcq></data-provider></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<fib label="Q3" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Enter part or all of a Player's name or email address: </font><blank label="a" length="20" required="false" alternateLabel="SearchString"/></paragraph></fib>
+<break/>
+<mc label="Q4" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Choose from possible matches:</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:SignupSheet:SName"/>
+<string value=" ("/>
+<field name="Record:SignupSheet:SEMail"/>
+<string value=")"/>
+</display-expression><value-expression><field name="Record:SignupSheet:SName"/>
+</value-expression><sort-expression></sort-expression><record-selector><form name="SignupSheet" /><conditions>
+<or>
+<contains field="Record:SignupSheet:SName">
+<string field="Administrator:SearchString"/>
+</contains>
+<contains field="Record:SignupSheet:SEMail">
+<string field="Administrator:SearchString"/>
+</contains>
+</or>
+</conditions></record-selector></dynamic-mcq></data-provider></mc>
+</items>
+</form>
+<form name="Sheet" startPoint="false" themePath="mvsc" process="Post-Sheet">
+<items>
+<heading label="H1" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Add Signup Sheet</font></paragraph></heading>
+<text label="T1" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>A Sheet Name is the name that distinguishes this sheet from other signup sheets.  For example, if people are choosing tryout locations and times, an appropriate name might be: "Combs Field, Saturday, 1:30pm."</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>People looking at a list of Sheet Names should be able to see all the information they will need in order to select the correct sheet to sign up on.</font></paragraph></text>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Current Sheet Names:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="Name"/>
+</header><contents><field name="Record:Sheet:SheetName" /></contents></column><conditions><form name="Sheet" /></conditions></itemization-table></font></paragraph></text>
+<fib label="Q1" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Add Sheet Name: </font><blank label="a" length="52" required="false" alternateLabel="SheetName"/></paragraph></fib>
+<mc label="Q2" alternateLabel="AddAnother" onlyone="false" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Add another sheet</font></paragraph></choice></mc>
+<field name="Count"/>
+<field name="Displayed?"/>
+</items>
+</form>
+<form name="SignUp" startPoint="true" themePath="mvsc" process="Post-Signup" preProcess="Pre-Signup">
+<items>
+<heading label="H1" type="Main"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000"><field name="Head"/></font></paragraph></heading>
+<text label="T1" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Inst"/></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Please select:</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:Sheet:SheetName"/>
+</display-expression><value-expression><field name="Record:Sheet:SheetName"/>
+</value-expression><sort-expression></sort-expression><record-selector><form name="Sheet" /><conditions>
+<isLessThan field="Record:Sheet:Count">
+<string field="MaxNames"/>
+</isLessThan>
+</conditions></record-selector></dynamic-mcq></data-provider></mc>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="A40000"><b><i><field name="Message"/></i></b></font></paragraph></text>
+</items>
+</form>
+<form name="SignupSheet" startPoint="false" themePath="mvsc" process="Post-SignupSheet" preProcess="GetSetupParameters">
+<items>
+<heading label="H1" type="Main"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000"><field name="Head"/></font></paragraph></heading>
+<heading label="H2" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000"><field name="SignUp:Q1"/></font></paragraph></heading>
+<text label="T1" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Inst"/></font></paragraph></text>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="A40000"><b><i><field name="Message"/></i></b></font></paragraph></text>
+<fib label="Q1" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Name: </font><blank label="a" length="20" required="false" alternateLabel="SName"/></paragraph></fib>
+<fib label="Q2" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Parent Name: </font><blank label="a" length="20" required="false" alternateLabel="SPName"/></paragraph><displayConditions>
+<equals field="AskParentName">
+<string value="Yes"/>
+</equals>
+</displayConditions></fib>
+<fib label="Q3" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Email Address: </font><blank label="a" length="20" required="false" alternateLabel="SEMail"/></paragraph><displayConditions>
+<equals field="AskEmail">
+<string value="Yes"/>
+</equals>
+</displayConditions></fib>
+<fib label="Q4" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Re-enter Email Address: </font><blank label="a" length="20" required="false" alternateLabel="SEmailConfirm"/></paragraph><displayConditions>
+<equals field="AskEmail">
+<string value="Yes"/>
+</equals>
+</displayConditions></fib>
+<fib label="Q5" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Best Phone Number: </font><blank label="a" length="20" required="false" alternateLabel="SPhone"/></paragraph><displayConditions>
+<equals field="AskPhone">
+<string value="Yes"/>
+</equals>
+</displayConditions></fib>
+<fib label="Q6" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Division Desired: </font><blank label="a" length="20" required="false" alternateLabel="SDesireDiv"/></paragraph><displayConditions>
+<equals field="AskDesiredDivision">
+<string value="Yes"/>
+</equals>
+</displayConditions></fib>
+<fib label="Q7" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Last played in Division: </font><blank label="a" length="20" required="false" alternateLabel="SPrevDiv"/></paragraph><displayConditions>
+<equals field="AskPreviousDivision">
+<string value="Yes"/>
+</equals>
+</displayConditions></fib>
+<fib label="Q8" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Age: </font><blank label="a" length="20" required="false" alternateLabel="SAge"/></paragraph><displayConditions>
+<equals field="AskAge">
+<string value="Yes"/>
+</equals>
+</displayConditions></fib>
+<fib label="Q9" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Grade: </font><blank label="a" length="20" required="false" alternateLabel="SGrade"/></paragraph><displayConditions>
+<equals field="AskGrade">
+<string value="Yes"/>
+</equals>
+</displayConditions></fib>
+<fib label="Q10" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><field name="Custom"/></font><font face="Arial" size="200" color="000000">: </font><blank label="a" length="20" required="false" alternateLabel="SCustom"/></paragraph><displayConditions>
+<isNotBlank field="Custom" />
+</displayConditions></fib>
+<skipInstructions>
+<if>
+<conditions>
+<and>
+<equals field="AskEmail">
+<string value="Yes"/>
+</equals>
+<doesNotEqual field="SignupSheet:SEMail">
+<string field="SignupSheet:SEmailConfirm"/>
+</doesNotEqual>
+</and>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="true">
+<string value="Email and Re-enter Email Addresses do not match!"/>
+</set>
+<skip to="H1"/>
+</trueSet>
+</if>
+</skipInstructions>
+<field name="SheetChosen"/>
+</items>
+</form>
+<form name="AlreadySignedup" startPoint="false" themePath="mvsc" process="Post-AlreadySignedUp">
+<items>
+<text label="T1" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Our records show you already signed up for: </font><font><field name="Choice"/></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">What would you like to do?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Switch from </font><font face="Arial" size="200" color="000000"><field name="Choice"/></font><font face="Arial" size="200" color="000000"> to </font><font face="Arial" size="200" color="000000"><field name="SignupSheet:SheetChosen"/></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Cancel this second signup (</font><font face="Arial" size="200" color="000000"><field name="SignupSheet:SheetChosen"/></font><font face="Arial" size="200" color="000000">) and stay with </font><font face="Arial" size="200" color="000000"><field name="Choice"/></font></paragraph></choice></mc>
+</items>
+</form>
+<form name="DeleteRecord" startPoint="false" themePath="mvsc" process="Post-DeleteRecord">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="ShowSignups" startPoint="true" themePath="mvsc" process="Post-ShowSignups" preProcess="GetSetupParameters">
+<items>
+<heading label="H1" type="Main"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000"><field name="Head"/></font></paragraph></heading>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">See all signup sheets</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Look for a specific person's name</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcDoesNotEqual field="ShowSignups:Q1" value="b"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<fib label="Q2" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Enter part of all of a Player's name or email address: </font><blank label="a" length="20" required="false" alternateLabel="PlayerSearchString"/></paragraph></fib>
+<break/>
+<mc label="Q3" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Choose from possible matches:</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:SignupSheet:SName"/>
+<string value=" ("/>
+<field name="Record:SignupSheet:SEMail"/>
+<string value=")"/>
+</display-expression><value-expression><field name="Record:SignupSheet:SName"/>
+</value-expression><sort-expression></sort-expression><record-selector><form name="SignupSheet" /><conditions>
+<or>
+<contains field="Record:SignupSheet:SName">
+<string field="ShowSignups:PlayerSearchString"/>
+</contains>
+<contains field="Record:SignupSheet:SEMail">
+<string field="ShowSignups:PlayerSearchString"/>
+</contains>
+</or>
+</conditions></record-selector></dynamic-mcq></data-provider></mc>
+</items>
+</form>
+</forms>
+<processes>
+<process name="GetSetupParameters">
+<delete><form name="SignupSheet"/><conditions>
+<isBlank field="Record:SignupSheet:SName" />
+</conditions></delete>
+<get recordList="Record List 1">
+<forms>
+<form name="Setup"/>
+</forms>
+</get>
+<foreach record="Item" recordList="Record List 1">
+<set field="Head" arithmeticAsText="false">
+<string field="Item:Setup:Header"/>
+</set>
+<set field="Inst" arithmeticAsText="false">
+<string field="Item:Setup:Instructions"/>
+</set>
+<set field="Custom" arithmeticAsText="false">
+<string field="Item:Setup:CustomQ"/>
+</set>
+<set field="FromName" arithmeticAsText="false">
+<string field="Item:Setup:AdminName"/>
+</set>
+<set field="FromEmail" arithmeticAsText="false">
+<string field="Item:Setup:AdminEmail"/>
+</set>
+<if>
+<conditions>
+<mcContains field="Item:Setup:OptionParentName">
+<string value="a"/>
+</mcContains>
+</conditions>
+<trueSet>
+<set field="AskParentName" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="AskParentName" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Item:Setup:OptionEmail" value="a"/>
+</conditions>
+<trueSet>
+<set field="AskEmail" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="AskEmail" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Item:Setup:OptionPhone" value="a"/>
+</conditions>
+<trueSet>
+<set field="AskPhone" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="AskPhone" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Item:Setup:OptionDesiredDivision" value="a"/>
+</conditions>
+<trueSet>
+<set field="AskDesiredDivision" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="AskDesiredDivision" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Item:Setup:OptionPreviousDivision" value="a"/>
+</conditions>
+<trueSet>
+<set field="AskPreviousDivision" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="AskPreviousDivision" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Item:Setup:OptionAge" value="a"/>
+</conditions>
+<trueSet>
+<set field="AskAge" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="AskAge" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Item:Setup:OptionGrade" value="a"/>
+</conditions>
+<trueSet>
+<set field="AskGrade" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="AskGrade" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</falseSet>
+</if>
+</foreach>
+<set field="Message" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</process>
+<process name="Post-Administrator">
+<if>
+<conditions>
+<mcIsBlank field="Administrator:Q1" />
+</conditions>
+<trueSet>
+<show form="Administrator"/>
+</trueSet>
+</if>
+<get recordList="Record List 8">
+<forms>
+<form name="Setup"/>
+</forms>
+</get>
+<foreach record="SetupItem" recordList="Record List 8">
+<set field="Custom" arithmeticAsText="false">
+<string field="SetupItem:Setup:CustomQ"/>
+</set>
+</foreach>
+<if>
+<conditions>
+<mcEquals field="Administrator:Q1" value="a"/>
+</conditions>
+<trueSet>
+<comment>View all signup sheets</comment>
+<get recordList="Record List 6">
+<forms>
+<form name="Sheet"/>
+</forms>
+</get>
+<foreach record="Sheet" recordList="Record List 6">
+<set field="Sheet:Sheet:Displayed?" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</foreach>
+<show document="ViewHeader" reset="false"/>
+<get recordList="Record List 7">
+<forms>
+<form name="Sheet"/>
+</forms>
+<conditions>
+<equals field="Record List 7:Sheet:Displayed?">
+<string value="No"/>
+</equals>
+</conditions></get>
+<foreach record="Display" recordList="Record List 7">
+<set field="Display:Sheet:Displayed?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<set field="Sheet" arithmeticAsText="false">
+<string field="Display:Sheet:SheetName"/>
+</set>
+<show document="ViewSheet" reset="false"/>
+</foreach>
+<show document="ViewHeader" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administrator:Q1" value="b"/>
+</conditions>
+<trueSet>
+<comment>View specific signup sheet</comment>
+<set field="Sheet" arithmeticAsText="false">
+<string field="Administrator:Q2"/>
+</set>
+<show document="ViewHeader" reset="false"/>
+<show document="ViewSheet" reset="false"/>
+<show document="ViewHeader" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administrator:Q1" value="c"/>
+</conditions>
+<trueSet>
+<comment>Search for specific player</comment>
+<if>
+<conditions>
+<mcIsBlank field="Administrator:Q4" />
+</conditions>
+<trueSet>
+<show form="Administrator"/>
+</trueSet>
+<falseSet>
+<show document="PlayerHeader" reset="false"/>
+<show document="PlayerData" reset="false"/>
+<show document="PlayerHeader" reset="false"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administrator:Q1" value="d"/>
+</conditions>
+<trueSet>
+<comment>Go to Setup</comment>
+<show form="Setup"/>
+</trueSet>
+</if>
+</process>
+<process name="Post-ManageSheets">
+<delete><form name="Sheet"/><conditions>
+<isBlank field="Record:Sheet:SheetName" />
+</conditions></delete>
+<if>
+<conditions>
+<mcEquals field="ManageSheets:Action" value="a"/>
+</conditions>
+<trueSet>
+<show form="Sheet"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="ManageSheets:Action" value="b"/>
+</conditions>
+<trueSet>
+<edit form="Sheet" submit="modify">
+<conditions>
+<mcEquals field="ManageSheets:SelectSheet">
+<string field="Record:Sheet:SheetName"/>
+</mcEquals>
+</conditions>
+</edit>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="ManageSheets:Action" value="c"/>
+</conditions>
+<trueSet>
+<delete><form name="Sheet"/><conditions>
+<equals field="Record:Sheet:SheetName">
+<string field="ManageSheets:SelectSheet"/>
+</equals>
+</conditions></delete>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="ManageSheets:Action" value="d"/>
+</conditions>
+<trueSet>
+<edit form="Setup" submit="modify">
+</edit>
+</trueSet>
+</if>
+<show form="ManageSheets"/>
+</process>
+<process name="Post-Setup">
+<if>
+<conditions>
+<isBlank field="Setup:Max" />
+</conditions>
+<trueSet>
+<set field="Setup:Max" arithmeticAsText="false">
+<string value="9999"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Setup:Q3" value="a"/>
+</conditions>
+<trueSet>
+<set field="Setup:Q3" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<show form="ManageSheets"/>
+</trueSet>
+<falseSet>
+<show form="Administrator"/>
+</falseSet>
+</if>
+</process>
+<process name="Post-Sheet">
+<if>
+<conditions>
+<mcContains field="Sheet:AddAnother" value="a"/>
+</conditions>
+<trueSet>
+<show form="Sheet"/>
+</trueSet>
+<falseSet>
+<show form="ManageSheets"/>
+</falseSet>
+</if>
+</process>
+<process name="Pre-Setup">
+<set field="Message" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<edit form="Setup" submit="modify">
+</edit>
+</process>
+<process name="Pre-Signup">
+<comment>- clean up</comment>
+<delete><form name="SignupSheet"/><conditions>
+<isBlank field="Record:SignupSheet:SName" />
+</conditions></delete>
+<comment>- get setup parameters necessary for this Form</comment>
+<get recordList="SetupItems">
+<forms>
+<form name="Setup"/>
+</forms>
+</get>
+<foreach record="Item" recordList="SetupItems">
+<set field="Head" arithmeticAsText="false">
+<string field="Item:Setup:Header"/>
+</set>
+<set field="Inst" arithmeticAsText="false">
+<string field="Item:Setup:Instructions"/>
+</set>
+<set field="MaxNames" arithmeticAsText="false">
+<string field="Item:Setup:Max"/>
+</set>
+</foreach>
+<comment>- calculate all the counts for all the sogn-up sheets</comment>
+<get recordList="SheetList">
+<forms>
+<form name="Sheet"/>
+</forms>
+</get>
+<foreach record="Entry" recordList="SheetList">
+<set field="Entry:Sheet:Count" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="RegistrantList">
+<forms>
+<form name="SignupSheet"/>
+</forms>
+<conditions>
+<equals field="RegistrantList:SignupSheet:SheetChosen">
+<string field="Entry:Sheet:SheetName"/>
+</equals>
+</conditions></get>
+<foreach record="Registrant" recordList="RegistrantList">
+<set field="Entry:Sheet:Count" arithmeticAsText="false">
+<add>
+<operand field="Entry:Sheet:Count"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+</foreach>
+<comment>- see if there are any sheets that are not yet filled</comment>
+<set field="Message" arithmeticAsText="false">
+<string value="Sorry, all available slots have been filled. Thank you!"/>
+</set>
+<get recordList="SheetList">
+<forms>
+<form name="Sheet"/>
+</forms>
+<conditions>
+<isLessThan field="SheetList:Sheet:Count">
+<string field="MaxNames"/>
+</isLessThan>
+</conditions></get>
+<foreach record="Entry" recordList="SheetList">
+<comment>- found at least one</comment>
+<set field="Message" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</foreach>
+</process>
+<process name="Post-Signup">
+<if>
+<conditions>
+<mcIsBlank field="SignUp:Q1" />
+</conditions>
+<trueSet>
+<show form="SignUp"/>
+</trueSet>
+<falseSet>
+<show form="SignupSheet"/>
+</falseSet>
+</if>
+</process>
+<process name="Post-SignupSheet">
+<if>
+<conditions>
+<isBlank field="SignupSheet:SName" />
+</conditions>
+<trueSet>
+<show form="SignUp"/>
+</trueSet>
+</if>
+<set field="SignupSheet:SheetChosen" arithmeticAsText="false">
+<string field="SignUp:Q1"/>
+</set>
+<get recordList="Record List 2">
+<forms>
+<form name="SignupSheet"/>
+</forms>
+<conditions>
+<and>
+<equals field="Record List 2:SignupSheet:SName">
+<string field="SignupSheet:SName"/>
+</equals>
+<doesNotEqual field="Record List 2:SignupSheet:SheetChosen">
+<string field="SignupSheet:SheetChosen"/>
+</doesNotEqual>
+</and>
+</conditions></get>
+<foreach record="SuchDuplicate" recordList="Record List 2">
+<set field="Choice" arithmeticAsText="false">
+<string field="SuchDuplicate:SignupSheet:SheetChosen"/>
+</set>
+<show form="AlreadySignedup"/>
+</foreach>
+<if>
+<conditions>
+<isNotBlank field="SignupSheet:SEMail" />
+</conditions>
+<trueSet>
+<send>
+<to addressField="SignupSheet:SEMail"/>
+<from addressField="FromEmail" aliasField="FromName"/>
+<subject><field name="Head"/> - Confirmation</subject>
+<body document="Confirmation" reset="false" showHeader="true"/>
+</send>
+</trueSet>
+</if>
+</process>
+<process name="Post-AlreadySignedUp">
+<if>
+<conditions>
+<mcEquals field="AlreadySignedup:Q1" value="a"/>
+</conditions>
+<trueSet>
+<delete><form name="SignupSheet"/><conditions>
+<and>
+<equals field="Record:SignupSheet:SheetChosen">
+<string field="Choice"/>
+</equals>
+<equals field="Record:SignupSheet:SName">
+<string field="SignupSheet:SName"/>
+</equals>
+</and>
+</conditions></delete>
+<send>
+<to addressField="SignupSheet:SEMail"/>
+<from addressField="FromEmail" aliasField="FromName"/>
+<subject><field name="Head"/> - Confirmation</subject>
+<body document="Confirmation" reset="false" showHeader="true"/>
+</send>
+</trueSet>
+<falseSet>
+<delete><form name="SignupSheet"/><conditions>
+<and>
+<equals field="Record:SignupSheet:SheetChosen">
+<string field="SignupSheet:SheetChosen"/>
+</equals>
+<equals field="Record:SignupSheet:SName">
+<string field="SignupSheet:SName"/>
+</equals>
+</and>
+</conditions></delete>
+<set field="Message" arithmeticAsText="false">
+<string value="Duplicate Signup canceled."/>
+</set>
+<show document="Message" reset="false"/>
+</falseSet>
+</if>
+</process>
+<process name="Post-DeleteRecord">
+<delete><form name="SignupSheet"/><conditions>
+<equals field="Record:SignupSheet:SName">
+<string field="Administrator:Q4"/>
+</equals>
+</conditions></delete>
+<set field="Message" arithmeticAsText="false">
+<string field="Administrator:Q4"/>
+<string value=" deleted."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Administrator"/>
+</process>
+<process name="Post-ShowSignups">
+<if>
+<conditions>
+<mcIsBlank field="ShowSignups:Q1" />
+</conditions>
+<trueSet>
+<show form="ShowSignups"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="ShowSignups:Q1" value="a"/>
+</conditions>
+<trueSet>
+<comment>View all signup sheets</comment>
+<get recordList="Record List 6">
+<forms>
+<form name="Sheet"/>
+</forms>
+</get>
+<foreach record="Sheet" recordList="Record List 6">
+<set field="Sheet:Sheet:Displayed?" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</foreach>
+<show document="ViewSignupReturn" reset="false"/>
+<get recordList="Record List 7">
+<forms>
+<form name="Sheet"/>
+</forms>
+<conditions>
+<equals field="Record List 7:Sheet:Displayed?">
+<string value="No"/>
+</equals>
+</conditions></get>
+<foreach record="Display" recordList="Record List 7">
+<set field="Display:Sheet:Displayed?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<set field="Sheet" arithmeticAsText="false">
+<string field="Display:Sheet:SheetName"/>
+</set>
+<show document="ViewSheet" reset="false"/>
+</foreach>
+<show document="ViewSignupReturn" reset="false"/>
+</trueSet>
+<falseSet>
+<comment>Search for specific player</comment>
+<if>
+<conditions>
+<mcIsBlank field="ShowSignups:Q3" />
+</conditions>
+<trueSet>
+<show form="ShowSignups"/>
+</trueSet>
+<falseSet>
+<show document="ViewSignupReturn" reset="false"/>
+<show document="ViewPlayerData" reset="false"/>
+<show document="ViewSignupReturn" reset="false"/>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</process>
+</processes>
+<documents>
+<document name="Confirmation">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>To: </font><font><field name="SignupSheet:SName"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>This email is just to confirm that you have signed up for </font><font><field name="SignupSheet:SheetChosen"/></font><font>.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Yours,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="FromName"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="FromEmail"/></font></paragraph>
+</xmlData>
+</document>
+<document name="Message">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="A80000"><b><i><field name="Message"/></i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="ViewSheet">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b><field name="Sheet"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="Name"/>
+</header><contents><field name="Record:SignupSheet:SName" /></contents></column><column><header><string value="Parent"/>
+</header><contents><field name="Record:SignupSheet:SPName" /></contents><display-conditions><equals field="AskParentName">
+<string value="Yes"/>
+</equals>
+</display-conditions></column><column><header><string value="Email"/>
+</header><contents><field name="Record:SignupSheet:SEMail" /></contents><display-conditions><equals field="AskEmail">
+<string value="Yes"/>
+</equals>
+</display-conditions></column><column><header><string value="Phone"/>
+</header><contents><field name="Record:SignupSheet:SPhone" /></contents><display-conditions><equals field="AskPhone">
+<string value="Yes"/>
+</equals>
+</display-conditions></column><column><header><string value="Desired Division"/>
+</header><contents><field name="Record:SignupSheet:SDesireDiv" /></contents><display-conditions><equals field="AskDesiredDivision">
+<string value="Yes"/>
+</equals>
+</display-conditions></column><column><header><string value="Previous Division"/>
+</header><contents><field name="Record:SignupSheet:SPrevDiv" /></contents><display-conditions><equals field="AskPreviousDivision">
+<string value="Yes"/>
+</equals>
+</display-conditions></column><column><header><string value="Age"/>
+</header><contents><field name="Record:SignupSheet:SAge" /></contents><display-conditions><equals field="AskAge">
+<string value="Yes"/>
+</equals>
+</display-conditions></column><column><header><string value="Grade"/>
+</header><contents><field name="Record:SignupSheet:SGrade" /></contents><display-conditions><equals field="AskGrade">
+<string value="Yes"/>
+</equals>
+</display-conditions></column><column><header><field name="Custom"/>
+</header><contents><field name="Record:SignupSheet:SCustom" /></contents><display-conditions><isNotBlank field="Custom" />
+</display-conditions></column><conditions><form name="SignupSheet" /><conditions>
+<equals field="Sheet">
+<string field="Record:SignupSheet:SheetChosen"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="ViewHeader">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administrator" project="">Return to Main Menu</invitation></u></font></paragraph>
+</xmlData>
+</document>
+<document name="PlayerData">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="Name"/>
+</header><contents><field name="Record:SignupSheet:SName" /></contents></column><column><header><string value="Parent"/>
+</header><contents><field name="Record:SignupSheet:SPName" /></contents><display-conditions><mcContains field="Setup:OptionParentName" value="a"/>
+</display-conditions></column><column><header><string value="Email"/>
+</header><contents><field name="Record:SignupSheet:SEMail" /></contents><display-conditions><mcContains field="Setup:OptionEmail" value="a"/>
+</display-conditions></column><column><header><string value="Phone"/>
+</header><contents><field name="Record:SignupSheet:SPhone" /></contents><display-conditions><mcContains field="Setup:OptionPhone" value="a"/>
+</display-conditions></column><column><header><string value="Desired Division"/>
+</header><contents><field name="Record:SignupSheet:SDesireDiv" /></contents><display-conditions><mcContains field="Setup:OptionDesiredDivision" value="a"/>
+</display-conditions></column><column><header><string value="Previous Division"/>
+</header><contents><field name="Record:SignupSheet:SPrevDiv" /></contents><display-conditions><mcContains field="Setup:OptionPreviousDivision" value="a"/>
+</display-conditions></column><column><header><string value="Age"/>
+</header><contents><field name="Record:SignupSheet:SAge" /></contents><display-conditions><mcContains field="Setup:OptionAge" value="a"/>
+</display-conditions></column><column><header><string value="Grade"/>
+</header><contents><field name="Record:SignupSheet:SGrade" /></contents><display-conditions><mcContains field="Setup:OptionGrade" value="a"/>
+</display-conditions></column><column><header><field name="Custom"/>
+</header><contents><field name="Record:SignupSheet:SCustom" /></contents><display-conditions><isNotBlank field="Setup:CustomQ" />
+</display-conditions></column><column><header><string value="Choice"/>
+</header><contents><field name="Record:SignupSheet:SheetChosen" /></contents></column><conditions><form name="SignupSheet" /><form name="Setup" /><conditions>
+<equals field="Record:SignupSheet:SName">
+<string field="Administrator:Q4"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="PlayerHeader">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administrator" project="">Return to Main Menu</invitation></u></font><sp/><sp/><sp/><sp/><sp/><sp/><sp/><font color="000080"><u><invitation form="DeleteRecord" project="">Delete this record</invitation></u></font></paragraph>
+</xmlData>
+</document>
+<document name="ViewSignupReturn">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="ShowSignups" project="">Return to Main Menu</invitation></u></font></paragraph>
+</xmlData>
+</document>
+<document name="ViewPlayerData">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="Name"/>
+</header><contents><field name="Record:SignupSheet:SName" /></contents></column><column><header><string value="Choice"/>
+</header><contents><field name="Record:SignupSheet:SheetChosen" /></contents></column><conditions><form name="SignupSheet" /><conditions>
+<equals field="Record:SignupSheet:SName">
+<string field="ShowSignups:Q3"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

@@ -267,6 +267,11 @@ export interface TawalaProject {
    * Persisted so File→Open can show identity without Pushing again.
    */
   deployUniqueId?: string;
+  /**
+   * Address returned by a Push on teacherexams.org. Set only after that Push
+   * succeeds. A file that merely remembers a Library address does not have this.
+   */
+  accountPushUniqueId?: string;
   /** Author / user identity who owns or acquired this project. */
   author?: string;
   authorId?: string;

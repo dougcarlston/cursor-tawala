@@ -1,3 +1,4 @@
+import { isPublicDesigner } from "@/api/accountPush";
 import { TawalaProject } from "@/types/tawala";
 
 export async function syncPreviewProject(
@@ -5,6 +6,11 @@ export async function syncPreviewProject(
   formName?: string,
   options?: { resetSession?: boolean },
 ): Promise<string> {
+  if (isPublicDesigner()) {
+    throw new Error(
+      "Preview stays on this computer. Push the project, then open it from My Tawala and use Use.",
+    );
+  }
   const res = await fetch("/api/preview", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

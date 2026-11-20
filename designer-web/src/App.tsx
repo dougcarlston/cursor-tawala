@@ -33,6 +33,7 @@ import {
   syncProjectNameFromFileName,
 } from "@/lib/shellCommands";
 import { tryOpenProjectFromQuery } from "@/lib/openFromQuery";
+import { isPublicDesigner } from "@/api/accountPush";
 import { getViewChrome, subscribeViewChrome } from "@/lib/viewChrome";
 
 const ITEMS_COLUMN_WIDTH = 76 + 1; // .designer-items + border
@@ -67,6 +68,25 @@ function savePanelWidths(left: number, right: number): void {
 }
 
 export default function App() {
+  useEffect(() => {
+    if (!isPublicDesigner()) return;
+    let cancelled = false;
+    void fetch("/home", { credentials: "same-origin", cache: "no-store" })
+      .then((res) => (res.ok ? res.text() : ""))
+      .then((html) => {
+        if (cancelled) return;
+        if (!/Welcome back,\s*<span class="userName">/.test(html)) {
+          location.replace("/login?r=" + encodeURIComponent("/app/designer/"));
+        }
+      })
+      .catch(() => {
+        /* A signed-in session check that fails stays on Designer. Push asks again. */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const openWindows = useProjectStore((s) => s.openWindows);
   const activeWindowId = useProjectStore((s) => s.activeWindowId);
   const loadTemplate = useProjectStore((s) => s.loadTemplate);

@@ -10,7 +10,7 @@ export interface StartPoint {
 
 export interface DeployResult {
   status: "success" | "failure";
-  mode?: "dev" | "java";
+  mode?: "dev" | "java" | "account";
   /** Designer display name (not necessarily the Tomcat project name). */
   project?: string;
   /** Tomcat / Node upload name — stable Redeploy key; minted on File→New first Push. */

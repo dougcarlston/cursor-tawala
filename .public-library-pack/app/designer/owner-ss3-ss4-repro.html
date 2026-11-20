@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Owner SS3/SS4 Mixed + Size bleed</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 1rem;
+        max-width: 48rem;
+      }
+      #editor {
+        border: 1px solid #888;
+        min-height: 6rem;
+        padding: 0.75rem;
+        position: relative;
+      }
+      #log {
+        white-space: pre-wrap;
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+        background: #111;
+        color: #ddd;
+        padding: 0.75rem;
+        margin-top: 1rem;
+        max-height: 28rem;
+        overflow: auto;
+      }
+      .ok {
+        color: #6d6;
+      }
+      .fail {
+        color: #f66;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Owner SS3 Mixed / SS4 Size bleed</h1>
+    <p>TNR 18 → Face Comic mid-span with field → clear → reselect → Size 26</p>
+    <div id="editor" class="rich-surface" contenteditable="true"></div>
+    <div>
+      <button type="button" id="btn-run">Run SS1→SS4</button>
+    </div>
+    <div id="log"></div>
+    <script type="module">
+      import {
+        paletteFontFace,
+        paletteFontSize,
+        readPaletteActiveState,
+        coalesceTypographicSamples,
+      } from "/src/lib/paletteCommands.ts";
+      import { setActivePaletteEditor } from "/src/lib/formattingPaletteContext.ts";
+      import { CARET_ZWSP } from "/src/lib/tokenCaretLanding.ts";
+      import {
+        bookmarkTextOffsets,
+        expandRangeToTouchedTokens,
+        rangeFromTextOffsets,
+      } from "/src/lib/selectionBookmark.ts";
+      import { MIXED_PALETTE_VALUE } from "/src/lib/paletteDefaults.ts";
+
+      const editor = document.getElementById("editor");
+      const logEl = document.getElementById("log");
+      let saved = null;
+
+      function log(msg, cls) {
+        const line = document.createElement("div");
+        if (cls) line.className = cls;
+        line.textContent = msg;
+        logEl.appendChild(line);
+      }
+
+      function chip(name) {
+        const span = document.createElement("span");
+        span.className = "field-token function-table-token";
+        span.contentEditable = "false";
+        span.dataset.fieldName = name;
+        span.textContent = `<<${name}>>`;
+        return span;
+      }
+
+      setActivePaletteEditor({
+        el: editor,
+        commit: () => {},
+        saveSelection: () => {
+          const sel = getSelection();
+          if (sel?.rangeCount) saved = sel.getRangeAt(0).cloneRange();
+        },
+        restoreSelection: () => {
+          if (!saved) return;
+          const sel = getSelection();
+          sel.removeAllRanges();
+          try {
+            sel.addRange(saved);
+          } catch {}
+        },
+      });
+
+      function build() {
+        editor.innerHTML = "";
+        const block = document.createElement("p");
+        block.className = "doc-placed-text";
+        block.style.fontSize = "18pt";
+        block.style.fontFamily = "Times New Roman";
+        block.style.width = "420px";
+        const t = (s) => block.appendChild(document.createTextNode(s));
+        t("This is an example of some test with a single field in it here: ");
+        block.appendChild(document.createTextNode(CARET_ZWSP));
+        block.appendChild(chip("_InviteeID"));
+        block.appendChild(document.createTextNode(CARET_ZWSP));
+        t(" We are trying to figure out why font size changes irrationally.");
+        editor.appendChild(block);
+        return block;
+      }
+
+      function selectExampleThroughWhy(block) {
+        const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+        let startNode = null,
+          startOff = 0,
+          endNode = null,
+          endOff = 0,
+          n;
+        while ((n = walker.nextNode())) {
+          if (n.parentElement?.closest(".field-token")) continue;
+          const i = n.data.indexOf("example");
+          if (i >= 0 && !startNode) {
+            startNode = n;
+            startOff = i;
+          }
+          const j = n.data.indexOf("why");
+          if (j >= 0) {
+            endNode = n;
+            endOff = j + 3;
+          }
+        }
+        const range = document.createRange();
+        range.setStart(startNode, startOff);
+        range.setEnd(endNode, endOff);
+        expandRangeToTouchedTokens(editor, range);
+        getSelection().removeAllRanges();
+        getSelection().addRange(range);
+        return range;
+      }
+
+      function sampleFaces(range) {
+        const faces = [];
+        const details = [];
+        const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+        let n;
+        while ((n = walker.nextNode())) {
+          if (!n.textContent?.replace(/\u00a0|\u200b/g, "").length) continue;
+          try {
+            if (!range.intersectsNode(n)) continue;
+          } catch {
+            continue;
+          }
+          if (n.parentElement?.closest(".field-token")) continue;
+          let el = n.parentElement;
+          let face = "(inherit/block)";
+          while (el && el !== editor) {
+            if (el.style?.fontFamily) {
+              face = el.style.fontFamily;
+              break;
+            }
+            if (el.classList?.contains("doc-placed-text") && el.style.fontFamily) {
+              face = "block:" + el.style.fontFamily;
+              break;
+            }
+            el = el.parentElement;
+          }
+          faces.push(face);
+          details.push({ t: n.data.slice(0, 40), face });
+        }
+        editor.querySelectorAll(".field-token").forEach((tok) => {
+          try {
+            if (!range.intersectsNode(tok)) return;
+          } catch {
+            return;
+          }
+          const cs = getComputedStyle(tok).fontFamily;
+          details.push({
+            t: "CHIP",
+            style: tok.style.fontFamily || "(none)",
+            computed: cs,
+          });
+          faces.push(tok.style.fontFamily || "(none)");
+        });
+        return { faces, details };
+      }
+
+      document.getElementById("btn-run").onclick = () => {
+        logEl.innerHTML = "";
+        const block = build();
+        const range = selectExampleThroughWhy(block);
+        const bm = bookmarkTextOffsets(editor, range);
+        log("SS1 bookmark: " + JSON.stringify(bm.text.slice(0, 80)));
+
+        paletteFontFace("Comic Sans MS");
+        log("SS2 html: " + block.innerHTML);
+
+        getSelection().removeAllRanges();
+        const re =
+          rangeFromTextOffsets(editor, bm.start, bm.end) ||
+          (() => {
+            throw new Error("reselect fail");
+          })();
+        getSelection().removeAllRanges();
+        getSelection().addRange(re);
+
+        const samples = sampleFaces(re);
+        log("SS3 samples: " + JSON.stringify(samples.details, null, 2));
+        const state = readPaletteActiveState();
+        log(
+          "SS3 palette face=" + JSON.stringify(state.fontFace) + " size=" + state.fontSize,
+          state.fontFace && state.fontFace !== MIXED_PALETTE_VALUE ? "ok" : "fail",
+        );
+
+        // Capture outside faces
+        const leftText = [...block.childNodes].find(
+          (c) => c.nodeType === 3 && c.data.includes("This is an"),
+        );
+        const rightText = [...block.childNodes].find(
+          (c) => c.nodeType === 3 && c.data.includes("irrationally"),
+        );
+        log(
+          "before Size left=" +
+            JSON.stringify(leftText?.data?.slice(0, 20)) +
+            " right=" +
+            JSON.stringify(rightText?.data?.slice(0, 40)),
+        );
+
+        paletteFontSize("26");
+        log("SS4 html: " + block.innerHTML);
+
+        const leftAfter = [...block.childNodes].find(
+          (c) => c.nodeType === 3 && c.data.includes("This is"),
+        );
+        const rightAfter = [...block.childNodes].find(
+          (c) => c.nodeType === 3 && (c.data.includes("irrationally") || c.data.includes("font size")),
+        );
+        log(
+          "SS4 left text node: " + JSON.stringify(leftAfter?.data) +
+            " parentFace=" +
+            (leftAfter?.parentElement?.style?.fontFamily || leftAfter?.parentElement?.className),
+        );
+        log(
+          "SS4 right text node: " + JSON.stringify(rightAfter?.data) +
+            " parentFace=" +
+            (rightAfter?.parentElement?.style?.fontFamily || "none/" + rightAfter?.parentElement?.className),
+        );
+
+        // Mid-word fragments?
+        const frags = [];
+        const w = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+        let tn;
+        while ((tn = w.nextNode())) {
+          if (tn.parentElement?.closest(".field-token")) continue;
+          if (!tn.data || tn.data === CARET_ZWSP) continue;
+          if (/^(exa|mple|fig|ure)/.test(tn.data) || tn.data === "exa" || tn.data === "mple") {
+            frags.push({
+              data: tn.data.slice(0, 30),
+              ff: tn.parentElement?.style?.fontFamily || "",
+              fs: tn.parentElement?.style?.fontSize || "",
+            });
+          }
+        }
+        log("mid-word frags: " + JSON.stringify(frags));
+
+        const afterState = readPaletteActiveState();
+        log("SS4 palette face=" + afterState.fontFace + " size=" + afterState.fontSize);
+      };
+
+      // auto-run
+      document.getElementById("btn-run").click();
+    </script>
+  </body>
+</html>

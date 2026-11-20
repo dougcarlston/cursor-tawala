@@ -2029,8 +2029,29 @@
       }
       return (
         `<button type="button" class="pm-action is-active" ` +
-        `title="${escapeHtml(op.title || op.label)}" ` +
+        `title="${escapeHtml(options.deployVersionTitle || op.title || op.label)}" ` +
         `data-op="${escapeHtml(op.id || op.label)}" data-wired="deploy-version" ` +
+        `data-project="${escapeHtml(projectId || "")}">${escapeHtml(op.label)}</button>`
+      );
+    }
+    if (
+      options.publicVersions &&
+      (op.confirmId === "deleteversion" || op.confirmId === "deleteselected")
+    ) {
+      const selected = op.confirmId === "deleteselected";
+      const enabled = selected ? !!options.deleteSelectedEnabled : !!options.deleteVersionEnabled;
+      const wired = selected ? "delete-selected-versions" : "delete-version";
+      const title = enabled
+        ? (selected
+          ? "Delete the checked versions. The live form stays."
+          : "Delete the checked version. The live form stays.")
+        : (selected
+          ? "Check the versions to delete. The live one cannot be checked."
+          : "Check one older version. The live form stays.");
+      return (
+        `<button type="button" class="pm-action${enabled ? " is-active" : ""}" ` +
+        `${enabled ? "" : "disabled "}title="${escapeHtml(title)}" ` +
+        `data-op="${escapeHtml(op.id || op.label)}" data-wired="${wired}" ` +
         `data-project="${escapeHtml(projectId || "")}">${escapeHtml(op.label)}</button>`
       );
     }
@@ -2055,6 +2076,7 @@
   }
 
   function versionIsRedeployable(v) {
+    if (v && v.javaVersionId) return true;
     if (
       typeof TawalaTransfer !== "undefined" &&
       typeof TawalaTransfer.versionHasRedeployableDefinition === "function"
@@ -2117,18 +2139,28 @@
     const btn = host.querySelector && host.querySelector('[data-wired="deploy-version"]');
     if (!btn) return;
     const projectId = btn.dataset.project || "";
-    const project =
-      (projectId &&
-        typeof TawalaDemo !== "undefined" &&
-        TawalaDemo.getMyTawala &&
-        TawalaDemo.getMyTawala(projectId)) ||
-      null;
+    const project = resolveMyTawalaProject(projectId);
+    if (project && project.publicAccount) {
+      const checked = checkedPublicVersionRows(project, host);
+      const version = checked.length === 1 ? checked[0] : null;
+      const enabled = !!(version && deployVersionEnabledForSelection(project, version));
+      btn.disabled = !enabled;
+      btn.classList.toggle("is-active", enabled);
+      btn.title = enabled
+        ? "Make this version the live form. The address stays the same."
+        : checked.length > 1
+          ? "Check only one version to make it the live form."
+          : "Check one older version to make it the live form.";
+      return;
+    }
     const version = getSelectedVersionRow(project, host);
     const enabled = deployVersionEnabledForSelection(project, version);
     btn.disabled = !enabled;
     if (enabled) {
       btn.classList.add("is-active");
-      btn.title = "Make this version the active deployed definition on :8080 (same uniqueId)";
+      btn.title = project && project.publicAccount
+        ? "Make this version the live form. The address stays the same."
+        : "Make this version the active deployed definition on :8080 (same uniqueId)";
     } else {
       btn.classList.remove("is-active");
       if (version && !versionIsRedeployable(version)) {
@@ -2138,6 +2170,60 @@
       } else {
         btn.title = "Select a non-current version that has a saved definition snapshot";
       }
+    }
+  }
+
+  function checkedDeletableVersionIds(project, host) {
+    if (!project || !project.publicAccount) return [];
+    const allowed = new Set(
+      projectVersionRows(project)
+        .filter((v) => v && v.javaVersionId && deployVersionEnabledForSelection(project, v))
+        .map((v) => String(v.javaVersionId))
+    );
+    const scope = host || document.getElementById("pmDetailHost") || document;
+    return [...scope.querySelectorAll("input.pm-version-check:checked")]
+      .map((el) => String(el.value || ""))
+      .filter((id) => allowed.has(id));
+  }
+
+  function checkedPublicVersionRows(project, host) {
+    if (!project || !project.publicAccount) return [];
+    const ids = new Set(checkedDeletableVersionIds(project, host));
+    return projectVersionRows(project).filter((v) => v && ids.has(String(v.javaVersionId)));
+  }
+
+  function singleCheckedPublicVersion(project, host) {
+    const rows = checkedPublicVersionRows(project, host);
+    return rows.length === 1 ? rows[0] : null;
+  }
+
+  function syncDeleteVersionChips(root) {
+    const host = root || document.getElementById("pmDetailHost") || document;
+    const deleteBtn = host.querySelector && host.querySelector('[data-wired="delete-version"]');
+    const selectedBtn = host.querySelector && host.querySelector('[data-wired="delete-selected-versions"]');
+    if (!deleteBtn && !selectedBtn) return;
+    const projectId = (deleteBtn || selectedBtn).dataset.project || "";
+    const project = resolveMyTawalaProject(projectId);
+    const checked = checkedPublicVersionRows(project, host);
+    const oneVersion = checked.length === 1 ? checked[0] : null;
+    const one = !!(oneVersion && deployVersionEnabledForSelection(project, oneVersion));
+    const many = checkedDeletableVersionIds(project, host);
+    if (deleteBtn) {
+      deleteBtn.disabled = !one;
+      deleteBtn.classList.toggle("is-active", one);
+      deleteBtn.title = one
+        ? "Delete the checked version. The live form stays."
+        : checked.length > 1
+          ? "Check only one version, or use Delete Selected Items."
+          : "Check one older version. The live form stays.";
+    }
+    if (selectedBtn) {
+      const enabled = many.length > 0;
+      selectedBtn.disabled = !enabled;
+      selectedBtn.classList.toggle("is-active", enabled);
+      selectedBtn.title = enabled
+        ? "Delete the checked versions. The live form stays."
+        : "Check the versions to delete. The live one cannot be checked.";
     }
   }
 
@@ -2152,16 +2238,30 @@
     const defaultSelected =
       rows.find((v) => currentNum != null && Number(v.versionNumber) === currentNum) || rows[0] || null;
     const deployEnabled = deployVersionEnabledForSelection(project, defaultSelected);
+    const liveTitle = project.publicAccount
+      ? "Make this version the live form. The address stays the same."
+      : "Make this version the active deployed definition on :8080 (same uniqueId)";
     const chips =
       '<div class="pm-chip-row">' +
       VERSION_OPS.map((op) =>
         sectionChip(op, project.id, {
           deployVersionEnabled: deployEnabled,
+          publicVersions: !!project.publicAccount,
+          deleteVersionEnabled: !!(
+            project.publicAccount &&
+            defaultSelected &&
+            deployVersionEnabledForSelection(project, defaultSelected)
+          ),
+          deleteSelectedEnabled: false,
           deployVersionTitle: deployEnabled
-            ? undefined
+            ? liveTitle
             : defaultSelected && !versionIsRedeployable(defaultSelected)
-              ? NO_VERSION_SNAPSHOT_MSG
-              : "Select a non-current version that has a saved definition snapshot",
+              ? (project.publicAccount
+                ? "Check one older version to make it the live form."
+                : NO_VERSION_SNAPSHOT_MSG)
+              : (project.publicAccount
+                ? "Check one older version to make it the live form."
+                : "Select a non-current version that has a saved definition snapshot"),
         })
       ).join("") +
       "</div>";
@@ -2177,16 +2277,22 @@
         const statusBits = [];
         if (isCurrent) statusBits.push("Current");
         if (isDeployed) statusBits.push("Deployed");
-        if (!hasSnap) statusBits.push("No snapshot");
+        if (!hasSnap && !project.publicAccount) statusBits.push("No snapshot");
         const status = statusBits.length ? statusBits.join(" · ") : "—";
         const descRaw = ownerFacingVersionDescription(v.description);
         return (
           `<tr class="${isCurrent ? "pm-version-current" : ""}" data-version-number="${escapeHtml(String(num))}" ` +
           `data-has-snapshot="${hasSnap ? "1" : "0"}">` +
           `<td class="pm-version-pick">` +
-          `<input type="radio" name="pmVersionPick" value="${escapeHtml(String(num))}" ` +
-          `${isCurrent ? "checked " : ""}` +
-          `aria-label="Select version ${escapeHtml(String(num))}" />` +
+          (project.publicAccount
+            ? (!isCurrent && v.javaVersionId
+              ? `<input type="checkbox" class="pm-version-check" value="${escapeHtml(String(v.javaVersionId))}" ` +
+                `data-version-number="${escapeHtml(String(num))}" ` +
+                `aria-label="Choose version ${escapeHtml(String(num))}" />`
+              : "")
+            : `<input type="radio" name="pmVersionPick" value="${escapeHtml(String(num))}" ` +
+              `${isCurrent ? "checked " : ""}` +
+              `aria-label="Select version ${escapeHtml(String(num))}" />`) +
           `</td>` +
           `<td class="pm-version-num">${escapeHtml(String(num))}</td>` +
           `<td class="pm-version-desc">` +
@@ -2226,6 +2332,44 @@
     const prev = String(input.dataset.savedValue != null ? input.dataset.savedValue : input.defaultValue || "").trim();
     if (next === prev) {
       input.value = next;
+      return;
+    }
+    if (window.TAWALA_PUBLIC_SITE) {
+      const project = accountProject(projectId);
+      const name = project && project.name ? String(project.name) : "";
+      if (!name) {
+        setStatus("Couldn’t save the version note.");
+        input.value = prev;
+        return;
+      }
+      const body = new URLSearchParams();
+      body.set("projectName", name);
+      body.set("action", "VersionNote");
+      body.set("versionNote", next);
+      body.set("versionNumber", String(versionNumber));
+      void fetch("/projectmanager/projectdetail", {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        redirect: "follow",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body: body.toString(),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            input.value = prev;
+            setStatus("The version note was not saved.");
+            return;
+          }
+          input.value = next;
+          input.dataset.savedValue = next;
+          input.defaultValue = next;
+          setStatus("Saved the note for version " + versionNumber + ".");
+        })
+        .catch(() => {
+          input.value = prev;
+          setStatus("The version note was not saved.");
+        });
       return;
     }
     if (
@@ -4253,9 +4397,10 @@
       ? `<dd class="pm-version-desc">${escapeHtml(versionDesc)}</dd>`
       : `<dd class="pm-version-desc pm-version-desc-empty"></dd>`;
 
-    const themeTitle =
-      `Theme: ${themeLabelForPath(themePath)} (${themePath}). ` +
-      "Changing Theme saves on My Tawala and Pushes CSS to :8080 when a live definition exists.";
+    const themeTitle = project.publicAccount
+      ? `Theme: ${themeLabelForPath(themePath)}. The form uses this theme the next time it is opened.`
+      : `Theme: ${themeLabelForPath(themePath)} (${themePath}). ` +
+        "Changing Theme saves on My Tawala and Pushes CSS to :8080 when a live definition exists.";
 
     return (
       `<div class="pm-identity-rail" id="pmIdentityRail" data-theme-path="${escapeHtml(themePath)}">` +
@@ -4528,7 +4673,71 @@
 
   async function applyThemeSelection(projectId, themePath) {
     if (window.TAWALA_PUBLIC_SITE) {
-      setStatus("Theme on the public site is not changed from this page yet.");
+      const project = accountProject(projectId);
+      const name = project && project.name ? String(project.name) : "";
+      const path = String(themePath || "").trim();
+      const sel = document.querySelector(
+        'select[data-wired="theme-select"][data-project="' + projectId + '"]'
+      );
+      const rail = document.getElementById("pmIdentityRail");
+      const previous = rail ? rail.getAttribute("data-theme-path") || "" : "";
+      if (!name || !path) {
+        setStatus("Select a project before changing its theme.");
+        if (sel && previous) sel.value = previous;
+        return;
+      }
+      setStatus("Saving theme…");
+      const body = new URLSearchParams();
+      body.set("projectName", name);
+      body.set("action", "Theme");
+      body.set("theme", path);
+      let res;
+      try {
+        res = await fetch("/projectmanager/projectdetail", {
+          method: "POST",
+          credentials: "same-origin",
+          cache: "no-store",
+          redirect: "follow",
+          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+          body: body.toString(),
+        });
+      } catch (e) {
+        if (sel && previous) sel.value = previous;
+        setStatus("The theme was not changed.");
+        return;
+      }
+      let landed = "";
+      try {
+        landed = new URL(res.url, location.origin).pathname;
+      } catch (e) {
+        landed = "";
+      }
+      if (/\/login$/.test(landed)) {
+        location.assign("/login?r=" + encodeURIComponent(location.pathname + location.search));
+        return;
+      }
+      if (!res.ok) {
+        if (sel && previous) sel.value = previous;
+        setStatus(
+          res.status === 400
+            ? "That theme is not available on this site."
+            : "The theme was not changed."
+        );
+        return;
+      }
+      if (project) project.themePath = path;
+      if (rail) rail.setAttribute("data-theme-path", path);
+      if (sel) {
+        sel.title =
+          "Theme: " +
+          themeLabelForPath(path) +
+          ". The form uses this theme the next time it is opened.";
+      }
+      setStatus(
+        "Theme set to " +
+          themeLabelForPath(path) +
+          ". Open the form again to see it."
+      );
       return;
     }
     if (!projectId || !themePath) return;
@@ -8065,6 +8274,151 @@
   }
 
   /**
+   * Rename the account project. The address and the stored responses stay.
+   * Another project on this account may not already use the name.
+   */
+  function openPublicRenameDialog(sourceName) {
+    const prior = document.getElementById("tawalaRenameModal");
+    if (prior) prior.remove();
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = "tawalaRenameModal";
+    backdrop.innerHTML =
+      '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="renameAccountTitle">' +
+      '<h3 id="renameAccountTitle">Rename</h3>' +
+      `<p class="pm-hint tawala-modal-lede">Rename “${escapeHtml(sourceName)}”. ` +
+      "The address and the responses stay with this project.</p>" +
+      '<div class="tawala-modal-body">' +
+      '<label class="tawala-modal-field" for="renameAccountName">Project name' +
+      `<input type="text" id="renameAccountName" maxlength="100" value="${escapeHtml(sourceName)}" autocomplete="off" />` +
+      "</label>" +
+      '<p class="pm-hint tawala-modal-hint-tight">The name has to be new on this account. A name another project already has is refused.</p>' +
+      '<p class="pm-hint" id="renameAccountError" role="alert" style="display:none;"></p>' +
+      "</div>" +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action" id="renameAccountCancel">Cancel</button>' +
+      '<button type="button" class="pm-action is-active" id="renameAccountConfirm">Rename</button>' +
+      "</div></div>";
+    document.body.appendChild(backdrop);
+    const nameInput = backdrop.querySelector("#renameAccountName");
+    const errEl = backdrop.querySelector("#renameAccountError");
+    function showErr(msg) {
+      if (!errEl) return;
+      errEl.textContent = msg || "";
+      errEl.style.display = msg ? "" : "none";
+    }
+    function closeDialog() {
+      backdrop.remove();
+      document.removeEventListener("keydown", onKey, true);
+    }
+    function onKey(ev) {
+      if (ev.key === "Escape") closeDialog();
+    }
+    async function confirmRename() {
+      const nameVal = nameInput.value.replace(/\s+/g, " ").trim();
+      if (!nameVal) {
+        showErr("Enter a project name.");
+        nameInput.focus();
+        return;
+      }
+      if (nameVal === sourceName) {
+        closeDialog();
+        return;
+      }
+      if (backdrop.dataset.renaming === "1") return;
+      backdrop.dataset.renaming = "1";
+      const confirmBtn = backdrop.querySelector("#renameAccountConfirm");
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Renaming…";
+      }
+      showErr("");
+      const body = new URLSearchParams();
+      body.set("projectName", sourceName);
+      body.set("action", "Rename");
+      body.set("newName", nameVal);
+      let res;
+      try {
+        res = await fetch("/projectmanager/projectdetail", {
+          method: "POST",
+          credentials: "same-origin",
+          cache: "no-store",
+          redirect: "follow",
+          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+          body: body.toString(),
+        });
+      } catch (e) {
+        delete backdrop.dataset.renaming;
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Rename";
+        }
+        showErr("The project was not renamed.");
+        return;
+      }
+      let path = "";
+      try {
+        path = new URL(res.url, location.origin).pathname;
+      } catch (e) {
+        path = "";
+      }
+      if (/\/login$/.test(path)) {
+        location.assign("/login?r=" + encodeURIComponent(location.pathname + location.search));
+        return;
+      }
+      if (res.status === 409) {
+        delete backdrop.dataset.renaming;
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Rename";
+        }
+        showErr("This account already has a project with that name. Choose another.");
+        nameInput.focus();
+        return;
+      }
+      if (!res.ok) {
+        delete backdrop.dataset.renaming;
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Rename";
+        }
+        showErr("The project was not renamed.");
+        return;
+      }
+      closeDialog();
+      let nextName = nameVal;
+      try {
+        const landed = new URL(res.url, location.origin);
+        nextName =
+          landed.searchParams.get("name") ||
+          landed.searchParams.get("projectName") ||
+          nameVal;
+      } catch (e) {
+        nextName = nameVal;
+      }
+      location.assign(
+        "/app/mytawala-project.html?name=" +
+          encodeURIComponent(nextName) +
+          "&v=20261120-vercheck1"
+      );
+    }
+    document.addEventListener("keydown", onKey, true);
+    backdrop.addEventListener("click", (ev) => {
+      if (ev.target === backdrop) closeDialog();
+    });
+    backdrop.querySelector("#renameAccountCancel").addEventListener("click", closeDialog);
+    backdrop.querySelector("#renameAccountConfirm").addEventListener("click", confirmRename);
+    nameInput.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        confirmRename();
+      }
+    });
+    nameInput.focus();
+    nameInput.select();
+  }
+
+  /**
    * Fork a project already on this account. The name must be new.
    * Responses stay on the original unless the box is checked.
    */
@@ -8199,7 +8553,7 @@
       location.assign(
         "/app/mytawala-project.html?name=" +
           encodeURIComponent(nextName) +
-          "&v=20261120-makecopy1"
+          "&v=20261120-vercheck1"
       );
     }
     document.addEventListener("keydown", onKey, true);
@@ -8232,6 +8586,17 @@
     const formScope = btn.dataset.dataScope === "form" && btn.dataset.formName
       ? String(btn.dataset.formName)
       : "";
+
+    if (wired === "rename-project" || op === "rename") {
+      ev.preventDefault();
+      const sourceName = publicProjectName(projectId, btn) || name;
+      if (!sourceName) {
+        setStatus("Select a project to rename.");
+        return true;
+      }
+      openPublicRenameDialog(sourceName);
+      return true;
+    }
 
     if (wired === "make-copy-mytawala" || op === "make-copy") {
       ev.preventDefault();
@@ -8297,6 +8662,123 @@
       void postAccountAction(name, "Delete")
         .then((done) => {
           if (done) location.assign("/app/mytawala.html");
+        })
+        .finally(() => {
+          accountActionBusy = false;
+        });
+      return true;
+    }
+
+    if (wired === "deploy-version") {
+      ev.preventDefault();
+      if (!name || accountActionBusy) return true;
+      const project = accountProject(projectId);
+      const host = document.getElementById("pmDetailHost") || document;
+      const version = singleCheckedPublicVersion(project, host);
+      if (!version || !version.javaVersionId || !deployVersionEnabledForSelection(project, version)) {
+        setStatus("Check one older version. The live form stays as it is.");
+        return true;
+      }
+      const ok = window.confirm(
+        "Make version " + version.versionNumber + " the live form of “" + name + "”?\n\n" +
+          "The address stays the same. Responses stay. The form and its theme become the ones from that version. This does not add a new version.\n\n" +
+          "Answers collected on a newer form may not match this older one."
+      );
+      if (!ok) return true;
+      accountActionBusy = true;
+      void postAccountAction(name, "Deploy", { project_version: version.javaVersionId })
+        .then((done) => {
+          if (done) location.reload();
+        })
+        .finally(() => {
+          accountActionBusy = false;
+        });
+      return true;
+    }
+
+    if (wired === "delete-version") {
+      ev.preventDefault();
+      if (!name || accountActionBusy) return true;
+      const project = accountProject(projectId);
+      const host = document.getElementById("pmDetailHost") || document;
+      const version = singleCheckedPublicVersion(project, host);
+      if (!version || !version.javaVersionId || !deployVersionEnabledForSelection(project, version)) {
+        setStatus("Check one older version. The live form stays.");
+        return true;
+      }
+      const ok = window.confirm(
+        "Delete version " + version.versionNumber + " of “" + name + "”?\n\n" +
+          "The live form stays. This version is removed, and its number is not reused."
+      );
+      if (!ok) return true;
+      accountActionBusy = true;
+      void postAccountAction(name, "deleteversion", { project_version: version.javaVersionId })
+        .then((done) => {
+          if (done) location.reload();
+        })
+        .finally(() => {
+          accountActionBusy = false;
+        });
+      return true;
+    }
+
+    if (wired === "delete-selected-versions") {
+      ev.preventDefault();
+      if (!name || accountActionBusy) return true;
+      const project = accountProject(projectId);
+      const host = document.getElementById("pmDetailHost") || document;
+      const ids = checkedDeletableVersionIds(project, host);
+      if (!ids.length) {
+        setStatus("Check the versions to delete. The live one cannot be checked.");
+        return true;
+      }
+      const ok = window.confirm(
+        "Delete " + ids.length + " version" + (ids.length === 1 ? "" : "s") + " of “" + name + "”?\n\n" +
+          "The live form stays. These versions are removed, and their numbers are not reused."
+      );
+      if (!ok) return true;
+      accountActionBusy = true;
+      const body = new URLSearchParams();
+      ids.forEach((id) => body.append("version_id", id));
+      void fetch("/projectmanager/delete-multiple-versions", {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body: body.toString(),
+      })
+        .then((res) => {
+          if (res.url && /\/login(?:\?|$)/.test(res.url)) {
+            location.assign(res.url);
+            return;
+          }
+          if (!res.ok) {
+            setStatus("Those versions were not deleted (" + res.status + ").");
+            return;
+          }
+          location.reload();
+        })
+        .catch(() => {
+          setStatus("Those versions were not deleted.");
+        })
+        .finally(() => {
+          accountActionBusy = false;
+        });
+      return true;
+    }
+
+    if (wired === "activate-project" || wired === "deactivate-project") {
+      ev.preventDefault();
+      if (!name || accountActionBusy) return true;
+      const offline = wired === "deactivate-project";
+      const question = offline
+        ? "De-activate “" + name + "”?\n\nThe live form shows an offline page. The project stays on My Tawala, and the responses stay."
+        : "Activate “" + name + "”?\n\nThe live form opens again.";
+      if (!window.confirm(question)) return true;
+      accountActionBusy = true;
+      void postAccountAction(name, "Offline", { offline: offline ? "1" : "0" })
+        .then((done) => {
+          if (done) location.reload();
         })
         .finally(() => {
           accountActionBusy = false;
@@ -8428,6 +8910,8 @@
         wired === "deactivate-project" ||
         wired === "activate-project" ||
         wired === "deploy-version" ||
+        wired === "delete-version" ||
+        wired === "delete-selected-versions" ||
         wired === "rename-project" ||
         wired === "make-copy-mytawala" ||
         wired === "publish-mytawala" ||
@@ -8893,6 +9377,12 @@
         ev.target.closest && ev.target.closest('h2.pm-detail-title[data-wired="rename-project"]');
       if (title) {
         ev.preventDefault();
+        if (window.TAWALA_PUBLIC_SITE) {
+          const sourceName = publicProjectName(title.dataset.project || "", title);
+          if (sourceName) openPublicRenameDialog(sourceName);
+          else setStatus("Select a project to rename.");
+          return;
+        }
         openRenameDialog(title.dataset.project || "");
         return;
       }
@@ -8916,6 +9406,12 @@
         ev.target.closest && ev.target.closest('h2.pm-detail-title[data-wired="rename-project"]');
       if (title && ev.key === "Enter" && ev.target === title) {
         ev.preventDefault();
+        if (window.TAWALA_PUBLIC_SITE) {
+          const sourceName = publicProjectName(title.dataset.project || "", title);
+          if (sourceName) openPublicRenameDialog(sourceName);
+          else setStatus("Select a project to rename.");
+          return;
+        }
         openRenameDialog(title.dataset.project || "");
         return;
       }
@@ -8949,13 +9445,22 @@
       const input = ev.target.closest && ev.target.closest(".pm-version-desc-input");
       if (input) saveVersionDescriptionFromInput(input);
       if (ev.target && ev.target.name === "pmVersionPick") {
-        syncDeployVersionChip(document.getElementById("pmDetailHost") || scope);
+        const host = document.getElementById("pmDetailHost") || scope;
+        syncDeployVersionChip(host);
+        syncDeleteVersionChips(host);
+      }
+      if (ev.target && ev.target.classList && ev.target.classList.contains("pm-version-check")) {
+        const host = document.getElementById("pmDetailHost") || scope;
+        syncDeployVersionChip(host);
+        syncDeleteVersionChips(host);
       }
     });
     scope.addEventListener("click", (ev) => {
       /* Radios sometimes fire click without change when re-selecting; keep chip in sync. */
       if (ev.target && ev.target.name === "pmVersionPick") {
-        syncDeployVersionChip(document.getElementById("pmDetailHost") || scope);
+        const host = document.getElementById("pmDetailHost") || scope;
+        syncDeployVersionChip(host);
+        syncDeleteVersionChips(host);
       }
     });
     scope.addEventListener("keydown", (ev) => {

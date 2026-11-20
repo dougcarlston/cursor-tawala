@@ -1,0 +1,82 @@
+{
+  "name": "sum-smoke-test",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "Sum Entries",
+      "startPoint": true,
+      "themePath": "default",
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "SUM Smoke Test — Enter Amount"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Enter a whole number and Submit. Use the Back link to add two or three stored responses, then open the separate View Total start point."
+        },
+        {
+          "type": "fib",
+          "label": "FIB1",
+          "style": "topLabels",
+          "prompt": "Amount: ______",
+          "blanks": [
+            {
+              "name": "a",
+              "alternateLabel": "Amount",
+              "length": 6,
+              "height": 1,
+              "required": true
+            }
+          ]
+        }
+      ],
+      "process": "Process 1"
+    },
+    {
+      "name": "View Total",
+      "startPoint": true,
+      "themePath": "default",
+      "preProcess": "Show Total",
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "This form is only a start point for opening the Total Report document."
+        }
+      ]
+    }
+  ],
+  "processes": [
+    {
+      "name": "Show Total",
+      "commands": [
+        {
+          "cmd": "show",
+          "document": "Total Report"
+        }
+      ]
+    },
+    {
+      "name": "Process 1",
+      "commands": [
+        {
+          "cmd": "show",
+          "form": "Sum Entries"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Total Report",
+      "content": "<p class=\"doc-placed-text\" style=\"position: absolute; left: 36pt; top: 36pt;\">SUM Smoke Test</p><p class=\"doc-placed-text\" style=\"position: absolute; left: 36pt; top: 72pt;\">Stored total: <span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"sum\" data-function-instance=\"1\" data-function-config=\"{&quot;field&quot;:&quot;Sum Entries:Amount&quot;,&quot;conditionsRows&quot;:[],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SUM\">&lt;&lt;SUM(Sum Entries:Amount)&gt;&gt;</span></p>"
+    }
+  ]
+}

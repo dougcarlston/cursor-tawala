@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { isPublicDesigner } from "@/api/accountPush";
 import { useProjectStore } from "@/store/projectStore";
 import { summarizePreservedGaps } from "@/lib/preservedImportGaps";
 
@@ -12,6 +13,10 @@ export function StatusBar() {
   const gapSummary = useMemo(() => summarizePreservedGaps(project), [project]);
 
   useEffect(() => {
+    if (isPublicDesigner()) {
+      setRuntime("java");
+      return;
+    }
     fetch("/api/health")
       .then((r) => r.json())
       .then((d) => setRuntime(d.runtime === "java" ? "java" : "dev"))

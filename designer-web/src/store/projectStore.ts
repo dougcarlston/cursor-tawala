@@ -40,6 +40,7 @@ import {
 import { parentPathAndChildIndex, ROOT_INSERT_PATH } from "@/lib/skipInsertPath";
 import { DeployCredentials, DeployResult, loadCredentials, saveCredentials } from "@/api/deploy";
 import { deployProject as apiDeploy } from "@/api/deploy";
+import { deploySignedInProject, isPublicDesigner } from "@/api/accountPush";
 import { getGlobalAuthUser } from "@/lib/clerkAuth";
 import type { ProcessStatementPanel } from "@/processStatements";
 import { processPanelKeyForCommand, processPanelKeyForLabel } from "@/processStatements";
@@ -1904,6 +1905,39 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   deploy: async () => {
     const { project, credentials } = get();
+    if (isPublicDesigner()) {
+      set({ statusMessage: "Pushing…" });
+      try {
+        const result = await deploySignedInProject(project);
+        if (result.status === "failure") {
+          set({
+            lastDeploy: { ...result, project: project.name },
+            showDeployResult: true,
+            statusMessage: `Push failed: ${result.error}`,
+          });
+          return;
+        }
+        const nextProject = {
+          ...project,
+          deployIdentityName: result.deployIdentityName || project.deployIdentityName,
+          deployUniqueId: result.uniqueId,
+          accountPushUniqueId: result.uniqueId,
+        };
+        const idBit = result.uniqueId ? ` · uniqueId ${result.uniqueId}` : "";
+        set({
+          project: nextProject,
+          lastDeploy: result,
+          showDeployResult: true,
+          dirty: true,
+          statusMessage: result.identityMinted
+            ? `Pushed ${project.name} as ${result.deployIdentityName}${idBit}`
+            : `Pushed ${project.name}${idBit}`,
+        });
+      } catch (e) {
+        set({ statusMessage: `Push error: ${e instanceof Error ? e.message : String(e)}` });
+      }
+      return;
+    }
     const authUser = getGlobalAuthUser();
     const effectiveCredentials = credentials || (authUser ? { user: authUser.primaryEmail || authUser.id, password: "clerk-auth" } : null);
     if (!effectiveCredentials) {

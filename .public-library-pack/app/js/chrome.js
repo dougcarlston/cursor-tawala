@@ -265,7 +265,7 @@
 
   /** Guest taste My Tawala; logged-in users get the real private pile. */
   function myTawalaHref() {
-    if (isPublicSite()) return "/app/mytawala.html?v=20261120-makecopy1";
+    if (isPublicSite()) return "/app/mytawala.html?v=20261120-theme1";
     return isLoggedIn() ? "mytawala.html" : "mytawala-demo.html";
   }
 
@@ -324,7 +324,8 @@
   function resolveHref(key) {
     if (key === "mytawala") return myTawalaHref();
     if (isPublicSite() && key === "home") return "/home";
-    if (isPublicSite() && key === "library") return "/app/library.html?v=20261120-admin12";
+    if (isPublicSite() && key === "library") return "/app/library.html?v=20261120-theme1";
+    if (isPublicSite() && key === "designer") return "/app/designer/";
     const item = LINKS[key];
     return item ? item.href : "#";
   }
@@ -338,12 +339,15 @@
       return `<span class="link-pending" aria-disabled="true"${title}>${text}</span>`;
     }
     const target =
-      item.target === "_blank" ? ' target="_blank" rel="noopener"' : "";
+      item.target === "_blank" && !(isPublicSite() && key === "designer")
+        ? ' target="_blank" rel="noopener"'
+        : "";
     return `<a href="${resolveHref(key)}"${target}>${text}</a>`;
   }
 
   function renderNav(activePage) {
     return NAV_ORDER.map((key) => {
+      if (isPublicSite() && key === "designer" && !isLoggedIn()) return "";
       const item = LINKS[key];
       const selected =
         key === activePage ||
@@ -353,7 +357,9 @@
         return `<li class="${selected ? "selected" : ""}"><span class="link-pending" aria-disabled="true">${item.label}</span></li>`;
       }
       const target =
-        item.target === "_blank" ? ' target="_blank" rel="noopener"' : "";
+        item.target === "_blank" && !(isPublicSite() && key === "designer")
+          ? ' target="_blank" rel="noopener"'
+          : "";
       return `<li class="${selected ? "selected" : ""}"><a href="${resolveHref(key)}"${target}${selected ? ' aria-current="page"' : ""}>${item.label}</a></li>`;
     }).join("\n          ");
   }

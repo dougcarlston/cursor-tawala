@@ -1,0 +1,3098 @@
+{
+  "name": "SignupSheets",
+  "format": "2.0",
+  "themePath": "mvsc",
+  "_originalFormat": "1.13",
+  "_designerBuild": "228",
+  "_convertedFrom": "designer-web/public/samples/legacy/SignupSheets.tawala.xml",
+  "forms": [
+    {
+      "name": "Setup",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Setup"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "bold",
+                      "nodes": [
+                        {
+                          "type": "italic",
+                          "nodes": [
+                            {
+                              "type": "field",
+                              "name": "Message"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "color": "#A40000"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "topLabels",
+          "prompt": "Header for all Signup Sheets:",
+          "blanks": [
+            {
+              "name": "Header",
+              "length": 61,
+              "alternateLabel": "Header"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "topLabels",
+          "prompt": "Instructions to appear at top of all Signup Sheets:",
+          "blanks": [
+            {
+              "name": "Instructions",
+              "length": 61,
+              "alternateLabel": "Instructions",
+              "height": 5
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "text",
+                      "text": "Individual Signup Sheet Names: "
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": []
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 720,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "itemizationTable",
+                      "version": 2,
+                      "form": "Sheet",
+                      "columns": [
+                        {
+                          "header": "Signup Sheets",
+                          "field": "Record:Sheet:SheetName"
+                        }
+                      ]
+                    }
+                  ],
+                  "face": "Arial",
+                  "size": 10,
+                  "color": "#000000"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "check here to add,edit or delete signup sheets"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "topLabels",
+          "prompt": "Max signups per sheet (leave blank if no limit):",
+          "blanks": [
+            {
+              "name": "Max",
+              "length": 20,
+              "alternateLabel": "Max"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "instructional",
+          "content": "Add as many other fields as you want to request from people signing up.  Note: If you don't select Email Address, the signups will not receive email confirmation of their selection."
+        },
+        {
+          "type": "mc",
+          "label": "Q5",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "Indicate fields to be asked on signup sheet in addition to Player Name:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Parent Name"
+            }
+          ],
+          "name": "OptionParentName",
+          "paddingBottom": false
+        },
+        {
+          "type": "mc",
+          "label": "Q6",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Email Address"
+            }
+          ],
+          "name": "OptionEmail",
+          "paddingBottom": false
+        },
+        {
+          "type": "mc",
+          "label": "Q7",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Best Phone Number"
+            }
+          ],
+          "name": "OptionPhone",
+          "paddingBottom": false
+        },
+        {
+          "type": "mc",
+          "label": "Q8",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Division Desired"
+            }
+          ],
+          "name": "OptionDesiredDivision",
+          "paddingBottom": false
+        },
+        {
+          "type": "mc",
+          "label": "Q9",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Last played in Division"
+            }
+          ],
+          "name": "OptionPreviousDivision",
+          "paddingBottom": false
+        },
+        {
+          "type": "mc",
+          "label": "Q10",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Age"
+            }
+          ],
+          "name": "OptionAge",
+          "paddingBottom": false
+        },
+        {
+          "type": "mc",
+          "label": "Q11",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Grade"
+            }
+          ],
+          "name": "OptionGrade"
+        },
+        {
+          "type": "fib",
+          "label": "Q12",
+          "style": "topLabels",
+          "prompt": "If you want to add a custom question for the signup sheet, enter it here:",
+          "blanks": [
+            {
+              "name": "CustomQ",
+              "length": 52,
+              "alternateLabel": "CustomQ"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q13",
+          "style": "topLabels",
+          "prompt": "Administrator Name: (for confirmation letters to signups)",
+          "blanks": [
+            {
+              "name": "AdminName",
+              "length": 20,
+              "alternateLabel": "AdminName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q14",
+          "style": "topLabels",
+          "prompt": "Administrator Email:",
+          "blanks": [
+            {
+              "name": "AdminEmail",
+              "length": 20,
+              "alternateLabel": "AdminEmail"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q15",
+          "style": "topLabels",
+          "prompt": "Re-enter Administrator Email:",
+          "blanks": [
+            {
+              "name": "AdminEmailConfirm",
+              "length": 20,
+              "alternateLabel": "AdminEmailConfirm"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Setup:AdminEmail",
+                "op": "doesNotEqual",
+                "value": "<<Setup:AdminEmailConfirm>>"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Email and Re-enter Email Addresses do not match!",
+                  "concat": false,
+                  "arithmeticAsText": true
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Setup",
+      "preProcess": "Pre-Setup"
+    },
+    {
+      "name": "ManageSheets",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Add/Edit/Delete Signup Sheets"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "text",
+                      "text": "Current Sheet Names:"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": []
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 720,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "itemizationTable",
+                      "version": 2,
+                      "form": "Sheet",
+                      "columns": [
+                        {
+                          "header": "Name",
+                          "field": "Record:Sheet:SheetName"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Add a new sheet"
+            },
+            {
+              "label": "b",
+              "text": "Edit an existing sheet"
+            },
+            {
+              "label": "c",
+              "text": "Delete a sheet"
+            },
+            {
+              "label": "d",
+              "text": "Return"
+            }
+          ],
+          "name": "Action"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "and": [
+                  {
+                    "field": "ManageSheets:Action",
+                    "op": "mcDoesNotEqual",
+                    "value": "b"
+                  },
+                  {
+                    "field": "ManageSheets:Action",
+                    "op": "mcDoesNotEqual",
+                    "value": "c"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "Please select the sheet to edit or delete:",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "Sheet",
+              "displayExpr": "<<Record:Sheet:SheetName>>",
+              "valueExpr": "<<Record:Sheet:SheetName>>",
+              "sortExpr": "<<Record:Sheet:SheetName>>"
+            }
+          ],
+          "name": "SelectSheet"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-ManageSheets"
+    },
+    {
+      "name": "Administrator",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Signup Sheets"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "View all signup sheets"
+            },
+            {
+              "label": "b",
+              "text": "View specific signup sheet"
+            },
+            {
+              "label": "c",
+              "text": "Search for specific player"
+            },
+            {
+              "label": "d",
+              "text": "Set up signup sheets"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Administrator:Q1",
+                "op": "mcEquals",
+                "value": "c"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "Q3"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Administrator:Q1",
+                "op": "mcDoesNotEqual",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "Which sheet do you wish to view?",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "Sheet",
+              "displayExpr": "<<Record:Sheet:SheetName>>",
+              "valueExpr": "<<Record:Sheet:SheetName>>"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "topLabels",
+          "prompt": "Enter part or all of a Player's name or email address:",
+          "blanks": [
+            {
+              "name": "SearchString",
+              "length": 20,
+              "alternateLabel": "SearchString"
+            }
+          ]
+        },
+        {
+          "type": "break",
+          "label": "BREAK"
+        },
+        {
+          "type": "mc",
+          "label": "Q4",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "Choose from possible matches:",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "SignupSheet",
+              "displayExpr": "<<Record:SignupSheet:SName>> (<<Record:SignupSheet:SEMail>>)",
+              "valueExpr": "<<Record:SignupSheet:SName>>",
+              "where": {
+                "or": [
+                  {
+                    "field": "Record:SignupSheet:SName",
+                    "op": "contains",
+                    "value": "<<Administrator:SearchString>>"
+                  },
+                  {
+                    "field": "Record:SignupSheet:SEMail",
+                    "op": "contains",
+                    "value": "<<Administrator:SearchString>>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Administrator",
+      "preProcess": "GetSetupParameters"
+    },
+    {
+      "name": "Sheet",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Add Signup Sheet"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "A Sheet Name is the name that distinguishes this sheet from other signup sheets.  For example, if people are choosing tryout locations and times, an appropriate name might be: \"Combs Field, Saturday, 1:30pm.\"\nPeople looking at a list of Sheet Names should be able to see all the information they will need in order to select the correct sheet to sign up on."
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "text",
+                      "text": "Current Sheet Names:"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": []
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 720,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "itemizationTable",
+                      "version": 2,
+                      "form": "Sheet",
+                      "columns": [
+                        {
+                          "header": "Name",
+                          "field": "Record:Sheet:SheetName"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "topLabels",
+          "prompt": "Add Sheet Name:",
+          "blanks": [
+            {
+              "name": "SheetName",
+              "length": 52,
+              "alternateLabel": "SheetName"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Add another sheet"
+            }
+          ],
+          "name": "AddAnother"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Count"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Displayed?"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Sheet"
+    },
+    {
+      "name": "SignUp",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "<<Head>>"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "field",
+                      "name": "Inst"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "Please select:",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "Sheet",
+              "displayExpr": "<<Record:Sheet:SheetName>>",
+              "valueExpr": "<<Record:Sheet:SheetName>>",
+              "where": {
+                "field": "Record:Sheet:Count",
+                "op": "isLessThan",
+                "value": "<<MaxNames>>"
+              }
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "bold",
+                      "nodes": [
+                        {
+                          "type": "italic",
+                          "nodes": [
+                            {
+                              "type": "field",
+                              "name": "Message"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "color": "#A40000"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Signup",
+      "preProcess": "Pre-Signup"
+    },
+    {
+      "name": "SignupSheet",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "<<Head>>"
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "<<SignUp:Q1>>"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "field",
+                      "name": "Inst"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "bold",
+                      "nodes": [
+                        {
+                          "type": "italic",
+                          "nodes": [
+                            {
+                              "type": "field",
+                              "name": "Message"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "color": "#A40000"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Name:",
+          "blanks": [
+            {
+              "name": "SName",
+              "length": 20,
+              "alternateLabel": "SName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Parent Name:",
+          "blanks": [
+            {
+              "name": "SPName",
+              "length": 20,
+              "alternateLabel": "SPName"
+            }
+          ],
+          "displayCondition": {
+            "field": "AskParentName",
+            "op": "equals",
+            "value": "Yes"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Email Address:",
+          "blanks": [
+            {
+              "name": "SEMail",
+              "length": 20,
+              "alternateLabel": "SEMail"
+            }
+          ],
+          "displayCondition": {
+            "field": "AskEmail",
+            "op": "equals",
+            "value": "Yes"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Re-enter Email Address:",
+          "blanks": [
+            {
+              "name": "SEmailConfirm",
+              "length": 20,
+              "alternateLabel": "SEmailConfirm"
+            }
+          ],
+          "displayCondition": {
+            "field": "AskEmail",
+            "op": "equals",
+            "value": "Yes"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q5",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Best Phone Number:",
+          "blanks": [
+            {
+              "name": "SPhone",
+              "length": 20,
+              "alternateLabel": "SPhone"
+            }
+          ],
+          "displayCondition": {
+            "field": "AskPhone",
+            "op": "equals",
+            "value": "Yes"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q6",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Division Desired:",
+          "blanks": [
+            {
+              "name": "SDesireDiv",
+              "length": 20,
+              "alternateLabel": "SDesireDiv"
+            }
+          ],
+          "displayCondition": {
+            "field": "AskDesiredDivision",
+            "op": "equals",
+            "value": "Yes"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q7",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Last played in Division:",
+          "blanks": [
+            {
+              "name": "SPrevDiv",
+              "length": 20,
+              "alternateLabel": "SPrevDiv"
+            }
+          ],
+          "displayCondition": {
+            "field": "AskPreviousDivision",
+            "op": "equals",
+            "value": "Yes"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q8",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Age:",
+          "blanks": [
+            {
+              "name": "SAge",
+              "length": 20,
+              "alternateLabel": "SAge"
+            }
+          ],
+          "displayCondition": {
+            "field": "AskAge",
+            "op": "equals",
+            "value": "Yes"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q9",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Grade:",
+          "blanks": [
+            {
+              "name": "SGrade",
+              "length": 20,
+              "alternateLabel": "SGrade"
+            }
+          ],
+          "displayCondition": {
+            "field": "AskGrade",
+            "op": "equals",
+            "value": "Yes"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q10",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "<<Custom>>:",
+          "blanks": [
+            {
+              "name": "SCustom",
+              "length": 20,
+              "alternateLabel": "SCustom"
+            }
+          ],
+          "displayCondition": {
+            "field": "Custom",
+            "op": "isNotBlank"
+          }
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "and": [
+                  {
+                    "field": "AskEmail",
+                    "op": "equals",
+                    "value": "Yes"
+                  },
+                  {
+                    "field": "SignupSheet:SEMail",
+                    "op": "doesNotEqual",
+                    "value": "<<SignupSheet:SEmailConfirm>>"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Email and Re-enter Email Addresses do not match!",
+                  "concat": false,
+                  "arithmeticAsText": true
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "SheetChosen"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-SignupSheet",
+      "preProcess": "GetSetupParameters"
+    },
+    {
+      "name": "AlreadySignedup",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "text",
+                      "text": "Our records show you already signed up for: "
+                    }
+                  ]
+                },
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "field",
+                      "name": "Choice"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "What would you like to do?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Switch from <<Choice>> to <<SignupSheet:SheetChosen>>"
+            },
+            {
+              "label": "b",
+              "text": "Cancel this second signup (<<SignupSheet:SheetChosen>>) and stay with <<Choice>>"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-AlreadySignedUp"
+    },
+    {
+      "name": "DeleteRecord",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-DeleteRecord"
+    },
+    {
+      "name": "ShowSignups",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "<<Head>>"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "See all signup sheets"
+            },
+            {
+              "label": "b",
+              "text": "Look for a specific person's name"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "ShowSignups:Q1",
+                "op": "mcDoesNotEqual",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "topLabels",
+          "prompt": "Enter part of all of a Player's name or email address:",
+          "blanks": [
+            {
+              "name": "PlayerSearchString",
+              "length": 20,
+              "alternateLabel": "PlayerSearchString"
+            }
+          ]
+        },
+        {
+          "type": "break",
+          "label": "BREAK"
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "Choose from possible matches:",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "SignupSheet",
+              "displayExpr": "<<Record:SignupSheet:SName>> (<<Record:SignupSheet:SEMail>>)",
+              "valueExpr": "<<Record:SignupSheet:SName>>",
+              "where": {
+                "or": [
+                  {
+                    "field": "Record:SignupSheet:SName",
+                    "op": "contains",
+                    "value": "<<ShowSignups:PlayerSearchString>>"
+                  },
+                  {
+                    "field": "Record:SignupSheet:SEMail",
+                    "op": "contains",
+                    "value": "<<ShowSignups:PlayerSearchString>>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-ShowSignups",
+      "preProcess": "GetSetupParameters"
+    }
+  ],
+  "processes": [
+    {
+      "name": "GetSetupParameters",
+      "commands": [
+        {
+          "cmd": "delete",
+          "form": "SignupSheet",
+          "from": "SignupSheet",
+          "where": {
+            "field": "Record:SignupSheet:SName",
+            "op": "isBlank"
+          }
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 1",
+          "sourceForms": [
+            "Setup"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Item",
+          "recordList": "Record List 1",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Head",
+              "value": "<<Item:Setup:Header>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Inst",
+              "value": "<<Item:Setup:Instructions>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Custom",
+              "value": "<<Item:Setup:CustomQ>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "FromName",
+              "value": "<<Item:Setup:AdminName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "FromEmail",
+              "value": "<<Item:Setup:AdminEmail>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Item:Setup:OptionParentName",
+                "op": "mcContains",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "AskParentName",
+                  "value": "Yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "AskParentName",
+                  "value": "No",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Item:Setup:OptionEmail",
+                "op": "mcContains",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "AskEmail",
+                  "value": "Yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "AskEmail",
+                  "value": "No",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Item:Setup:OptionPhone",
+                "op": "mcContains",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "AskPhone",
+                  "value": "Yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "AskPhone",
+                  "value": "No",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Item:Setup:OptionDesiredDivision",
+                "op": "mcContains",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "AskDesiredDivision",
+                  "value": "Yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "AskDesiredDivision",
+                  "value": "No",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Item:Setup:OptionPreviousDivision",
+                "op": "mcContains",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "AskPreviousDivision",
+                  "value": "Yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "AskPreviousDivision",
+                  "value": "No",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Item:Setup:OptionAge",
+                "op": "mcContains",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "AskAge",
+                  "value": "Yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "AskAge",
+                  "value": "No",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Item:Setup:OptionGrade",
+                "op": "mcContains",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "AskGrade",
+                  "value": "Yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "AskGrade",
+                  "value": "No",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        }
+      ]
+    },
+    {
+      "name": "Post-Administrator",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administrator:Q1",
+            "op": "mcIsBlank"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Administrator"
+            }
+          ]
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 8",
+          "sourceForms": [
+            "Setup"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "SetupItem",
+          "recordList": "Record List 8",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Custom",
+              "value": "<<SetupItem:Setup:CustomQ>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administrator:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "View all signup sheets"
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 6",
+              "sourceForms": [
+                "Sheet"
+              ]
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Sheet",
+              "recordList": "Record List 6",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Sheet:Sheet:Displayed?",
+                  "value": "No",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ViewHeader",
+              "reset": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 7",
+              "sourceForms": [
+                "Sheet"
+              ],
+              "where": {
+                "field": "Record List 7:Sheet:Displayed?",
+                "op": "equals",
+                "value": "No"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Display",
+              "recordList": "Record List 7",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Display:Sheet:Displayed?",
+                  "value": "Yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Sheet",
+                  "value": "<<Display:Sheet:SheetName>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "ViewSheet",
+                  "reset": false
+                }
+              ]
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ViewHeader",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administrator:Q1",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "View specific signup sheet"
+            },
+            {
+              "cmd": "set",
+              "field": "Sheet",
+              "value": "<<Administrator:Q2>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ViewHeader",
+              "reset": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ViewSheet",
+              "reset": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ViewHeader",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administrator:Q1",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "Search for specific player"
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Administrator:Q4",
+                "op": "mcIsBlank"
+              },
+              "then": [
+                {
+                  "cmd": "show",
+                  "form": "Administrator"
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "showDocument",
+                  "document": "PlayerHeader",
+                  "reset": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "PlayerData",
+                  "reset": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "PlayerHeader",
+                  "reset": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administrator:Q1",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "Go to Setup"
+            },
+            {
+              "cmd": "show",
+              "form": "Setup"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-ManageSheets",
+      "commands": [
+        {
+          "cmd": "delete",
+          "form": "Sheet",
+          "from": "Sheet",
+          "where": {
+            "field": "Record:Sheet:SheetName",
+            "op": "isBlank"
+          }
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ManageSheets:Action",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Sheet"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ManageSheets:Action",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "edit",
+              "form": "Sheet",
+              "submit": "modify",
+              "condition": {
+                "field": "ManageSheets:SelectSheet",
+                "op": "mcEquals",
+                "value": "<<Record:Sheet:SheetName>>"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ManageSheets:Action",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "delete",
+              "form": "Sheet",
+              "from": "Sheet",
+              "where": {
+                "field": "Record:Sheet:SheetName",
+                "op": "equals",
+                "value": "<<ManageSheets:SelectSheet>>"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ManageSheets:Action",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "edit",
+              "form": "Setup",
+              "submit": "modify"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "ManageSheets"
+        }
+      ]
+    },
+    {
+      "name": "Post-Setup",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup:Max",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Setup:Max",
+              "value": "9999",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup:Q3",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Setup:Q3",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "ManageSheets"
+            }
+          ],
+          "else": [
+            {
+              "cmd": "show",
+              "form": "Administrator"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-Sheet",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Sheet:AddAnother",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Sheet"
+            }
+          ],
+          "else": [
+            {
+              "cmd": "show",
+              "form": "ManageSheets"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pre-Setup",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "edit",
+          "form": "Setup",
+          "submit": "modify"
+        }
+      ]
+    },
+    {
+      "name": "Pre-Signup",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- clean up"
+        },
+        {
+          "cmd": "delete",
+          "form": "SignupSheet",
+          "from": "SignupSheet",
+          "where": {
+            "field": "Record:SignupSheet:SName",
+            "op": "isBlank"
+          }
+        },
+        {
+          "cmd": "comment",
+          "text": "- get setup parameters necessary for this Form"
+        },
+        {
+          "cmd": "get",
+          "recordList": "SetupItems",
+          "sourceForms": [
+            "Setup"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Item",
+          "recordList": "SetupItems",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Head",
+              "value": "<<Item:Setup:Header>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Inst",
+              "value": "<<Item:Setup:Instructions>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "MaxNames",
+              "value": "<<Item:Setup:Max>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "- calculate all the counts for all the sogn-up sheets"
+        },
+        {
+          "cmd": "get",
+          "recordList": "SheetList",
+          "sourceForms": [
+            "Sheet"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Entry",
+          "recordList": "SheetList",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Entry:Sheet:Count",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "RegistrantList",
+              "sourceForms": [
+                "SignupSheet"
+              ],
+              "where": {
+                "field": "RegistrantList:SignupSheet:SheetChosen",
+                "op": "equals",
+                "value": "<<Entry:Sheet:SheetName>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Registrant",
+              "recordList": "RegistrantList",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Entry:Sheet:Count",
+                  "value": "<<Entry:Sheet:Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "- see if there are any sheets that are not yet filled"
+        },
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": "Sorry, all available slots have been filled. Thank you!",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "SheetList",
+          "sourceForms": [
+            "Sheet"
+          ],
+          "where": {
+            "field": "SheetList:Sheet:Count",
+            "op": "isLessThan",
+            "value": "<<MaxNames>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Entry",
+          "recordList": "SheetList",
+          "do": [
+            {
+              "cmd": "comment",
+              "text": "- found at least one"
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-Signup",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SignUp:Q1",
+            "op": "mcIsBlank"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "SignUp"
+            }
+          ],
+          "else": [
+            {
+              "cmd": "show",
+              "form": "SignupSheet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-SignupSheet",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SignupSheet:SName",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "SignUp"
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "SignupSheet:SheetChosen",
+          "value": "<<SignUp:Q1>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 2",
+          "sourceForms": [
+            "SignupSheet"
+          ],
+          "where": {
+            "and": [
+              {
+                "field": "Record List 2:SignupSheet:SName",
+                "op": "equals",
+                "value": "<<SignupSheet:SName>>"
+              },
+              {
+                "field": "Record List 2:SignupSheet:SheetChosen",
+                "op": "doesNotEqual",
+                "value": "<<SignupSheet:SheetChosen>>"
+              }
+            ]
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "SuchDuplicate",
+          "recordList": "Record List 2",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Choice",
+              "value": "<<SuchDuplicate:SignupSheet:SheetChosen>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "AlreadySignedup"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SignupSheet:SEMail",
+            "op": "isNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "send",
+              "to": {
+                "fieldRef": "SignupSheet:SEMail"
+              },
+              "from": {
+                "fieldRef": "FromEmail",
+                "aliasField": "FromName"
+              },
+              "subject": "<<Head>> - Confirmation",
+              "body": {
+                "document": "Confirmation",
+                "reset": false,
+                "showHeader": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-AlreadySignedUp",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "AlreadySignedup:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "delete",
+              "form": "SignupSheet",
+              "from": "SignupSheet",
+              "where": {
+                "and": [
+                  {
+                    "field": "Record:SignupSheet:SheetChosen",
+                    "op": "equals",
+                    "value": "<<Choice>>"
+                  },
+                  {
+                    "field": "Record:SignupSheet:SName",
+                    "op": "equals",
+                    "value": "<<SignupSheet:SName>>"
+                  }
+                ]
+              }
+            },
+            {
+              "cmd": "send",
+              "to": {
+                "fieldRef": "SignupSheet:SEMail"
+              },
+              "from": {
+                "fieldRef": "FromEmail",
+                "aliasField": "FromName"
+              },
+              "subject": "<<Head>> - Confirmation",
+              "body": {
+                "document": "Confirmation",
+                "reset": false,
+                "showHeader": true
+              }
+            }
+          ],
+          "else": [
+            {
+              "cmd": "delete",
+              "form": "SignupSheet",
+              "from": "SignupSheet",
+              "where": {
+                "and": [
+                  {
+                    "field": "Record:SignupSheet:SheetChosen",
+                    "op": "equals",
+                    "value": "<<SignupSheet:SheetChosen>>"
+                  },
+                  {
+                    "field": "Record:SignupSheet:SName",
+                    "op": "equals",
+                    "value": "<<SignupSheet:SName>>"
+                  }
+                ]
+              }
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Duplicate Signup canceled.",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Message",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-DeleteRecord",
+      "commands": [
+        {
+          "cmd": "delete",
+          "form": "SignupSheet",
+          "from": "SignupSheet",
+          "where": {
+            "field": "Record:SignupSheet:SName",
+            "op": "equals",
+            "value": "<<Administrator:Q4>>"
+          }
+        },
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": "<<Administrator:Q4>> deleted.",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Message",
+          "reset": false
+        },
+        {
+          "cmd": "show",
+          "form": "Administrator"
+        }
+      ]
+    },
+    {
+      "name": "Post-ShowSignups",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ShowSignups:Q1",
+            "op": "mcIsBlank"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "ShowSignups"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ShowSignups:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "View all signup sheets"
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 6",
+              "sourceForms": [
+                "Sheet"
+              ]
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Sheet",
+              "recordList": "Record List 6",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Sheet:Sheet:Displayed?",
+                  "value": "No",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ViewSignupReturn",
+              "reset": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 7",
+              "sourceForms": [
+                "Sheet"
+              ],
+              "where": {
+                "field": "Record List 7:Sheet:Displayed?",
+                "op": "equals",
+                "value": "No"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Display",
+              "recordList": "Record List 7",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Display:Sheet:Displayed?",
+                  "value": "Yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Sheet",
+                  "value": "<<Display:Sheet:SheetName>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "ViewSheet",
+                  "reset": false
+                }
+              ]
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ViewSignupReturn",
+              "reset": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "comment",
+              "text": "Search for specific player"
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "ShowSignups:Q3",
+                "op": "mcIsBlank"
+              },
+              "then": [
+                {
+                  "cmd": "show",
+                  "form": "ShowSignups"
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "showDocument",
+                  "document": "ViewSignupReturn",
+                  "reset": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "ViewPlayerData",
+                  "reset": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "ViewSignupReturn",
+                  "reset": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Confirmation",
+      "content": [
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": []
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "text",
+                  "text": "To: "
+                }
+              ]
+            },
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "field",
+                  "name": "SignupSheet:SName"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": []
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "text",
+                  "text": "This email is just to confirm that you have signed up for "
+                }
+              ]
+            },
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "field",
+                  "name": "SignupSheet:SheetChosen"
+                }
+              ]
+            },
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "text",
+                  "text": "."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": []
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "text",
+                  "text": "Yours,"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": []
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "field",
+                  "name": "FromName"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "field",
+                  "name": "FromEmail"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Message",
+      "content": [
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "bold",
+                  "nodes": [
+                    {
+                      "type": "italic",
+                      "nodes": [
+                        {
+                          "type": "field",
+                          "name": "Message"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "color": "#A80000"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": []
+        }
+      ]
+    },
+    {
+      "name": "ViewSheet",
+      "content": [
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "bold",
+                  "nodes": [
+                    {
+                      "type": "field",
+                      "name": "Sheet"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": []
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "itemizationTable",
+                  "version": 2,
+                  "form": "SignupSheet",
+                  "columns": [
+                    {
+                      "header": "Name",
+                      "field": "Record:SignupSheet:SName"
+                    },
+                    {
+                      "header": "Parent",
+                      "field": "Record:SignupSheet:SPName",
+                      "displayCondition": {
+                        "field": "AskParentName",
+                        "op": "equals",
+                        "value": "Yes"
+                      }
+                    },
+                    {
+                      "header": "Email",
+                      "field": "Record:SignupSheet:SEMail",
+                      "displayCondition": {
+                        "field": "AskEmail",
+                        "op": "equals",
+                        "value": "Yes"
+                      }
+                    },
+                    {
+                      "header": "Phone",
+                      "field": "Record:SignupSheet:SPhone",
+                      "displayCondition": {
+                        "field": "AskPhone",
+                        "op": "equals",
+                        "value": "Yes"
+                      }
+                    },
+                    {
+                      "header": "Desired Division",
+                      "field": "Record:SignupSheet:SDesireDiv",
+                      "displayCondition": {
+                        "field": "AskDesiredDivision",
+                        "op": "equals",
+                        "value": "Yes"
+                      }
+                    },
+                    {
+                      "header": "Previous Division",
+                      "field": "Record:SignupSheet:SPrevDiv",
+                      "displayCondition": {
+                        "field": "AskPreviousDivision",
+                        "op": "equals",
+                        "value": "Yes"
+                      }
+                    },
+                    {
+                      "header": "Age",
+                      "field": "Record:SignupSheet:SAge",
+                      "displayCondition": {
+                        "field": "AskAge",
+                        "op": "equals",
+                        "value": "Yes"
+                      }
+                    },
+                    {
+                      "header": "Grade",
+                      "field": "Record:SignupSheet:SGrade",
+                      "displayCondition": {
+                        "field": "AskGrade",
+                        "op": "equals",
+                        "value": "Yes"
+                      }
+                    },
+                    {
+                      "header": "<<Custom>>",
+                      "field": "Record:SignupSheet:SCustom",
+                      "displayCondition": {
+                        "field": "Custom",
+                        "op": "isNotBlank"
+                      }
+                    }
+                  ],
+                  "where": {
+                    "field": "Sheet",
+                    "op": "equals",
+                    "value": "<<Record:SignupSheet:SheetChosen>>"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ViewHeader",
+      "content": [
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": []
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "underline",
+                  "nodes": [
+                    {
+                      "type": "invitation",
+                      "form": "Administrator",
+                      "text": "Return to Main Menu",
+                      "project": ""
+                    }
+                  ]
+                }
+              ],
+              "color": "#000080"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PlayerData",
+      "content": [
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "itemizationTable",
+                  "version": 2,
+                  "form": "SignupSheet",
+                  "columns": [
+                    {
+                      "header": "Name",
+                      "field": "Record:SignupSheet:SName"
+                    },
+                    {
+                      "header": "Parent",
+                      "field": "Record:SignupSheet:SPName",
+                      "displayCondition": {
+                        "field": "Setup:OptionParentName",
+                        "op": "mcContains",
+                        "value": "a"
+                      }
+                    },
+                    {
+                      "header": "Email",
+                      "field": "Record:SignupSheet:SEMail",
+                      "displayCondition": {
+                        "field": "Setup:OptionEmail",
+                        "op": "mcContains",
+                        "value": "a"
+                      }
+                    },
+                    {
+                      "header": "Phone",
+                      "field": "Record:SignupSheet:SPhone",
+                      "displayCondition": {
+                        "field": "Setup:OptionPhone",
+                        "op": "mcContains",
+                        "value": "a"
+                      }
+                    },
+                    {
+                      "header": "Desired Division",
+                      "field": "Record:SignupSheet:SDesireDiv",
+                      "displayCondition": {
+                        "field": "Setup:OptionDesiredDivision",
+                        "op": "mcContains",
+                        "value": "a"
+                      }
+                    },
+                    {
+                      "header": "Previous Division",
+                      "field": "Record:SignupSheet:SPrevDiv",
+                      "displayCondition": {
+                        "field": "Setup:OptionPreviousDivision",
+                        "op": "mcContains",
+                        "value": "a"
+                      }
+                    },
+                    {
+                      "header": "Age",
+                      "field": "Record:SignupSheet:SAge",
+                      "displayCondition": {
+                        "field": "Setup:OptionAge",
+                        "op": "mcContains",
+                        "value": "a"
+                      }
+                    },
+                    {
+                      "header": "Grade",
+                      "field": "Record:SignupSheet:SGrade",
+                      "displayCondition": {
+                        "field": "Setup:OptionGrade",
+                        "op": "mcContains",
+                        "value": "a"
+                      }
+                    },
+                    {
+                      "header": "<<Custom>>",
+                      "field": "Record:SignupSheet:SCustom",
+                      "displayCondition": {
+                        "field": "Setup:CustomQ",
+                        "op": "isNotBlank"
+                      }
+                    },
+                    {
+                      "header": "Choice",
+                      "field": "Record:SignupSheet:SheetChosen"
+                    }
+                  ],
+                  "where": {
+                    "field": "Record:SignupSheet:SName",
+                    "op": "equals",
+                    "value": "<<Administrator:Q4>>"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PlayerHeader",
+      "content": [
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": []
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "underline",
+                  "nodes": [
+                    {
+                      "type": "invitation",
+                      "form": "Administrator",
+                      "text": "Return to Main Menu",
+                      "project": ""
+                    }
+                  ]
+                }
+              ],
+              "color": "#000080"
+            },
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "underline",
+                  "nodes": [
+                    {
+                      "type": "invitation",
+                      "form": "DeleteRecord",
+                      "text": "Delete this record",
+                      "project": ""
+                    }
+                  ]
+                }
+              ],
+              "color": "#000080"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ViewSignupReturn",
+      "content": [
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": []
+        },
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "underline",
+                  "nodes": [
+                    {
+                      "type": "invitation",
+                      "form": "ShowSignups",
+                      "text": "Return to Main Menu",
+                      "project": ""
+                    }
+                  ]
+                }
+              ],
+              "color": "#000080"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ViewPlayerData",
+      "content": [
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": [
+            {
+              "type": "font",
+              "nodes": [
+                {
+                  "type": "itemizationTable",
+                  "version": 2,
+                  "form": "SignupSheet",
+                  "columns": [
+                    {
+                      "header": "Name",
+                      "field": "Record:SignupSheet:SName"
+                    },
+                    {
+                      "header": "Choice",
+                      "field": "Record:SignupSheet:SheetChosen"
+                    }
+                  ],
+                  "where": {
+                    "field": "Record:SignupSheet:SName",
+                    "op": "equals",
+                    "value": "<<ShowSignups:Q3>>"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

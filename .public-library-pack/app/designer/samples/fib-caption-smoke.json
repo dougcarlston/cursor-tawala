@@ -1,0 +1,49 @@
+{
+  "name": "FIB Caption Smoke",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "Form 1",
+      "startPoint": true,
+      "themePath": "default",
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "content": "Per-blank caption smoke"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Idle Design should show First / Last above the underscore runs. Push to see italic captions above the live boxes. This is stock Designer — not DirtBowl Registration."
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "leftAlignLabels",
+          "prompt": "Name of Registrant: ________________ ________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 16,
+              "height": 1,
+              "alternateLabel": "FirstName",
+              "caption": "First"
+            },
+            {
+              "name": "b",
+              "length": 16,
+              "height": 1,
+              "alternateLabel": "LastName",
+              "caption": "Last"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "processes": [],
+  "documents": []
+}

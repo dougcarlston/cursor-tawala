@@ -79,13 +79,13 @@
 		                        <li><a href="/info">ABOUT</a></li>
 								<c:if test="${! empty user}">
 									<c:if test="${user.status.allowedToViewDesigner}">
-				                        <li><a href="/designer" id="designerLink">DESIGNER</a></li>
+				                        <li><a href="/app/designer/" id="designerLink">DESIGNER</a></li>
 				                    </c:if>
 		                        </c:if>
 		                        <li><a href="${urls.faq}">FAQ</a></li>
-		                        <li><a href="/app/library.html?v=20261120-admin12">LIBRARY</a></li>
+		                        <li><a href="/app/library.html?v=20261120-theme1">LIBRARY</a></li>
 								<c:if test="${! empty user}">
-			                        <li><a href="/app/mytawala.html?v=20261120-makecopy1">MY TAWALA</a></li>
+			                        <li><a href="/app/mytawala.html?v=20261120-theme1">MY TAWALA</a></li>
 			                    </c:if>
 		                        <li><a href="/home">HOME</a></li>
 		                	</ul>

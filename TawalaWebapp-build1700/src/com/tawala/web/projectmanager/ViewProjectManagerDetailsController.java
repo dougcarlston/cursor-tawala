@@ -16,12 +16,14 @@ import com.scissor.ImpossibleException;
 import com.scissor.Log;
 import com.tawala.UsersHibernateImpl;
 import com.tawala.World;
+import com.tawala.hibernate.TawalaSessionFactory;
 import com.tawala.domain.User;
 import com.tawala.email.EmailService;
 import com.tawala.message.Message;
 import com.tawala.project.Form;
 import com.tawala.project.FormSubmission;
 import com.tawala.project.Project;
+import com.tawala.project.ProjectVersion;
 import com.tawala.project.ProjectsHibernateImpl;
 import com.tawala.project.UserProject;
 import com.tawala.project.backup.DailyBackup;
@@ -46,6 +48,14 @@ public class ViewProjectManagerDetailsController implements Controller {
 	public static final String PARAMETER_ACTION_DELETE_ALL_EMAILS = "DeleteAllEmails";
 	public static final String PARAMETER_ACTION_DELETE_VERSION = "deleteversion";
 	public static final String PARAMETER_ACTION_COPY = "Copy";
+	public static final String PARAMETER_ACTION_RENAME = "Rename";
+	public static final String PARAMETER_ACTION_THEME = "Theme";
+	public static final String PARAMETER_ACTION_OFFLINE = "Offline";
+	public static final String PARAMETER_OFFLINE = "offline";
+	public static final String PARAMETER_ACTION_VERSION_NOTE = "VersionNote";
+	public static final String PARAMETER_VERSION_NOTE = "versionNote";
+	public static final String PARAMETER_VERSION_NUMBER = "versionNumber";
+	public static final String PARAMETER_THEME = "theme";
 	public static final String PARAMETER_NEW_NAME = "newName";
 	public static final String PARAMETER_COPY_RESPONSES = "copyResponses";
 
@@ -77,6 +87,32 @@ public class ViewProjectManagerDetailsController implements Controller {
 			String destination = copyOwnedProject(request, response, user, project);
 			if (destination != null) {
 				redirectToProjectDetails(response, destination);
+			}
+			return null;
+		}
+		if (action != null && action.equalsIgnoreCase(PARAMETER_ACTION_RENAME)) {
+			String destination = renameOwnedProject(request, response, user, project);
+			if (destination != null) {
+				redirectToProjectDetails(response, destination);
+			}
+			return null;
+		}
+		if (action != null && action.equalsIgnoreCase(PARAMETER_ACTION_THEME)) {
+			String destination = setOwnedProjectTheme(request, response, project);
+			if (destination != null) {
+				redirectToProjectDetails(response, destination);
+			}
+			return null;
+		}
+		if (action != null && action.equalsIgnoreCase(PARAMETER_ACTION_OFFLINE)) {
+			if (setOwnedProjectOffline(request, user, project)) {
+				redirectToProjectDetails(response, projectName);
+			}
+			return null;
+		}
+		if (action != null && action.equalsIgnoreCase(PARAMETER_ACTION_VERSION_NOTE)) {
+			if (noteOwnedProjectVersion(request, response, project)) {
+				redirectToProjectDetails(response, projectName);
 			}
 			return null;
 		}
@@ -168,6 +204,132 @@ public class ViewProjectManagerDetailsController implements Controller {
 			throws Exception {
 		response.sendRedirect(WellKnown.urls.getProjectManagerView());
 		return null;
+	}
+
+	/**
+	 * Theme on the live project this account already owns. The address and the
+	 * stored responses stay. The form uses the new theme the next time it opens.
+	 */
+	/**
+	 * Activate leaves the live form open. De-activate shows the offline page.
+	 * The project and its responses stay on this account.
+	 */
+	private boolean setOwnedProjectOffline(HttpServletRequest request, User user,
+			UserProject project) {
+		String flag = request.getParameter(PARAMETER_OFFLINE);
+		boolean offline = "1".equals(flag) || "true".equalsIgnoreCase(flag);
+		WorldInitializer.getDefaultWorld().domain().projects()
+				.takeProjectOffline(user, project.getId(), offline);
+		return true;
+	}
+
+	/**
+	 * Writes the Push note onto one version of this account project.
+	 * No version number means the newest version, which is the one just pushed.
+	 */
+	private boolean noteOwnedProjectVersion(HttpServletRequest request,
+			HttpServletResponse response, UserProject project) throws IOException {
+		String note = request.getParameter(PARAMETER_VERSION_NOTE);
+		if (note != null) {
+			note = note.trim();
+		}
+		if (note == null) {
+			note = "";
+		}
+		if (note.length() > 500) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return false;
+		}
+		ProjectVersion target = null;
+		String number = request.getParameter(PARAMETER_VERSION_NUMBER);
+		if (number != null && number.trim().length() > 0) {
+			int wanted;
+			try {
+				wanted = Integer.parseInt(number.trim());
+			} catch (NumberFormatException e) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+				return false;
+			}
+			List versions = project.getVersions();
+			for (int i = 0; i < versions.size(); i++) {
+				ProjectVersion version = (ProjectVersion) versions.get(i);
+				if (version.getVersionNumber() == wanted) {
+					target = version;
+					break;
+				}
+			}
+		} else if (project.getVersions() != null && project.getVersions().size() > 0) {
+			target = (ProjectVersion) project.getVersions().get(0);
+		}
+		if (target == null) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return false;
+		}
+		target.setDescription(note);
+		TawalaSessionFactory.MAIN.getHibernateTemplate().update(target);
+		return true;
+	}
+
+	private String setOwnedProjectTheme(HttpServletRequest request,
+			HttpServletResponse response, UserProject source) throws IOException {
+		String theme = request.getParameter(PARAMETER_THEME);
+		if (theme != null) {
+			theme = theme.trim();
+		}
+		if (theme == null || theme.length() == 0
+				|| CommonTheme.getThemeByPath(theme) == null) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return null;
+		}
+		String uniqueId = source.getUniqueRandomId();
+		if (uniqueId == null || uniqueId.length() == 0) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return null;
+		}
+		WorldInitializer.getDefaultWorld().domain().projects()
+				.changeProjectTheme(uniqueId, theme);
+		TawalaSessionFactory.MAIN
+				.evictCachedDataForQuery(ProjectsHibernateImpl.CACHED_QUERY_TEMPLATE_ID);
+		return source.getName();
+	}
+
+	/**
+	 * Same project, new account name. The address and the stored responses stay.
+	 * Another project on this account may not already use the name.
+	 */
+	private String renameOwnedProject(HttpServletRequest request,
+			HttpServletResponse response, User user, UserProject source)
+			throws IOException {
+		String newName = request.getParameter(PARAMETER_NEW_NAME);
+		if (newName != null) {
+			newName = newName.trim();
+		}
+		if (newName == null || newName.length() == 0 || newName.length() > 100) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return null;
+		}
+		if (newName.equals(source.getName())) {
+			return source.getName();
+		}
+		String folded = newName.toLowerCase();
+		List<UserProject> owned = WorldInitializer.getDefaultWorld().domain()
+				.projects().getAllForUserId(user.getId());
+		for (int i = 0; i < owned.size(); i++) {
+			UserProject existing = owned.get(i);
+			if (sameProject(existing, source)) {
+				continue;
+			}
+			String existingName = existing.getName();
+			if (existingName != null && existingName.toLowerCase().equals(folded)) {
+				response.sendError(HttpServletResponse.SC_CONFLICT);
+				return null;
+			}
+		}
+		WorldInitializer.getDefaultWorld().domain().projects()
+				.changeProjectNameAndOwnership(source.getId(), newName, user);
+		TawalaSessionFactory.MAIN
+				.evictCachedDataForQuery(ProjectsHibernateImpl.CACHED_QUERY_TEMPLATE_ID);
+		return newName;
 	}
 
 	/**

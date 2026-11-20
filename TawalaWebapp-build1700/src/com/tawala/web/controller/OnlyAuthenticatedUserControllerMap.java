@@ -45,6 +45,7 @@ import com.tawala.web.projectmanager.SaveDuringCustomizationController;
 import com.tawala.web.projectmanager.SaveFormSelectionController;
 import com.tawala.web.projectmanager.SaveHideSelectedFormsStateController;
 import com.tawala.web.projectmanager.UpgradeWithNewerVersionController;
+import com.tawala.web.projectmanager.UploadSignedInProjectController;
 import com.tawala.web.projectmanager.ViewProjectManagerController;
 import com.tawala.web.projectmanager.ViewProjectManagerDataController;
 import com.tawala.web.projectmanager.ViewProjectManagerDetailsController;
@@ -225,6 +226,8 @@ public class OnlyAuthenticatedUserControllerMap extends
 				new DeployToMyTawalaController());
 		registerHandler("/library/copy-to-my-tawala",
 				new CopyPublicCatalogToAccountController());
+		registerHandler("/projectmanager/upload-project",
+				new UploadSignedInProjectController());
 		registerHandler(WellKnown.urls
 				.getProjectManagerUpgradeWithNewerVersionFromLibrary(),
 				new UpgradeWithNewerVersionController());

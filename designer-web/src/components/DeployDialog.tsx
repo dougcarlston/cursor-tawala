@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { DesignerDialog } from "./DesignerDialog";
+import { isPublicDesigner } from "@/api/accountPush";
 import {
   LOCAL_WEBSITE_MOCK_MYTAWALA_URL,
   mockProjectIdFromName,
@@ -33,13 +34,65 @@ export function DeployDialog() {
 
   const failed = lastDeploy.status === "failure";
   const close = () => {
+    const note = versionDescription.trim();
+    const account = lastDeploy?.mode === "account";
     setVersionDescription("");
     setBusy(false);
     setShow(false);
+    if (account && note) {
+      const name = lastDeploy?.deployIdentityName || lastDeploy?.project || "";
+      if (!name) return;
+      const body = new URLSearchParams();
+      body.set("projectName", name);
+      body.set("action", "VersionNote");
+      body.set("versionNote", note);
+      void fetch("/projectmanager/projectdetail", {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        redirect: "follow",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body: body.toString(),
+      });
+    }
   };
+
+  async function saveAccountVersionNote(): Promise<void> {
+    const note = versionDescription.trim();
+    if (!note || lastDeploy?.mode !== "account") return;
+    const name = lastDeploy.deployIdentityName || lastDeploy.project || "";
+    if (!name) return;
+    const body = new URLSearchParams();
+    body.set("projectName", name);
+    body.set("action", "VersionNote");
+    body.set("versionNote", note);
+    await fetch("/projectmanager/projectdetail", {
+      method: "POST",
+      credentials: "same-origin",
+      cache: "no-store",
+      redirect: "follow",
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body: body.toString(),
+    });
+  }
 
   const openMyTawala = async () => {
     if (failed || busy) return;
+    const accountName = lastDeploy.deployIdentityName || lastDeploy.project || "Project";
+    if (isPublicDesigner() || lastDeploy.mode === "account") {
+      setBusy(true);
+      try {
+        await saveAccountVersionNote();
+      } finally {
+        setBusy(false);
+      }
+      window.open(
+        "/app/mytawala-project.html?name=" + encodeURIComponent(accountName) + "&v=20261120-vercheck1",
+        "_blank",
+        "noopener,noreferrer",
+      );
+      return;
+    }
     const name = lastDeploy.project ?? "Project";
     const id = mockProjectIdFromName(name);
     const note = versionDescription.trim();
@@ -147,11 +200,13 @@ export function DeployDialog() {
       <div className="designer-dialog-panel">
         <p>
           <strong>{lastDeploy.project ?? "Project"}</strong>
-          {lastDeploy.mode === "java"
-            ? " → Java backend (:8080)"
-            : lastDeploy.mode === "dev"
-              ? " → dev runtime"
-              : null}
+          {lastDeploy.mode === "account"
+            ? " is on your My Tawala"
+            : lastDeploy.mode === "java"
+              ? " → Java backend (:8080)"
+              : lastDeploy.mode === "dev"
+                ? " → dev runtime"
+                : null}
         </p>
         {failed ? (
           <p className="hint" role="alert">
@@ -189,6 +244,13 @@ export function DeployDialog() {
                 maxLength={500}
               />
             </label>
+            {lastDeploy.mode === "account" ? (
+              <p className="hint">
+                <strong>Show in My Tawala</strong> opens this project on your account. Use the
+                form from that page to see the theme. The public Library copy is left as it is
+                when the name was already taken.
+              </p>
+            ) : (
             <p className="hint">
               <strong>Show in My Tawala</strong> opens Project Details on :5500, mints the next
               version number on the mock overlay, saves a definition snapshot (for later{" "}
@@ -200,6 +262,7 @@ export function DeployDialog() {
               </a>
               .
             </p>
+            )}
           </>
         )}
       </div>

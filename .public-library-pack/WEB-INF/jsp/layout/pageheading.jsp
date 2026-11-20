@@ -106,7 +106,7 @@
 		<c:if test="${! empty user}">
 			<c:if test="${user.status.allowedToViewDesigner}">
 				<li class="<c:out value="${designerPageClass}" />" >
-					<a href="${urls.designer}" id="designerLink">DESIGNER</a>
+					<a href="/app/designer/" id="designerLink">DESIGNER</a>
 				</li>
 			</c:if>
 		</c:if>
@@ -116,12 +116,12 @@
 		</li>
 
 		<li class="<c:out value="${libraryPageClass}" />" >
-			<a href="/app/library.html?v=20261120-admin12">LIBRARY</a>
+			<a href="/app/library.html?v=20261120-theme1">LIBRARY</a>
 		</li>
 
 		<c:if test="${! empty user}">
 			<li class="<c:out value="${mytawalaPageClass}" />" >
-				<a href="/app/mytawala.html?v=20261120-makecopy1">MY TAWALA</a>
+				<a href="/app/mytawala.html?v=20261120-theme1">MY TAWALA</a>
 			</li>
 		</c:if>
 
