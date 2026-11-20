@@ -1,0 +1,134 @@
+{
+  "name": "Sign-up Sheet Sample",
+  "format": "2.0",
+  "themePath": "dirtbowl2",
+  "forms": [
+    {
+      "name": "Form 1",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Sign-up Sheet Template"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Replace this text with your own instructions, then deploy. Delete this instruction box when you are done."
+        },
+        {
+          "type": "fib",
+          "label": "FIB3",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Full Name: ____________________\n____________________",
+          "blanks": [
+            {
+              "name": "firstName",
+              "length": 20,
+              "alternateLabel": "firstName"
+            },
+            {
+              "name": "lastName",
+              "length": 20,
+              "alternateLabel": "lastName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "FIB1",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Email: ____________________",
+          "blanks": [
+            {
+              "name": "Email",
+              "length": 20,
+              "alternateLabel": "Email"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "FIB2",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Address: ____________________",
+          "blanks": [
+            {
+              "name": "Address",
+              "length": 20,
+              "alternateLabel": "Address"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "itemizationTable",
+                      "version": 2,
+                      "form": "Form 1",
+                      "columns": [
+                        {
+                          "header": "First",
+                          "field": "Record:Form 1:firstName"
+                        },
+                        {
+                          "header": "Last",
+                          "field": "Record:Form 1:lastName"
+                        },
+                        {
+                          "header": "Email",
+                          "field": "Record:Form 1:Email"
+                        },
+                        {
+                          "header": "Address",
+                          "field": "Record:Form 1:Address"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "themePath": "dirtbowl2",
+      "process": "Process 1"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process 1",
+      "commands": [
+        {
+          "cmd": "show",
+          "form": "Form 1"
+        }
+      ]
+    }
+  ],
+  "documents": [],
+  "_originalFormat": "1.11",
+  "_designerBuild": "204",
+  "_convertedFrom": "tomcat:kxlgkzkqmaebhz3",
+  "deployIdentityName": "Sign-up Sheet Sample",
+  "deployUniqueId": "kxlgkzkqmaebhz3",
+  "_dumpedFrom": "tomcat-postgres",
+  "_dumpedAt": "2026-09-14T22:43:25.827Z",
+  "_tomcatLastUpdated": "2026-09-09T17:08:42.999+00:00",
+  "_tomcatVersion": 1
+}

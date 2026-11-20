@@ -1,0 +1,1111 @@
+{
+  "name": "Sign-up Sheet",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "Customize",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Title for the Sign-up Sheet:\n____________________________________________________________________________",
+          "blanks": [
+            {
+              "name": "Title",
+              "length": 76,
+              "alternateLabel": "Title"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "",
+          "prompt": "Description or message on the Sign-up Sheet:\n____________________________________________________________________________",
+          "blanks": [
+            {
+              "name": "Description",
+              "length": 76,
+              "alternateLabel": "Description",
+              "height": 3
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "Contact information, if any, to request from signers:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Phone number"
+            },
+            {
+              "label": "b",
+              "text": "Email address"
+            },
+            {
+              "label": "c",
+              "text": "Physical address"
+            }
+          ],
+          "name": "ContactInfo"
+        },
+        {
+          "type": "mc",
+          "label": "Q4",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "What information do you want visible on the Sign-up Sheet?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Signers' names only"
+            },
+            {
+              "label": "b",
+              "text": "Signers' names and contact information"
+            }
+          ],
+          "name": "DisplayInfo"
+        },
+        {
+          "type": "mc",
+          "label": "Q5",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Check here to be notified by email when someone signs up."
+            }
+          ],
+          "name": "Notify"
+        },
+        {
+          "type": "fib",
+          "label": "Q6",
+          "style": "",
+          "prompt": "If you checked the box above, provide your email address:\n____________________________________________________________________________",
+          "blanks": [
+            {
+              "name": "NotifyEmail",
+              "length": 76,
+              "alternateLabel": "NotifyEmail"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q7",
+          "style": "",
+          "prompt": "Message to display to signers after they've signed (optional):\n____________________________________________________________________________",
+          "blanks": [
+            {
+              "name": "FinalRemarks",
+              "length": 76,
+              "alternateLabel": "FinalRemarks",
+              "height": 2
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "MCQ1",
+          "name": "AfterSave",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "<div>After saving, what next?</div>",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Try the signup sheet"
+            },
+            {
+              "label": "b",
+              "text": "Stay on Customize (keep editing)"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-Customize",
+      "preProcess": "Pre-Customize"
+    },
+    {
+      "name": "Questionnaire",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Add your name to the list:\nName:__________________________________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 42
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "ContactType3",
+                "op": "doesNotEqual",
+                "value": "empty"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "Q4"
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "ContactType2",
+                    "op": "doesNotEqual",
+                    "value": "empty"
+                  },
+                  "then": [
+                    {
+                      "cmd": "skip",
+                      "to": "Q3"
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "ContactType1",
+                        "op": "equals",
+                        "value": "empty"
+                      },
+                      "then": [
+                        {
+                          "cmd": "skip",
+                          "to": "__EndOfForm__"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "",
+          "prompt": "Please provide your <<ContactType1>>:\n_________________________________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 41
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "",
+          "prompt": "Please provide the following contact information:\nYour <<ContactType1>>:\n_________________________________________\nYour <<ContactType2>>:\n_________________________________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 41
+            },
+            {
+              "name": "b",
+              "length": 41
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip3",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "",
+          "prompt": "Please provide the following contact information:\nYour <<ContactType1>>:\n_________________________________________\nYour <<ContactType2>>:\n_________________________________________\nYour <<ContactType3>>:\n_________________________________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 41
+            },
+            {
+              "name": "b",
+              "length": 41
+            },
+            {
+              "name": "c",
+              "length": 41
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-SignUp",
+      "preProcess": "Show Signatures"
+    },
+    {
+      "name": "Administration",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Show Signatures",
+      "preProcess": "Pre-Administration"
+    },
+    {
+      "name": "DeleteRecord",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Remove Signer From List"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Enter the name of the signer to remove from the list:\n__________________________________________",
+          "blanks": [
+            {
+              "name": "NameToRemove",
+              "length": 42,
+              "alternateLabel": "NameToRemove"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-DeleteRecord",
+      "preProcess": "Show Signatures"
+    },
+    {
+      "name": "ConfirmDelete",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": true,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Are you sure you want to remove <<DeleteRecord:NameToRemove>> from the list?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes"
+            },
+            {
+              "label": "b",
+              "text": "No"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-ConfirmDelete"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Show Signatures",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- get the customization settings"
+        },
+        {
+          "cmd": "get",
+          "recordList": "Setup List",
+          "sourceForms": [
+            "Customize"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Setting",
+          "recordList": "Setup List",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "ContactType1",
+              "value": "empty",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "ContactType2",
+              "value": "empty",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "ContactType3",
+              "value": "empty",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Title",
+              "value": "<<Setting:Customize:Title>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Description",
+              "value": "<<Setting:Customize:Description>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "SignUpFinalRemarks",
+              "value": "<<Setting:Customize:FinalRemarks>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "comment",
+              "text": "- set the appropriate labels for the Contact Info"
+            },
+            {
+              "cmd": "comment",
+              "text": "- (note that these settings also control the Skip logic in the Questionnaire Form)"
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Setting:Customize:ContactInfo",
+                "op": "mcContains",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "ContactType1",
+                  "value": "phone number",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Setting:Customize:ContactInfo",
+                "op": "mcContains",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "ContactType1",
+                    "op": "equals",
+                    "value": "empty"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "ContactType1",
+                      "value": "email address",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "ContactType2",
+                      "value": "email address",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Setting:Customize:ContactInfo",
+                "op": "mcContains",
+                "value": "c"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "ContactType1",
+                    "op": "equals",
+                    "value": "empty"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "ContactType1",
+                      "value": "mailing address",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "ContactType2",
+                        "op": "equals",
+                        "value": "empty"
+                      },
+                      "then": [
+                        {
+                          "cmd": "set",
+                          "field": "ContactType2",
+                          "value": "mailing address",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ],
+                      "else": [
+                        {
+                          "cmd": "set",
+                          "field": "ContactType3",
+                          "value": "mailing address",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cmd": "comment",
+              "text": "- this flag controls whether Contact Info is displayed to the public in the Sign-up Sheet"
+            },
+            {
+              "cmd": "set",
+              "field": "displayContactInfo",
+              "value": "true",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Setting:Customize:DisplayInfo",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "displayContactInfo",
+                  "value": "false",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "comment",
+              "text": "- send an email to the customizer when the Questionnaire is submitted by a user?"
+            },
+            {
+              "cmd": "set",
+              "field": "sendNotification",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Setting:Customize:Notify",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "sendNotification",
+                  "value": "true",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "notificationEmailAddress",
+                  "value": "<<Setting:Customize:NotifyEmail>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "- \"build\" the display document"
+        },
+        {
+          "cmd": "showDocument",
+          "document": "SignUp Header",
+          "reset": false
+        },
+        {
+          "cmd": "comment",
+          "text": "- note that adminMode overrides the customization display setting"
+        },
+        {
+          "cmd": "comment",
+          "text": "- (the Contact Info is always displayed in the Adminstration Report)"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "and": [
+              {
+                "field": "displayContactInfo",
+                "op": "equals",
+                "value": "false"
+              },
+              {
+                "field": "adminMode",
+                "op": "doesNotEqual",
+                "value": "true"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "Names Only",
+              "reset": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "ContactType3",
+                "op": "doesNotEqual",
+                "value": "empty"
+              },
+              "then": [
+                {
+                  "cmd": "showDocument",
+                  "document": "NamesAndInfo3",
+                  "reset": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "ContactType2",
+                    "op": "doesNotEqual",
+                    "value": "empty"
+                  },
+                  "then": [
+                    {
+                      "cmd": "showDocument",
+                      "document": "NamesAndInfo2",
+                      "reset": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "ContactType1",
+                        "op": "doesNotEqual",
+                        "value": "empty"
+                      },
+                      "then": [
+                        {
+                          "cmd": "showDocument",
+                          "document": "NamesAndInfo1",
+                          "reset": false
+                        }
+                      ],
+                      "else": [
+                        {
+                          "cmd": "showDocument",
+                          "document": "Names Only",
+                          "reset": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "adminMode",
+            "op": "equals",
+            "value": "true"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- admin can remove names from the list"
+            },
+            {
+              "cmd": "set",
+              "field": "adminMode",
+              "value": "False",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Delete Record Link",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-SignUp",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- show the \"all done\" page to the signer"
+        },
+        {
+          "cmd": "showDocument",
+          "document": "SignUp Finish",
+          "reset": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SignUpFinalRemarks",
+            "op": "isNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "SignUp Remarks",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "SignUp ViewFinalList",
+          "reset": false
+        },
+        {
+          "cmd": "comment",
+          "text": "- send email notification to customizer (optional)"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "and": [
+              {
+                "field": "sendNotification",
+                "op": "equals",
+                "value": "true"
+              },
+              {
+                "and": [
+                  {
+                    "field": "notificationEmailAddress",
+                    "op": "isNotBlank"
+                  },
+                  {
+                    "field": "Questionnaire:Q1:a",
+                    "op": "isNotBlank"
+                  }
+                ]
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "send",
+              "to": {
+                "fieldRef": "notificationEmailAddress"
+              },
+              "subject": "<<Questionnaire:Q1:a>> has signed up for <<Customize_Title>>",
+              "body": {
+                "document": "Notification Email",
+                "reset": false,
+                "showHeader": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-Customize",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- show save confirmation; then try signup sheet or stay on Customize (Test Drive Option A)"
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Customization Save Confirmation",
+          "reset": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Customize:AfterSave",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- Try the signup sheet (same Test Drive session — no start wipe)"
+            },
+            {
+              "cmd": "show",
+              "form": "Questionnaire"
+            }
+          ],
+          "else": [
+            {
+              "cmd": "comment",
+              "text": "- Stay on Customize (default / keep editing)"
+            },
+            {
+              "cmd": "show",
+              "form": "Customize"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pre-Administration",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- in the Show Signatures Process this flag overrides"
+        },
+        {
+          "cmd": "comment",
+          "text": "- the \"DisplayInfo\" flag from the Customize settings"
+        },
+        {
+          "cmd": "set",
+          "field": "adminMode",
+          "value": "true",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "comment",
+          "text": "- a trick to detect when the user got here via the Invitation link"
+        },
+        {
+          "cmd": "comment",
+          "text": "- in the SignUp ViewFinalList document; in this case the Administration"
+        },
+        {
+          "cmd": "comment",
+          "text": "- Form is being invoked at the end of the Questionnare"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "_InviteeID",
+            "op": "equals",
+            "value": "fromSignupSheet"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "adminMode",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-DeleteRecord",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- find matching names in the Questionnaire database"
+        },
+        {
+          "cmd": "get",
+          "recordList": "MatchingSigners",
+          "sourceForms": [
+            "Questionnaire"
+          ],
+          "where": {
+            "field": "MatchingSigners:Questionnaire:Q1:a",
+            "op": "equals",
+            "value": "<<DeleteRecord:NameToRemove>>"
+          }
+        },
+        {
+          "cmd": "set",
+          "field": "count",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Match",
+          "recordList": "MatchingSigners",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "count",
+            "op": "equals",
+            "value": "0"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- name not found"
+            },
+            {
+              "cmd": "showDocument",
+              "document": "No Match Found",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ],
+          "else": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "isGreaterThan",
+                "value": "1"
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "- duplicate names found"
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "Duplicate Names Found",
+                  "reset": false
+                }
+              ]
+            },
+            {
+              "cmd": "comment",
+              "text": "- confirm delete"
+            },
+            {
+              "cmd": "show",
+              "form": "ConfirmDelete"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-ConfirmDelete",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ConfirmDelete:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- if deletion confirmed, remove matching records"
+            },
+            {
+              "cmd": "delete",
+              "form": "Questionnaire",
+              "from": "Questionnaire",
+              "where": {
+                "field": "Record:Questionnaire:Q1:a",
+                "op": "equals",
+                "value": "<<DeleteRecord:NameToRemove>>"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    },
+    {
+      "name": "Pre-Customize",
+      "commands": [
+        {
+          "cmd": "edit",
+          "form": "Customize",
+          "submit": "modify"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "SignUp Header",
+      "content": "<p style=\"text-align:center\"><span style=\"font-size:16pt\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Title\" title=\"Customize_Title\" draggable=\"true\">&lt;&lt;Customize_Title&gt;&gt;</span></b></span></p><p></p><p><span style=\"font-size:11pt\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Description\" title=\"Customize_Description\" draggable=\"true\">&lt;&lt;Customize_Description&gt;&gt;</span></b></span></p><p></p><p><span><b>Who's signed up so far:</b></span></p>"
+    },
+    {
+      "name": "Names Only",
+      "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-token function-table-token\" data-function-id=\"itemization-table\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:1,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;Record:Questionnaire:Q1:a&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;,&quot;form-name&quot;:&quot;Questionnaire&quot;}\" data-itemization-form=\"Questionnaire\" data-itemization-token=\"true\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22form%22%3A%22Questionnaire%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AQ1%3Aa%22%7D%5D%2C%22showPrint%22%3Afalse%2C%22showExport%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22conditionsRows%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22combinator%22%3A%22and%22%2C%22conditionsCombinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, 1, Record:Questionnaire:Q1:a)&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "NamesAndInfo1",
+      "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-token function-table-token\" data-function-id=\"itemization-table\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:2,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;Record:Questionnaire:Q1:a&quot;},{&quot;header&quot;:&quot;Contact Info&quot;,&quot;contents&quot;:&quot;Record:Questionnaire:Q2:a&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;,&quot;form-name&quot;:&quot;Questionnaire&quot;}\" data-itemization-form=\"Questionnaire\" data-itemization-token=\"true\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22form%22%3A%22Questionnaire%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AQ1%3Aa%22%7D%2C%7B%22header%22%3A%22Contact%20Info%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AQ2%3Aa%22%7D%5D%2C%22showPrint%22%3Afalse%2C%22showExport%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22conditionsRows%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22combinator%22%3A%22and%22%2C%22conditionsCombinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, 2, Record:Questionnaire:Q1:a, Record:Questionnaire:Q2:a)&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "NamesAndInfo2",
+      "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-token function-table-token\" data-function-id=\"itemization-table\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:3,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;Record:Questionnaire:Q1:a&quot;},{&quot;header&quot;:&quot;Contact 1&quot;,&quot;contents&quot;:&quot;Record:Questionnaire:Q3:a&quot;},{&quot;header&quot;:&quot;Contact 2&quot;,&quot;contents&quot;:&quot;Record:Questionnaire:Q3:b&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;,&quot;form-name&quot;:&quot;Questionnaire&quot;}\" data-itemization-form=\"Questionnaire\" data-itemization-token=\"true\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22form%22%3A%22Questionnaire%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AQ1%3Aa%22%7D%2C%7B%22header%22%3A%22Contact%201%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AQ3%3Aa%22%7D%2C%7B%22header%22%3A%22Contact%202%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AQ3%3Ab%22%7D%5D%2C%22showPrint%22%3Afalse%2C%22showExport%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22conditionsRows%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22combinator%22%3A%22and%22%2C%22conditionsCombinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ...)&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "NamesAndInfo3",
+      "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-token function-table-token\" data-function-id=\"itemization-table\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:4,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;Record:Questionnaire:Q1:a&quot;},{&quot;header&quot;:&quot;Contact 1&quot;,&quot;contents&quot;:&quot;Record:Questionnaire:Q4:a&quot;},{&quot;header&quot;:&quot;Contact 2&quot;,&quot;contents&quot;:&quot;Record:Questionnaire:Q4:b&quot;},{&quot;header&quot;:&quot;Contact 3&quot;,&quot;contents&quot;:&quot;Record:Questionnaire:Q4:c&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;,&quot;form-name&quot;:&quot;Questionnaire&quot;}\" data-itemization-form=\"Questionnaire\" data-itemization-token=\"true\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22form%22%3A%22Questionnaire%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AQ1%3Aa%22%7D%2C%7B%22header%22%3A%22Contact%201%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AQ4%3Aa%22%7D%2C%7B%22header%22%3A%22Contact%202%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AQ4%3Ab%22%7D%2C%7B%22header%22%3A%22Contact%203%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AQ4%3Ac%22%7D%5D%2C%22showPrint%22%3Afalse%2C%22showExport%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22conditionsRows%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22combinator%22%3A%22and%22%2C%22conditionsCombinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ...)&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "SignUp Finish",
+      "content": "<p></p><p><span><b>Your name has been added to the list!</b></span></p>"
+    },
+    {
+      "name": "SignUp Remarks",
+      "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"SignUpFinalRemarks\" title=\"SignUpFinalRemarks\" draggable=\"true\">&lt;&lt;SignUpFinalRemarks&gt;&gt;</span></b></span></p>"
+    },
+    {
+      "name": "SignUp ViewFinalList",
+      "content": "<p></p><p><span><b>If you'd like to see the list of all who have signed up, </b></span><span><b><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here&quot;,&quot;isPrivate&quot;:true,&quot;authToken&quot;:&quot;fromSignupSheet&quot;}\" style=\"color:#000080;text-decoration:underline\">click here</span></u></b></span><span><b>.</b></span></p>"
+    },
+    {
+      "name": "Notification Email",
+      "content": "<p></p><p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Questionnaire:Q1:a\" title=\"Questionnaire:Q1:a\" draggable=\"true\">&lt;&lt;Questionnaire:Q1:a&gt;&gt;</span></b></span><span> has signed up for </span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Title\" title=\"Customize_Title\" draggable=\"true\">&lt;&lt;Customize_Title&gt;&gt;</span></b></span></p><p></p><p><span>To see the list of all who have signed up </span><span><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">click here</span></u></span><span>.</span></p><p></p><p><span><b>Thank you for using Tawala!</b></span></p>"
+    },
+    {
+      "name": "Delete Record Link",
+      "content": "<p></p><p><span><b>To remove a name from the list </b></span><span><b><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;DeleteRecord&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">click here</span></u></b></span><span><b>.</b></span></p>"
+    },
+    {
+      "name": "No Match Found",
+      "content": "<p></p><p><span><b>The name </b></span><span><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"DeleteRecord:NameToRemove\" title=\"DeleteRecord:NameToRemove\" draggable=\"true\">&lt;&lt;DeleteRecord:NameToRemove&gt;&gt;</span></i></b></span><span><b> was not found in the list.</b></span></p>"
+    },
+    {
+      "name": "Duplicate Names Found",
+      "content": "<p></p><p><span><b>The name </b></span><span><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"DeleteRecord:NameToRemove\" title=\"DeleteRecord:NameToRemove\" draggable=\"true\">&lt;&lt;DeleteRecord:NameToRemove&gt;&gt;</span></i></b></span><span><b>was found more than once in the list.</b></span></p><p><span><b>All occurences of that name will be removed.</b></span></p>"
+    },
+    {
+      "name": "Customization Save Confirmation",
+      "content": "<p style=\"text-align:center\"><span><b><i>All the data have been saved!</i></b></span></p>"
+    }
+  ],
+  "_originalFormat": "1.8",
+  "_designerBuild": "169",
+  "_convertedFrom": "../ Current Tawala Projects/Master List TAWALA/customizable/Sign-up Sheet.tawala",
+  "_conversionPass": {
+    "date": "2026-08-20",
+    "converter": "designer-web/src/lib/tawalaXmlToJson.mjs",
+    "source": "../ Current Tawala Projects/Master List TAWALA/customizable/Sign-up Sheet.tawala"
+  },
+  "deployIdentityName": "Sophisticated Sign-up Sheet 2a565cad",
+  "deployUniqueId": "gnqp5qfd06ktec3",
+  "author": "Douglas Carlston",
+  "authorId": "user_3IgtAyCFHd0WtjtmQLmKLmXJiZb",
+  "userId": "doug@carlston.net"
+}

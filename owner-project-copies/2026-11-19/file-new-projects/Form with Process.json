@@ -1,0 +1,23 @@
+{
+  "name": "Form with process",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "Form 1",
+      "startPoint": true,
+      "items": [],
+      "themePath": "default",
+      "process": "Process 1"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process 1",
+      "commands": []
+    }
+  ],
+  "documents": [],
+  "_originalFormat": "1.6",
+  "_convertedFrom": "../Tawala Projects/Misc old .Tawala files/Form with process.tawala"
+}

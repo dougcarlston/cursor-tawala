@@ -1,0 +1,41 @@
+{
+  "name": "Form with proc and doc",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "Form 1",
+      "startPoint": true,
+      "items": [],
+      "themePath": "default",
+      "process": "Process 1"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process 1",
+      "commands": [
+        {
+          "cmd": "showDocument",
+          "document": "Document 1",
+          "reset": false
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Document 1",
+      "content": [
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": []
+        }
+      ]
+    }
+  ],
+  "_originalFormat": "1.6",
+  "_convertedFrom": "../Tawala Projects/Misc old .Tawala files/Form with process connecting a document.tawala"
+}

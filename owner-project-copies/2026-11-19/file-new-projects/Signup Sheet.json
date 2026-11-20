@@ -1,0 +1,108 @@
+{
+  "name": "Signup-sheet",
+  "format": "2.0",
+  "themePath": "dirtbowl2",
+  "forms": [
+    {
+      "name": "Form 1",
+      "startPoint": true,
+      "themePath": "dirtbowl2",
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Sign-up Sheet Template"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Replace this text with your own instructions, then deploy. Delete this instruction box when you are done."
+        },
+        {
+          "type": "fib",
+          "label": "FIB3",
+          "prompt": "Full Name: ____________________&nbsp; ____________________&nbsp;",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 20,
+              "required": false,
+              "alternateLabel": "firstName",
+              "caption": "(first)",
+              "height": 1
+            },
+            {
+              "name": "b",
+              "length": 20,
+              "required": false,
+              "alternateLabel": "lastName",
+              "caption": "(last)",
+              "height": 1
+            }
+          ],
+          "style": "rightAlignLabelsJustified"
+        },
+        {
+          "type": "fib",
+          "label": "FIB1",
+          "prompt": "Email: ____________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 20,
+              "required": false,
+              "alternateLabel": "Email",
+              "height": 1,
+              "validation": {
+                "type": "email",
+                "errorMessage": "Please enter a valid email address."
+              }
+            }
+          ],
+          "style": "rightAlignLabelsJustified"
+        },
+        {
+          "type": "fib",
+          "label": "FIB2",
+          "prompt": "Address: ____________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 20,
+              "required": false,
+              "alternateLabel": "Address",
+              "height": 1
+            }
+          ],
+          "style": "rightAlignLabelsJustified"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"1\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:4,&quot;column&quot;:[{&quot;header&quot;:&quot;First&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:firstName&gt;&gt;&quot;},{&quot;header&quot;:&quot;Last&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:lastName&gt;&gt;&quot;},{&quot;header&quot;:&quot;Email&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:Email&gt;&gt;&quot;},{&quot;header&quot;:&quot;Address&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:Address&gt;&gt;&quot;}],&quot;form-name&quot;:&quot;Form 1&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" data-itemization-form=\"Form 1\" data-itemization-token=\"true\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"font-size: 10pt; color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ...)&gt;&gt;</span>​"
+        }
+      ],
+      "process": "Process 1"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process 1",
+      "commands": [
+        {
+          "cmd": "show",
+          "form": "Form 1"
+        }
+      ]
+    }
+  ],
+  "documents": [],
+  "deployIdentityName": "Signup-sheet 5fd3f45d",
+  "deployUniqueId": "i9xltc1l2j0ad74",
+  "author": "dev",
+  "authorId": "dev",
+  "userId": "dev"
+}

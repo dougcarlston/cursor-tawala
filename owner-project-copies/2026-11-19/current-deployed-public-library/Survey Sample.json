@@ -1,0 +1,120 @@
+{
+  "name": "Survey Sample",
+  "format": "2.0",
+  "themePath": "mvsc",
+  "forms": [
+    {
+      "name": "Survey",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Simple Survey Sample"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "This Sample shows you how a simple poll works.   Just answer the question below (this is an opinion poll, not a test).\n\n\nYou can add as many responses to your question as you like by pressing the Submit button to add a new response. The results are displayed in the appended Report. \n\n\nTest Drive will delete your answers when you leave the Program so others can try it with a clean slate."
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "What body of water does the Western end of the Panama Canal connect with?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "The Pacific Ocean"
+            },
+            {
+              "label": "b",
+              "text": "The Atlantic Ocean"
+            },
+            {
+              "label": "c",
+              "text": "The Gulf of Mexico"
+            },
+            {
+              "label": "d",
+              "text": "The Gulf of California"
+            },
+            {
+              "label": "e",
+              "text": "The Gulf of America"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Process 1"
+    },
+    {
+      "name": "Report",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p>Here are the results so far:</p><p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><b>What body of water does the Western end of the Panama Canal connect with?</b></span></p><p><span><span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"response-totals-table\" data-function-instance=\"1\" data-function-config=\"{&quot;layout-type&quot;:&quot;vertical&quot;,&quot;field&quot;:&quot;Survey:Q1&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Survey:Q1&quot;,&quot;op&quot;:&quot;mcIsNotBlank&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"RESPONSE TOTALS\">&lt;&lt;RESPONSE TOTALS(vertical, Survey:Q1, Survey:Q1 is not blank)&gt;&gt;</span></span></p><p></p>"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Process 2"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process 1",
+      "commands": [
+        {
+          "cmd": "showDocument",
+          "document": "Thank you",
+          "reset": false
+        },
+        {
+          "cmd": "show",
+          "form": "Report"
+        }
+      ]
+    },
+    {
+      "name": "Process 2",
+      "commands": [
+        {
+          "cmd": "show",
+          "form": "Survey"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Thank you",
+      "content": "<p></p><p>Thank you for taking our survey.</p>"
+    }
+  ],
+  "images": [
+    {
+      "id": "image1",
+      "imageFormat": "PNG",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFUOE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xrTkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJcff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEyddV+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxTe1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCPpnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXIZjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yAI2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVPtItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+SvTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomevP2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg=="
+    }
+  ],
+  "_originalFormat": "1.11",
+  "_designerBuild": "204",
+  "_convertedFrom": "tomcat:gy1zssbrwm4fgfm",
+  "deployIdentityName": "Simple Survey Template",
+  "deployUniqueId": "gy1zssbrwm4fgfm",
+  "_dumpedFrom": "tomcat-postgres",
+  "_dumpedAt": "2026-09-14T22:43:25.827Z",
+  "_tomcatLastUpdated": "2026-09-09T18:46:04.392+00:00",
+  "_tomcatVersion": 56
+}
