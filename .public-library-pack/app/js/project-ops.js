@@ -2055,6 +2055,14 @@
         `data-project="${escapeHtml(projectId || "")}">${escapeHtml(op.label)}</button>`
       );
     }
+    if (options.publicVersions && op.wired === "download-version") {
+      return (
+        `<button type="button" class="pm-action is-active" ` +
+        `title="Download the checked version as a Designer .json file. With none checked, this downloads the live version." ` +
+        `data-op="${escapeHtml(op.id || op.label)}" data-wired="download-version" ` +
+        `data-project="${escapeHtml(projectId || "")}">${escapeHtml(op.label)}</button>`
+      );
+    }
     if (!isOpActive(op)) return disabledChip(op);
     return (
       `<button type="button" class="pm-action is-active" ` +
@@ -8399,7 +8407,7 @@
       location.assign(
         "/app/mytawala-project.html?name=" +
           encodeURIComponent(nextName) +
-          "&v=20261120-vercheck1"
+          "&v=20261123-dljson1"
       );
     }
     document.addEventListener("keydown", onKey, true);
@@ -8553,7 +8561,7 @@
       location.assign(
         "/app/mytawala-project.html?name=" +
           encodeURIComponent(nextName) +
-          "&v=20261120-vercheck1"
+          "&v=20261123-dljson1"
       );
     }
     document.addEventListener("keydown", onKey, true);
@@ -8783,6 +8791,110 @@
         .finally(() => {
           accountActionBusy = false;
         });
+      return true;
+    }
+
+    if (wired === "download-version") {
+      ev.preventDefault();
+      const project = accountProject(projectId);
+      const host = document.getElementById("pmDetailHost") || document;
+      const rows = project ? projectVersionRows(project) : [];
+      const checked = checkedPublicVersionRows(project, host);
+      if (checked.length > 1) {
+        setStatus("Check only one version to download. Clear the checks to download the live version.");
+        return true;
+      }
+      const version =
+        checked.length === 1
+          ? checked[0]
+          : rows.find((v) => v && (v.deployed || v.current) && v.javaVersionId) || null;
+      const versionId = version && version.javaVersionId ? String(version.javaVersionId) : "";
+      if (!/^\d+$/.test(versionId)) {
+        setStatus("That version cannot be downloaded.");
+        return true;
+      }
+      const converter =
+        window.TawalaXmlToJson && window.TawalaXmlToJson.convertTawalaXmlToProject;
+      if (typeof converter !== "function") {
+        setStatus("The Designer file converter did not load. Refresh and try again.");
+        return true;
+      }
+      const accountName = project && project.name ? String(project.name) : name || "Project";
+      const accountId = project && project.uniqueId ? String(project.uniqueId) : "";
+      setStatus("Preparing version " + version.versionNumber + "…");
+      void fetch("/projectmanager/downloadversion?project_version=" + encodeURIComponent(versionId), {
+        credentials: "same-origin",
+        cache: "no-store",
+        redirect: "follow",
+      })
+        .then((res) => res.text().then((xml) => ({ res, xml })))
+        .then(({ res, xml }) => {
+          if (res.url && /\/login(?:\?|$)/.test(res.url)) {
+            location.assign(res.url);
+            return;
+          }
+          if (!res.ok || xml.indexOf("<") === -1) {
+            setStatus("That version did not download.");
+            return;
+          }
+          const converted = converter(xml, { sourceLabel: accountName + ".json" });
+          const fileProject = converted.project || {};
+          fileProject.name = accountName;
+          fileProject.deployIdentityName = accountName;
+          if (/^[A-Za-z0-9]{1,20}$/.test(accountId)) {
+            fileProject.deployUniqueId = accountId;
+            fileProject.uniqueId = accountId;
+            fileProject.accountPushUniqueId = accountId;
+          }
+          const safe = accountName.replace(/[\\/:*?"<>|]+/g, "_").replace(/\s+/g, " ").trim() || "Project";
+          const filename =
+            checked.length === 1 ? safe + " version " + version.versionNumber + ".json" : safe + ".json";
+          const blob = new Blob([JSON.stringify(fileProject, null, 2)], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(url);
+          const notes = converted.warnings && converted.warnings.length
+            ? " (" + converted.warnings.length + " conversion notes)"
+            : "";
+          setStatus("Downloaded " + filename + notes + ".");
+        })
+        .catch(() => {
+          setStatus("That version did not download.");
+        });
+      return true;
+    }
+
+    if (wired === "edit-in-designer" || op === "edit-in-designer") {
+      ev.preventDefault();
+      const project = accountProject(projectId);
+      const rows = project ? projectVersionRows(project) : [];
+      const live =
+        rows.find((v) => v && (v.deployed || v.current) && v.javaVersionId) || null;
+      const versionId = live && live.javaVersionId ? String(live.javaVersionId) : "";
+      const accountName = project && project.name ? String(project.name) : name;
+      const accountId = project && project.uniqueId ? String(project.uniqueId) : "";
+      if (!/^\d+$/.test(versionId) || !accountName || !/^[A-Za-z0-9]{1,20}$/.test(accountId)) {
+        setStatus("This account project cannot be opened in Designer yet.");
+        return true;
+      }
+      const url =
+        "/app/designer/?accountVersion=" +
+        encodeURIComponent(versionId) +
+        "&accountName=" +
+        encodeURIComponent(accountName) +
+        "&accountId=" +
+        encodeURIComponent(accountId);
+      const opened = window.open(url, "tawala-designer-edit");
+      if (!opened) {
+        setStatus("The browser blocked Designer. Allow the window, then use Edit project in Designer again.");
+        return true;
+      }
+      setStatus("Opened “" + accountName + "” in Designer.");
       return true;
     }
 

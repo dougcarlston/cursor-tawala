@@ -76,7 +76,9 @@ export default function App() {
       .then((html) => {
         if (cancelled) return;
         if (!/Welcome back,\s*<span class="userName">/.test(html)) {
-          location.replace("/login?r=" + encodeURIComponent("/app/designer/"));
+          location.replace(
+            "/login?r=" + encodeURIComponent(location.pathname + location.search),
+          );
         }
       })
       .catch(() => {

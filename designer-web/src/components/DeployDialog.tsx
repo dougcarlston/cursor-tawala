@@ -87,7 +87,7 @@ export function DeployDialog() {
         setBusy(false);
       }
       window.open(
-        "/app/mytawala-project.html?name=" + encodeURIComponent(accountName) + "&v=20261120-vercheck1",
+        "/app/mytawala-project.html?name=" + encodeURIComponent(accountName) + "&v=20261123-editdes1",
         "_blank",
         "noopener,noreferrer",
       );

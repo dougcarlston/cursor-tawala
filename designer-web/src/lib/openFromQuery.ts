@@ -7,7 +7,9 @@
  *
  * Clears the query string after a successful load so refresh does not re-import.
  */
+import { isPublicDesigner } from "@/api/accountPush";
 import { clearProjectFileHandle } from "@/lib/shellCommands";
+import { convertTawalaXmlToProject } from "@/lib/tawalaXmlToJson.mjs";
 import { useProjectStore } from "@/store/projectStore";
 
 const MOCK_JSON_RE =
@@ -17,9 +19,18 @@ const SNAPSHOT_RE = /^[a-f0-9]{16,64}$/i;
 function stripOpenQueryParams(): void {
   try {
     const url = new URL(window.location.href);
-    if (!url.searchParams.has("snapshot") && !url.searchParams.has("mockJson")) return;
+    if (
+      !url.searchParams.has("snapshot") &&
+      !url.searchParams.has("mockJson") &&
+      !url.searchParams.has("accountVersion")
+    ) {
+      return;
+    }
     url.searchParams.delete("snapshot");
     url.searchParams.delete("mockJson");
+    url.searchParams.delete("accountVersion");
+    url.searchParams.delete("accountName");
+    url.searchParams.delete("accountId");
     const qs = url.searchParams.toString();
     window.history.replaceState({}, "", url.pathname + (qs ? `?${qs}` : "") + url.hash);
   } catch {
@@ -66,6 +77,70 @@ async function loadProjectObject(
  */
 export async function tryOpenProjectFromQuery(): Promise<boolean> {
   const params = new URLSearchParams(window.location.search);
+  const accountVersion = (params.get("accountVersion") || "").trim();
+  if (accountVersion) {
+    if (!isPublicDesigner()) {
+      useProjectStore.getState().setStatus("Open this project from Designer on the public site.");
+      stripOpenQueryParams();
+      return true;
+    }
+    const accountName = (params.get("accountName") || "").trim();
+    const accountId = (params.get("accountId") || "").trim();
+    if (!/^\d+$/.test(accountVersion) || !accountName || !/^[A-Za-z0-9]{1,20}$/.test(accountId)) {
+      alert("Couldn’t open this account project. Go back to Project Details and use Edit project in Designer.");
+      stripOpenQueryParams();
+      return true;
+    }
+    try {
+      const res = await fetch(
+        "/projectmanager/downloadversion?project_version=" + encodeURIComponent(accountVersion),
+        { credentials: "same-origin", cache: "no-store", redirect: "follow" },
+      );
+      let landed = "";
+      try {
+        landed = new URL(res.url, location.origin).pathname;
+      } catch {
+        landed = "";
+      }
+      if (/\/login$/.test(landed)) {
+        location.assign("/login?r=" + encodeURIComponent(location.pathname + location.search));
+        return true;
+      }
+      const xml = await res.text();
+      if (!res.ok || xml.indexOf("<") === -1) {
+        throw new Error("The live version did not come back.");
+      }
+      const converted = convertTawalaXmlToProject(xml, { sourceLabel: accountName + ".tawala" });
+      const project = converted.project as {
+        name?: string;
+        deployIdentityName?: string;
+        deployUniqueId?: string;
+        uniqueId?: string;
+        accountPushUniqueId?: string;
+      };
+      project.name = accountName;
+      project.deployIdentityName = accountName;
+      project.deployUniqueId = accountId;
+      project.uniqueId = accountId;
+      project.accountPushUniqueId = accountId;
+      clearProjectFileHandle();
+      useProjectStore.getState().importJson(JSON.stringify(project));
+      const notes = converted.warnings.length
+        ? " Opened with " + converted.warnings.length + " conversion notes."
+        : "";
+      useProjectStore
+        .getState()
+        .setStatus("Opened “" + accountName + "” from My Tawala. A later Push updates this project." + notes);
+      stripOpenQueryParams();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      alert("Couldn’t open this project in Designer.\n\n" + msg);
+      useProjectStore.getState().setStatus("Open from My Tawala failed: " + msg);
+      stripOpenQueryParams();
+    }
+    return true;
+  }
+
   const snapshotId = (params.get("snapshot") || "").trim();
   const mockJson = (params.get("mockJson") || "").trim();
 
