@@ -33,7 +33,12 @@ public class HomeController implements Controller {
 
         */
 		
-		response.sendRedirect(WellKnown.urls.getSportsHome());
+		String target = WellKnown.urls.getHomePage();
+		String query = request.getQueryString();
+		if (query != null && query.length() > 0) {
+			target = target + "?" + query;
+		}
+		response.sendRedirect(target);
 		return null;
 	}
 

@@ -7,6 +7,7 @@
     <div class="section">
         <tiles:getAsString name="introductionText"/>
 	    <form method="POST" id="editUser">
+		<input type="hidden" name="r" value="<c:out value="${param.r}" />" />
 		<br />
 		<h3>Account Information</h3>
         <div>

@@ -87,7 +87,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20261120-designer1"></script>
+  <script src="js/chrome.js?v=20261123-same11"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -598,7 +598,11 @@
         a.remove();
       });
       document.querySelectorAll('a[href="signup.html"]').forEach((a) => {
-        a.setAttribute("href", "/user/registration");
+        a.setAttribute("href", "#");
+        a.addEventListener("click", (event) => {
+          event.preventDefault();
+          if (window.TawalaChrome && TawalaChrome.openSignUp) TawalaChrome.openSignUp();
+        });
       });
       document.querySelectorAll('a[href="http://localhost:5173"]').forEach((a) => {
         const p = a.parentElement;

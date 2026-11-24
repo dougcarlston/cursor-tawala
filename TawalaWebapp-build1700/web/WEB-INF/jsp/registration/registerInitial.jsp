@@ -7,6 +7,7 @@
 
 <div class="section">
 	<form:form id="registrationForm" commandName="userForm">
+		<input type="hidden" name="r" value="<c:out value="${param.r}" />" />
 		<p>
 			Please create a user name and password.
     	</p>

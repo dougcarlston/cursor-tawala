@@ -1,6 +1,7 @@
 package com.tawala.web.user;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import com.scissor.Log;
 import com.tawala.domain.User;
 import com.tawala.web.WorldInitializer;
 import com.tawala.web.controller.VisitorTrackerInterceptor;
+import com.tawala.web.controller.WellKnown;
 import com.tawala.web.general.LandingPageController;
 
 public class UserRegistrationController extends BaseUserAccountEditController {
@@ -68,8 +70,66 @@ public class UserRegistrationController extends BaseUserAccountEditController {
 		}
 		
 		postUserRegistration(request, response, form.getUser());
-		
-		return super.onSubmit(request, response, command, errors);
+
+		if (request.getSession(false) == null
+				|| request.getSession(false).getAttribute("user") == null) {
+			LoginController.setupUserSession(request, response, form.getUser(), true);
+		}
+		response.sendRedirect(pageToReturnTo(request));
+		return null;
+	}
+
+	/**
+	 * The page the person was on when they opened sign-up. Login already
+	 * does this with the same {@code r} parameter.
+	 */
+	private String pageToReturnTo(HttpServletRequest request) {
+		String safe = sameSitePath(request, request
+				.getParameter(LoginController.REDIRECT_TO_PARAMETER));
+		if (safe == null || isAccountForm(safe)) {
+			return WellKnown.urls.getHome();
+		}
+		return safe;
+	}
+
+	private static boolean isAccountForm(String path) {
+		String bare = path;
+		int query = bare.indexOf('?');
+		if (query >= 0) {
+			bare = bare.substring(0, query);
+		}
+		return "/user/initialsetup".equals(bare)
+				|| "/user/registration".equals(bare)
+				|| "/login".equals(bare);
+	}
+
+	private static String sameSitePath(HttpServletRequest request, String candidate) {
+		if (!StringUtils.hasText(candidate)) {
+			return null;
+		}
+		candidate = candidate.trim();
+		if (candidate.startsWith("/") && !candidate.startsWith("//")
+				&& candidate.indexOf('\\') < 0 && candidate.indexOf("://") < 0) {
+			return candidate;
+		}
+		try {
+			URI uri = new URI(candidate);
+			if (!uri.isAbsolute()
+					|| uri.getHost() == null
+					|| !request.getServerName().equalsIgnoreCase(uri.getHost())) {
+				return null;
+			}
+			String path = uri.getRawPath();
+			if (path == null || !path.startsWith("/") || path.startsWith("//")) {
+				return null;
+			}
+			if (uri.getRawQuery() != null) {
+				path = path + '?' + uri.getRawQuery();
+			}
+			return path;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	protected void registerUser(BindException errors, UserForm form) throws UnsupportedEncodingException {

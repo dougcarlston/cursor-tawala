@@ -617,7 +617,12 @@
     if (window.TAWALA_PUBLIC_SITE && TawalaChrome.syncPublicAccount) {
       TawalaChrome.syncPublicAccount().then(async () => {
         if (!TawalaChrome.isLoggedIn()) {
-          location.replace("/login?r=" + encodeURIComponent("/app/mytawala.html"));
+          const label = document.getElementById("mytawalaUserLabel");
+          if (label) {
+            label.textContent = "";
+            const note = label.parentElement;
+            if (note) note.textContent = "Sign in to see your projects.";
+          }
           return;
         }
         const label = document.getElementById("mytawalaUserLabel");

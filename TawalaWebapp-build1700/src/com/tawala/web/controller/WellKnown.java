@@ -145,6 +145,10 @@ public class WellKnown {
         return "/user/registration";
     }
 
+    public String getClerkSession() {
+        return "/user/clerk-session";
+    }
+
     public String getUserInitialRegistration() {
         return "/user/initialsetup";
     }

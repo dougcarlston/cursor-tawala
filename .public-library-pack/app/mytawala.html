@@ -134,7 +134,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20261120-designer1"></script>
+  <script src="js/chrome.js?v=20261123-same11"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -618,7 +618,12 @@
     if (window.TAWALA_PUBLIC_SITE && TawalaChrome.syncPublicAccount) {
       TawalaChrome.syncPublicAccount().then(async () => {
         if (!TawalaChrome.isLoggedIn()) {
-          location.replace("/login?r=" + encodeURIComponent("/app/mytawala.html"));
+          const label = document.getElementById("mytawalaUserLabel");
+          if (label) {
+            label.textContent = "";
+            const note = label.parentElement;
+            if (note) note.textContent = "Sign in to see your projects.";
+          }
           return;
         }
         const label = document.getElementById("mytawalaUserLabel");

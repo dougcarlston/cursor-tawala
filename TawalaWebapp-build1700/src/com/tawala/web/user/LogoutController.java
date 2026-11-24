@@ -29,7 +29,7 @@ public class LogoutController implements Controller {
 
         handleLogout(request, response);
 
-        response.sendRedirect(WellKnown.urls.getHome());
+        response.sendRedirect(WellKnown.urls.getHomePage());
         
         return null;
     }
@@ -45,9 +45,9 @@ public class LogoutController implements Controller {
         }
         
         response.addCookie(LoginController.removeForumIntegrationCookie());
+        response.addCookie(LoginController.removeUserAccessCookie());
         UserAccessTicket ticket = UserAccessTicketInterceptor.getUserAccessTicket(request);
         if(ticket != null) {
-        	response.addCookie(LoginController.removeUserAccessCookie());
         	UsersHibernateImpl.deleteAccessTicket(ticket);
         }
     }

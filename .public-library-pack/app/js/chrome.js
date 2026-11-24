@@ -11,58 +11,285 @@
   /** Explicit guest/browse mode — set by Logout. Cleared by Login. */
   const GUEST_KEY = "tawala.mock.guest";
   const CLERK_PUBLISHABLE_KEY = "pk_test_cmFyZS1iYXQtNjMzNy5jbGVyay5hY2NvdW50cy5kZXYk";
-  const CLERK_JS_URL = "https://rare-bat-6337.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js";
+  const CLERK_JS_URL = "https://rare-bat-6337.clerk.accounts.dev/npm/@clerk/clerk-js@4.73.14/dist/clerk.browser.js";
 
   let clerkInstance = null;
   let clerkLoaded = false;
+  let pendingClerkAction = "";
+  let clerkLoadPromise = null;
+  let publicSignOutStarted = false;
+  let publicBindStarted = false;
 
-  function initClerk() {
-    if (isPublicSite()) return;
-    if (typeof window === "undefined" || !CLERK_PUBLISHABLE_KEY) return;
-    if (window.Clerk && window.Clerk.isReady) {
-      clerkInstance = window.Clerk;
-      onClerkReady();
-      return;
-    }
+  /**
+   * Clerk 4's isReady is a function. A truthy check skips load(), then openSignIn throws.
+   * signOut() also schedules closeSignIn(); open the window only after that, with no session left.
+   * On this dev instance a leftover session makes openSignIn a silent no-op.
+   */
+  function clerkIsLoaded() {
+    const clerk = window.Clerk;
+    if (!clerk) return false;
+    if (typeof clerk.isReady === "function") return clerk.isReady() === true;
+    return clerk.loaded === true;
+  }
 
-    const existingScript = document.querySelector(`script[src*="clerk.browser.js"]`);
-    if (!existingScript) {
-      const script = document.createElement("script");
-      script.setAttribute("data-clerk-publishable-key", CLERK_PUBLISHABLE_KEY);
-      script.async = true;
-      script.crossOrigin = "anonymous";
-      script.src = CLERK_JS_URL;
-      script.onload = async () => {
+  /** Home still loads scripts/json.js, which puts enumerable methods on Object.prototype. Clerk's cookie writer then calls .split on those methods and Login does nothing. */
+  function hideLegacyPrototypeMethods() {
+    ["toJSONString", "parseJSON"].forEach((name) => {
+      [Object, String, Array, Date, Boolean, Number].forEach((ctor) => {
         try {
-          if (window.Clerk) {
-            await window.Clerk.load();
-            clerkInstance = window.Clerk;
-            clerkLoaded = true;
-            onClerkReady();
+          const desc = Object.getOwnPropertyDescriptor(ctor.prototype, name);
+          if (desc && desc.enumerable) {
+            Object.defineProperty(ctor.prototype, name, { enumerable: false });
           }
-        } catch (err) {
-          console.warn("[TawalaChrome] Clerk load warning:", err);
-        }
-      };
-      document.head.appendChild(script);
-    } else {
-      existingScript.addEventListener("load", async () => {
-        try {
-          if (window.Clerk) {
-            await window.Clerk.load();
-            clerkInstance = window.Clerk;
-            clerkLoaded = true;
-            onClerkReady();
-          }
-        } catch (err) {
-          console.warn("[TawalaChrome] Clerk load warning:", err);
+        } catch {
+          /* ignore */
         }
       });
+    });
+    try {
+      const method = Object.getOwnPropertyDescriptor(Function.prototype, "method");
+      if (method && method.enumerable) {
+        Object.defineProperty(Function.prototype, "method", { enumerable: false });
+      }
+    } catch {
+      /* ignore */
     }
+  }
+
+  hideLegacyPrototypeMethods();
+
+  function ensureClerk() {
+    if (typeof window === "undefined" || !CLERK_PUBLISHABLE_KEY) {
+      return Promise.reject(new Error("Clerk key missing"));
+    }
+    if (clerkLoadPromise) return clerkLoadPromise;
+    clerkLoadPromise = (async () => {
+      hideLegacyPrototypeMethods();
+      window.__clerk_publishable_key = CLERK_PUBLISHABLE_KEY;
+      let script = document.querySelector('script[src*="clerk.browser.js"]');
+      if (!script) {
+        script = document.createElement("script");
+        script.setAttribute("data-clerk-publishable-key", CLERK_PUBLISHABLE_KEY);
+        script.async = true;
+        script.crossOrigin = "anonymous";
+        script.src = CLERK_JS_URL;
+        document.head.appendChild(script);
+      }
+      if (!window.Clerk) {
+        await new Promise((resolve, reject) => {
+          const finish = () => {
+            script.setAttribute("data-tawala-clerk-loaded", "1");
+            if (window.Clerk) resolve();
+            else reject(new Error("Clerk missing"));
+          };
+          if (script.getAttribute("data-tawala-clerk-loaded") === "1" || window.Clerk) {
+            finish();
+            return;
+          }
+          script.addEventListener("load", finish);
+          script.addEventListener("error", () => reject(new Error("Clerk script failed")));
+        });
+      }
+      hideLegacyPrototypeMethods();
+      if (!clerkIsLoaded()) await window.Clerk.load();
+      clerkInstance = window.Clerk;
+      clerkLoaded = true;
+      return window.Clerk;
+    })().catch((err) => {
+      clerkLoadPromise = null;
+      throw err;
+    });
+    return clerkLoadPromise;
+  }
+
+  function initClerk() {
+    ensureClerk()
+      .then(() => {
+        onClerkReady();
+      })
+      .catch((err) => {
+        console.warn("[TawalaChrome] Clerk load warning:", err);
+      });
+  }
+
+  function clerkReturnPath() {
+    try {
+      const r = new URLSearchParams(location.search).get("r") || "";
+      if (r.startsWith("/") && !r.startsWith("//") && r.indexOf("://") < 0 && r.indexOf("\\") < 0) {
+        return r;
+      }
+    } catch {
+      /* ignore */
+    }
+    return "";
+  }
+
+  function authHold() {
+    try {
+      return sessionStorage.getItem("tawala.auth.hold") === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  function authAwaiting() {
+    try {
+      return sessionStorage.getItem("tawala.auth.await") === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  function holdClerkAttach() {
+    try {
+      sessionStorage.setItem("tawala.auth.hold", "1");
+      sessionStorage.removeItem("tawala.auth.await");
+      sessionStorage.removeItem("tawala.clerk.bind");
+      sessionStorage.removeItem("tawala.clerk.bind.attempt");
+      sessionStorage.removeItem("tawala.clerk.bind.retry");
+      sessionStorage.removeItem("tawala.auth.cleared");
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function clearKeepSignedInCookie() {
+    document.cookie = "x=; Path=/; Max-Age=0";
+  }
+
+  let clerkListenerAttached = false;
+
+  async function bindPublicClerkAccount() {
+    if (authHold() && !authAwaiting()) return;
+    const clerkUser = window.Clerk && window.Clerk.user;
+    if (!clerkUser || !clerkUser.id) return;
+    let already = "";
+    try {
+      const res = await fetch("/home", { credentials: "same-origin", cache: "no-store" });
+      const html = res.ok ? await res.text() : "";
+      const match = String(html).match(/Welcome back,\s*<span class="userName">([^<]*)<\/span>/);
+      already = match ? match[1].trim() : "";
+    } catch {
+      already = "";
+    }
+    const clerkName = clerkUser.username || "";
+    const samePerson = already === clerkUser.id || (clerkName !== "" && already === clerkName);
+    if (samePerson) {
+      try {
+        sessionStorage.setItem("tawala.clerk.bind", clerkUser.id);
+        sessionStorage.removeItem("tawala.clerk.bind.retry");
+        sessionStorage.removeItem("tawala.clerk.bind.attempt");
+      } catch {
+        /* ignore */
+      }
+      return;
+    }
+    try {
+      const stamp = clerkUser.id + ":" + already;
+      if (sessionStorage.getItem("tawala.clerk.bind.attempt") === stamp) return;
+      sessionStorage.setItem("tawala.clerk.bind.attempt", stamp);
+    } catch {
+      /* ignore */
+    }
+    try {
+      if (sessionStorage.getItem("tawala.clerk.bind") === clerkUser.id) {
+        if (sessionStorage.getItem("tawala.clerk.bind.retry") === clerkUser.id) return;
+        sessionStorage.setItem("tawala.clerk.bind.retry", clerkUser.id);
+      }
+    } catch {
+      /* ignore */
+    }
+    let token = "";
+    try {
+      token = window.Clerk.session ? await window.Clerk.session.getToken() : "";
+    } catch {
+      token = "";
+    }
+    if (!token) return;
+    if (authHold() && !authAwaiting()) return;
+    const email =
+      clerkUser.primaryEmailAddress && clerkUser.primaryEmailAddress.emailAddress
+        ? clerkUser.primaryEmailAddress.emailAddress
+        : "";
+    let ok = false;
+    try {
+      const res = await fetch("/user/clerk-session", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: token,
+          email: email,
+          firstName: clerkUser.firstName || "",
+          lastName: clerkUser.lastName || "",
+        }),
+      });
+      ok = res.ok;
+    } catch {
+      ok = false;
+    }
+    if (!ok) return;
+    if (authHold() && !authAwaiting()) return;
+    try {
+      sessionStorage.setItem("tawala.clerk.bind", clerkUser.id);
+    } catch {
+      /* ignore */
+    }
+    const back = absoluteReturnUrl();
+    if (back === location.href) location.reload();
+    else location.href = back;
+  }
+
+  function authCleared() {
+    try {
+      return sessionStorage.getItem("tawala.auth.cleared") === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  function maybeBindAfterPrompt() {
+    if (publicBindStarted || !isPublicSite()) return;
+    if (!authAwaiting() || !authCleared()) return;
+    if (!window.Clerk || !window.Clerk.user) return;
+    publicBindStarted = true;
+    try {
+      sessionStorage.removeItem("tawala.auth.hold");
+      sessionStorage.removeItem("tawala.auth.await");
+      sessionStorage.removeItem("tawala.auth.cleared");
+      sessionStorage.removeItem("tawala.auth.return");
+    } catch {
+      /* ignore */
+    }
+    bindPublicClerkAccount();
   }
 
   function onClerkReady() {
     if (!clerkInstance) return;
+    if (isPublicSite()) {
+      if (pendingClerkAction === "signOut") {
+        pendingClerkAction = "";
+        finishPublicSignOut();
+        return;
+      }
+      if (!clerkListenerAttached) {
+        clerkListenerAttached = true;
+        clerkInstance.addListener((emission) => {
+          if (!emission || !emission.user) return;
+          if (authHold() && !authAwaiting()) return;
+          maybeBindAfterPrompt();
+        });
+      }
+      const pending = pendingClerkAction;
+      if (pending === "signIn" || pending === "signUp") {
+        pendingClerkAction = "";
+        continueClerkPrompt(pending);
+        return;
+      }
+      if (authHold() && !(authAwaiting() && authCleared() && clerkInstance.user)) return;
+      maybeBindAfterPrompt();
+      return;
+    }
     const user = clerkInstance.user;
     if (user) {
       const displayName =
@@ -137,6 +364,10 @@
   /** Public host copy. Does not default every visitor to the dev session. */
   function isPublicSite() {
     return typeof window !== "undefined" && window.TAWALA_PUBLIC_SITE === true;
+  }
+
+  function publicAuthHref(path) {
+    return path + "?r=" + encodeURIComponent(location.pathname + location.search);
   }
 
   function isGuestMode() {
@@ -241,20 +472,178 @@
     }
   }
 
-  function openSignIn() {
-    if (window.Clerk && typeof window.Clerk.openSignIn === "function") {
-      window.Clerk.openSignIn();
-    } else {
-      location.href = "login.html";
+  async function clearClerkSession() {
+    const clerk = window.Clerk;
+    if (!clerk || (!clerk.user && !clerk.session)) return;
+    try {
+      if (typeof clerk.signOut === "function") await clerk.signOut();
+    } catch {
+      /* ignore */
+    }
+    const deadline = Date.now() + 2500;
+    while ((clerk.user || clerk.session) && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    /* signOut schedules closeSignIn(); let that finish before opening a window. */
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  let promptSerial = 0;
+  let clerkDialogSawFields = false;
+
+  async function continueClerkPrompt(kind) {
+    const serial = ++promptSerial;
+    publicBindStarted = false;
+    holdClerkAttach();
+    await clearClerkSession();
+    if (serial !== promptSerial) return;
+    if (window.Clerk && (window.Clerk.user || window.Clerk.session)) {
+      console.warn("[TawalaChrome] Clerk session still present; sign-in window was not opened.");
+      return;
+    }
+    try {
+      sessionStorage.setItem("tawala.auth.hold", "1");
+      sessionStorage.setItem("tawala.auth.await", "1");
+      sessionStorage.setItem("tawala.auth.cleared", "1");
+      sessionStorage.setItem("tawala.auth.return", absoluteReturnUrl());
+    } catch {
+      /* ignore */
+    }
+    try {
+      const options = clerkOpenOptions();
+      if (kind === "signUp" && window.Clerk && typeof window.Clerk.openSignUp === "function") {
+        window.Clerk.openSignUp(options);
+      } else if (window.Clerk && typeof window.Clerk.openSignIn === "function") {
+        window.Clerk.openSignIn(options);
+      }
+    } catch (err) {
+      console.warn("[TawalaChrome] Clerk window warning:", err);
+    }
+    rememberClerkFields();
+    leaveBlankSignInWindow(serial);
+  }
+
+  function rememberClerkFields() {
+    if (rememberClerkFields.started) return;
+    rememberClerkFields.started = true;
+    setInterval(() => {
+      const dialog = document.querySelector("[role=dialog]");
+      if (dialog && dialog.querySelector("input, textarea")) clerkDialogSawFields = true;
+    }, 400);
+  }
+
+  function leaveBlankSignInWindow(serial) {
+    setTimeout(() => {
+      if (serial !== promptSerial) return;
+      const dialog = document.querySelector("[role=dialog]");
+      if (dialog && dialog.querySelector("input, textarea")) {
+        clerkDialogSawFields = true;
+        return;
+      }
+      if (clerkDialogSawFields) return;
+      try {
+        if (window.Clerk && typeof window.Clerk.closeSignIn === "function") window.Clerk.closeSignIn();
+      } catch {
+        /* ignore */
+      }
+      if (location.pathname === "/login") return;
+      const back = (location.pathname || "/home") + (location.search || "");
+      location.href = "/login?r=" + encodeURIComponent(back);
+    }, 8000);
+  }
+
+  async function finishPublicSignOut() {
+    if (publicSignOutStarted) return;
+    publicSignOutStarted = true;
+    pendingClerkAction = "";
+    holdClerkAttach();
+    clearKeepSignedInCookie();
+    try {
+      await Promise.race([
+        ensureClerk(),
+        new Promise((resolve) => setTimeout(resolve, 2500)),
+      ]);
+    } catch {
+      /* ignore */
+    }
+    try {
+      await clearClerkSession();
+    } catch {
+      /* ignore */
+    }
+    try {
+      await fetch("/logout", { credentials: "same-origin", redirect: "follow", cache: "no-store" });
+    } catch {
+      /* ignore */
+    }
+    location.href = "/home";
+  }
+
+  function signOutAndLeave() {
+    pendingClerkAction = "signOut";
+    initClerk();
+    setTimeout(() => {
+      if (pendingClerkAction === "signOut") finishPublicSignOut();
+    }, 3000);
+  }
+
+  function liveReturnPath() {
+    const requested = clerkReturnPath();
+    if (requested && requested !== "/") return requested;
+    const path = location.pathname || "/";
+    if (
+      path === "/" ||
+      path.endsWith("/login.html") ||
+      path.endsWith("/signup.html")
+    ) {
+      return "/home";
+    }
+    return path + (location.search || "");
+  }
+
+  function absoluteReturnUrl() {
+    const path = liveReturnPath() || "/home";
+    try {
+      return new URL(path, location.origin).href;
+    } catch {
+      return location.origin + "/home";
     }
   }
 
-  function openSignUp() {
-    if (window.Clerk && typeof window.Clerk.openSignUp === "function") {
-      window.Clerk.openSignUp();
-    } else {
-      location.href = "signup.html";
+  function clerkOpenOptions() {
+    const target = absoluteReturnUrl();
+    return {
+      fallbackRedirectUrl: target,
+      signUpFallbackRedirectUrl: target,
+    };
+  }
+
+  function mockAuthPage(kind) {
+    const onApp = typeof location !== "undefined" && location.pathname.indexOf("/app/") === 0;
+    if (kind === "signUp") return onApp ? "/app/signup.html" : "signup.html";
+    return onApp ? "/app/login.html" : "login.html";
+  }
+
+  function openSignIn() {
+    if (!isPublicSite()) {
+      if (window.Clerk && typeof window.Clerk.openSignIn === "function") window.Clerk.openSignIn();
+      else location.href = mockAuthPage("signIn");
+      return;
     }
+    holdClerkAttach();
+    pendingClerkAction = "signIn";
+    initClerk();
+  }
+
+  function openSignUp() {
+    if (!isPublicSite()) {
+      if (window.Clerk && typeof window.Clerk.openSignUp === "function") window.Clerk.openSignUp();
+      else location.href = mockAuthPage("signUp");
+      return;
+    }
+    holdClerkAttach();
+    pendingClerkAction = "signUp";
+    initClerk();
   }
 
   function openUserProfile() {
@@ -380,8 +769,8 @@
           `<li><a href="${isPublicSite() ? "/logout" : "logout.html"}" class="clerk-logout-action">Logout</a></li>`,
         ]
       : [
-          `<li><a href="${isPublicSite() ? "/user/registration" : "signup.html"}" class="clerk-signup-action">Register</a></li>`,
-          `<li><a href="${isPublicSite() ? "/login" : "login.html?next=mytawala.html"}" class="clerk-login-action">Log in</a></li>`,
+          `<li><a href="${isPublicSite() ? "#" : "signup.html"}" class="clerk-signup-action">Register</a></li>`,
+          `<li><a href="${isPublicSite() ? "#" : "login.html?next=mytawala.html"}" class="clerk-login-action">Log in</a></li>`,
         ];
     return (
       `<div class="account-menu">` +
@@ -399,8 +788,8 @@
     if (isPublicSite()) {
       return (
         `Welcome. Please ` +
-        `<a href="/user/registration">register</a> or ` +
-        `<a href="/login">Log in</a> ` +
+        `<a href="#" class="clerk-signup-action">register</a> or ` +
+        `<a href="#" class="clerk-login-action">Log in</a> ` +
         renderAccountMenu("")
       );
     }
@@ -500,7 +889,7 @@
 
     scope.querySelectorAll(".clerk-login-action").forEach((el) => {
       el.addEventListener("click", (e) => {
-        if (window.Clerk) {
+        if (isPublicSite() || window.Clerk) {
           e.preventDefault();
           openSignIn();
         }
@@ -509,7 +898,7 @@
 
     scope.querySelectorAll(".clerk-signup-action").forEach((el) => {
       el.addEventListener("click", (e) => {
-        if (window.Clerk) {
+        if (isPublicSite() || window.Clerk) {
           e.preventDefault();
           openSignUp();
         }
@@ -518,6 +907,16 @@
 
     scope.querySelectorAll(".clerk-logout-action").forEach((el) => {
       el.addEventListener("click", async (e) => {
+        if (isPublicSite()) {
+          e.preventDefault();
+          try {
+            sessionStorage.removeItem("tawala.clerk.bind");
+          } catch {
+            /* ignore */
+          }
+          await finishPublicSignOut();
+          return;
+        }
         if (window.Clerk && window.Clerk.user) {
           e.preventDefault();
           await clearSession();
@@ -647,6 +1046,22 @@
     updateSidebarAdminVisibility();
   }
 
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      if (isPublicSite()) initClerk();
+    });
+  } else if (isPublicSite()) {
+    initClerk();
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("loginForm");
+    if (!form) return;
+    form.addEventListener("submit", (event) => {
+      if (!event.isTrusted) event.preventDefault();
+    });
+  });
+
   window.TawalaChrome = {
     mount,
     anchor,
@@ -663,6 +1078,7 @@
     clearSession,
     openSignIn,
     openSignUp,
+    signOutAndLeave,
     openUserProfile,
     myTawalaHref,
     readSession,

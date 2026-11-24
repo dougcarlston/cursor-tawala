@@ -61,7 +61,7 @@
 		</div>
 		
 		<div id="statusLoggedOut" style="display: none;">
-			Hello. <a class="headingStatusLink" href="<tawala:loginUrl />" id="linkToLogin">Login</a> to see your projects. New to Tawala? <a class="headingStatusLink" href="${urls.userInitialRegistration}">Sign up for FREE account here</a>
+			Hello. <a class="headingStatusLink" href="/app/login.html" id="linkToLogin">Login</a> to see your projects. New to Tawala? <a class="headingStatusLink" href="/app/signup.html" id="linkToSignUp">Sign up for FREE account here</a>
 		</div>
 </div>
 		
@@ -81,6 +81,28 @@
 			loggedOutObj.style.display = "none";
 			loggedInObj.style.display = "block";
 		} 
+	}
+</script>
+<script>window.TAWALA_PUBLIC_SITE=true;</script>
+<script src="/app/js/chrome.js?v=20261123-same11"></script>
+<script>
+	function openClerkAccount(action) {
+		if (!window.TawalaChrome) return;
+		if (action === "signUp" && TawalaChrome.openSignUp) TawalaChrome.openSignUp();
+		else if (TawalaChrome.openSignIn) TawalaChrome.openSignIn();
+	}
+	var loginLink = document.getElementById("linkToLogin");
+	if (loginLink) loginLink.onclick = function () { openClerkAccount("signIn"); return false; };
+	var signUpLink = document.getElementById("linkToSignUp");
+	if (signUpLink) signUpLink.onclick = function () { openClerkAccount("signUp"); return false; };
+	var logoutLinks = document.querySelectorAll('a[href="/logout"], a[href="${urls.logout}"]');
+	for (var i = 0; i < logoutLinks.length; i++) {
+		logoutLinks[i].onclick = function () {
+			if (window.TawalaChrome && TawalaChrome.signOutAndLeave) {
+				TawalaChrome.signOutAndLeave();
+				return false;
+			}
+		};
 	}
 </script>
 
@@ -106,7 +128,7 @@
 		<c:if test="${! empty user}">
 			<c:if test="${user.status.allowedToViewDesigner}">
 				<li class="<c:out value="${designerPageClass}" />" >
-					<a href="/app/designer/" id="designerLink">DESIGNER</a>
+					<a href="${urls.designer}" id="designerLink">DESIGNER</a>
 				</li>
 			</c:if>
 		</c:if>
@@ -116,12 +138,12 @@
 		</li>
 
 		<li class="<c:out value="${libraryPageClass}" />" >
-			<a href="/app/library.html?v=20261120-theme1">LIBRARY</a>
+			<a href="/app/library.html">LIBRARY</a>
 		</li>
 
 		<c:if test="${! empty user}">
 			<li class="<c:out value="${mytawalaPageClass}" />" >
-				<a href="/app/mytawala.html?v=20261120-theme1">MY TAWALA</a>
+				<a href="/app/mytawala.html">MY TAWALA</a>
 			</li>
 		</c:if>
 

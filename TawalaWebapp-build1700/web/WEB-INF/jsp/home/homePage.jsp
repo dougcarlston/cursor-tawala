@@ -60,10 +60,32 @@
 							<a class="headingStatusLink" href="/logout">Logout</a>
 						</c:when>
 						<c:otherwise>
-							Hello. <a class="headingStatusLink" href="<tawala:loginUrl />" id="linkToLogin">Login</a> to see your projects. New to Tawala? <a class="headingStatusLink" href="${urls.userInitialRegistration}">Sign up for FREE account here!</a>
+							Hello. <a class="headingStatusLink" href="/app/login.html" id="linkToLogin">Login</a> to see your projects. New to Tawala? <a class="headingStatusLink" href="/app/signup.html" id="linkToSignUp">Sign up for FREE account here!</a>
 						</c:otherwise>        
 					</c:choose>        
 				</div>
+<script>window.TAWALA_PUBLIC_SITE=true;</script>
+<script src="/app/js/chrome.js?v=20261123-same11"></script>
+<script>
+	function openClerkAccount(action) {
+		if (!window.TawalaChrome) return;
+		if (action === "signUp" && TawalaChrome.openSignUp) TawalaChrome.openSignUp();
+		else if (TawalaChrome.openSignIn) TawalaChrome.openSignIn();
+	}
+	var loginLink = document.getElementById("linkToLogin");
+	if (loginLink) loginLink.onclick = function () { openClerkAccount("signIn"); return false; };
+	var signUpLink = document.getElementById("linkToSignUp");
+	if (signUpLink) signUpLink.onclick = function () { openClerkAccount("signUp"); return false; };
+	var logoutLinks = document.querySelectorAll('a[href="/logout"]');
+	for (var i = 0; i < logoutLinks.length; i++) {
+		logoutLinks[i].onclick = function () {
+			if (window.TawalaChrome && TawalaChrome.signOutAndLeave) {
+				TawalaChrome.signOutAndLeave();
+				return false;
+			}
+		};
+	}
+</script>
 
                 <div id="headingMenu">
 					<%@ include file="/WEB-INF/jsp/admin/administrator-access.jspf" %>

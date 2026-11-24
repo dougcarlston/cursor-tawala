@@ -28,6 +28,7 @@ import com.tawala.web.projectmanager.SendLinksByEmailController;
 import com.tawala.web.projectmanager.UserProjectTestDriveController;
 import com.tawala.web.sportsdashboard.ContactUsController;
 import com.tawala.web.sportsdashboard.SendEmailToOrganizationBoardController;
+import com.tawala.web.user.ClerkSessionController;
 import com.tawala.web.user.EmailVerificationController;
 import com.tawala.web.user.InitialRegistrationController;
 import com.tawala.web.user.LoginController;
@@ -51,6 +52,8 @@ public class AllowUnauthenticatedUserControllerMap extends
 
 		registerHandler(WellKnown.urls.getUserRegistration(),
 				new UserRegistrationController());
+		registerHandler(WellKnown.urls.getClerkSession(),
+				new ClerkSessionController());
 		registerHandler(WellKnown.urls.getUserInitialRegistration(),
 				new InitialRegistrationController());
 		registerHandler(

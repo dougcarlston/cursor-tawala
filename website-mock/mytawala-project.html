@@ -274,7 +274,8 @@
       const host = document.getElementById("pmDetailHost");
       await TawalaChrome.syncPublicAccount();
       if (!TawalaChrome.isLoggedIn()) {
-        location.replace("/login?r=" + encodeURIComponent(location.pathname + location.search));
+        const label = document.getElementById("mytawalaUserLabel");
+        if (label) label.textContent = "Sign in to see this project.";
         return;
       }
       const name = params.get("name") || "";
