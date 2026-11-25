@@ -8,7 +8,11 @@
 		<div class="content">
 			<h3>My Account</h3>
 			<div>
-				<span class="label">Name:</span><span>${user.id}</span>
+				<c:set var="shownName" value="${user.id}" />
+				<c:if test="${fn:startsWith(user.id, 'user_') and not empty user.firstName}">
+					<c:set var="shownName" value="${user.firstName}" />
+				</c:if>
+				<span class="label">Name:</span><span><c:out value="${shownName}" /></span>
 			</div>
 			<div>
 				<a href="/user/account">Edit Info</a> |

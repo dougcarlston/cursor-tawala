@@ -29,7 +29,7 @@ public class LogoutController implements Controller {
 
         handleLogout(request, response);
 
-        response.sendRedirect(WellKnown.urls.getHomePage());
+        response.sendRedirect(WellKnown.urls.getHome());
         
         return null;
     }

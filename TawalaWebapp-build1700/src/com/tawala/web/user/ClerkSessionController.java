@@ -30,18 +30,20 @@ import com.tawala.web.WorldInitializer;
 /**
  * Clerk owns sign-up and login. This accepts a Clerk session token, checks
  * Clerk's signature, and opens the existing Tawala session for that person.
- * A Clerk user whose signed token includes a user name opens that existing
- * Tawala account. The name is taken from the token, not from the browser.
- * A Clerk user with no matching Tawala account becomes a new account.
+ * The account is stored and found by Clerk's permanent id (the token's sub).
+ * A username in the signed token is the name shown on the page. It is never
+ * used to open a different Tawala account.
  */
 public class ClerkSessionController implements Controller {
-	private static final String ISSUER = "https://rare-bat-6337.clerk.accounts.dev";
-	private static final String JWKS_URL = ISSUER + "/.well-known/jwks.json";
+	private static final String DEV_ISSUER = "https://rare-bat-6337.clerk.accounts.dev";
+	private static final String PROD_ISSUER = "https://clerk.teacherexams.org";
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 	private static final SecureRandom RANDOM = new SecureRandom();
 	private static final long CLOCK_SKEW_SECONDS = 60;
-	private static volatile String cachedJwks = null;
-	private static volatile long cachedJwksAt = 0;
+	private static volatile String cachedDevJwks = null;
+	private static volatile long cachedDevJwksAt = 0;
+	private static volatile String cachedProdJwks = null;
+	private static volatile long cachedProdJwksAt = 0;
 
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -72,12 +74,12 @@ public class ClerkSessionController implements Controller {
 			return null;
 		}
 
-		User user = existingAccount(claims);
-		if (user == null) {
-			user = WorldInitializer.getDefaultWorld().domain().users().get(clerkId);
-		}
+		User user = WorldInitializer.getDefaultWorld().domain().users().get(clerkId);
 		if (user == null) {
 			user = createAccount(clerkId, body);
+		}
+		if (user != null) {
+			rememberShownName(user, claimedName(claims));
 		}
 		if (user == null || user.isSuspended() || !user.getStatus().isAllowedToLogOn()) {
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -91,12 +93,24 @@ public class ClerkSessionController implements Controller {
 		return null;
 	}
 
-	private static User existingAccount(JSONObject claims) {
+	private static String claimedName(JSONObject claims) {
 		String name = claims.optString("username", "");
 		if (!name.matches("[A-Za-z0-9_]{1,40}")) {
 			return null;
 		}
-		return WorldInitializer.getDefaultWorld().domain().users().get(name);
+		return name;
+	}
+
+	private void rememberShownName(User user, String chosen) {
+		if (chosen == null) {
+			return;
+		}
+		String shown = clip(chosen, 20);
+		if (shown.equals(user.getFirstName())) {
+			return;
+		}
+		user.setFirstName(shown);
+		WorldInitializer.getDefaultWorld().domain().users().addOrSave(user);
 	}
 
 	private User createAccount(String clerkId, JSONObject body) {
@@ -133,8 +147,13 @@ public class ClerkSessionController implements Controller {
 		if (!"RS256".equals(header.optString("alg"))) {
 			throw new IllegalArgumentException("unexpected algorithm");
 		}
+		JSONObject unsigned = new JSONObject(new String(base64Url(parts[1]), UTF8));
+		String issuer = unsigned.optString("iss", "");
+		if (!DEV_ISSUER.equals(issuer) && !PROD_ISSUER.equals(issuer)) {
+			throw new IllegalArgumentException("unexpected issuer");
+		}
 		String kid = header.optString("kid", "");
-		PublicKey key = keyFor(kid);
+		PublicKey key = keyFor(issuer, kid);
 		if (key == null) {
 			throw new IllegalArgumentException("unknown signing key");
 		}
@@ -146,7 +165,8 @@ public class ClerkSessionController implements Controller {
 		}
 
 		JSONObject claims = new JSONObject(new String(base64Url(parts[1]), UTF8));
-		if (!ISSUER.equals(claims.optString("iss"))) {
+		if (!DEV_ISSUER.equals(claims.optString("iss"))
+				&& !PROD_ISSUER.equals(claims.optString("iss"))) {
 			throw new IllegalArgumentException("unexpected issuer");
 		}
 		String sub = claims.optString("sub", "");
@@ -183,23 +203,27 @@ public class ClerkSessionController implements Controller {
 		}
 	}
 
-	private static PublicKey keyFor(String kid) throws Exception {
+	private static PublicKey keyFor(String issuer, String kid) throws Exception {
 		if (kid == null || kid.length() == 0) {
 			return null;
 		}
-		PublicKey key = keyFromJwks(jwks(false), kid);
+		PublicKey key = keyFromJwks(jwks(issuer, false), kid);
 		if (key == null) {
-			key = keyFromJwks(jwks(true), kid);
+			key = keyFromJwks(jwks(issuer, true), kid);
 		}
 		return key;
 	}
 
-	private static String jwks(boolean force) throws Exception {
+	private static String jwks(String issuer, boolean force) throws Exception {
 		long now = System.currentTimeMillis();
-		if (!force && cachedJwks != null && now - cachedJwksAt < 10 * 60 * 1000L) {
-			return cachedJwks;
+		boolean prod = PROD_ISSUER.equals(issuer);
+		String cached = prod ? cachedProdJwks : cachedDevJwks;
+		long cachedAt = prod ? cachedProdJwksAt : cachedDevJwksAt;
+		if (!force && cached != null && now - cachedAt < 10 * 60 * 1000L) {
+			return cached;
 		}
-		HttpURLConnection connection = (HttpURLConnection) new URL(JWKS_URL)
+		String url = issuer + "/.well-known/jwks.json";
+		HttpURLConnection connection = (HttpURLConnection) new URL(url)
 				.openConnection();
 		connection.setConnectTimeout(5000);
 		connection.setReadTimeout(5000);
@@ -216,9 +240,14 @@ public class ClerkSessionController implements Controller {
 				body.append(line);
 			}
 			reader.close();
-			cachedJwks = body.toString();
-			cachedJwksAt = now;
-			return cachedJwks;
+			if (prod) {
+				cachedProdJwks = body.toString();
+				cachedProdJwksAt = now;
+				return cachedProdJwks;
+			}
+			cachedDevJwks = body.toString();
+			cachedDevJwksAt = now;
+			return cachedDevJwks;
 		} finally {
 			connection.disconnect();
 		}

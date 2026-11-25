@@ -10,8 +10,8 @@
   const SESSION_KEY = "tawala.mock.session";
   /** Explicit guest/browse mode — set by Logout. Cleared by Login. */
   const GUEST_KEY = "tawala.mock.guest";
-  const CLERK_PUBLISHABLE_KEY = "pk_test_cmFyZS1iYXQtNjMzNy5jbGVyay5hY2NvdW50cy5kZXYk";
-  const CLERK_JS_URL = "https://rare-bat-6337.clerk.accounts.dev/npm/@clerk/clerk-js@4.73.14/dist/clerk.browser.js";
+  const CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsudGVhY2hlcmV4YW1zLm9yZyQ";
+  const CLERK_JS_URL = "https://clerk.teacherexams.org/npm/@clerk/clerk-js@4.73.14/dist/clerk.browser.js";
 
   let clerkInstance = null;
   let clerkLoaded = false;
@@ -91,7 +91,15 @@
         });
       }
       hideLegacyPrototypeMethods();
-      if (!clerkIsLoaded()) await window.Clerk.load();
+      if (!clerkIsLoaded()) {
+        await window.Clerk.load({
+          navigate: (to) => {
+            window.location.assign(to);
+          },
+          afterSignInUrl: absoluteReturnUrl(),
+          afterSignUpUrl: absoluteReturnUrl(),
+        });
+      }
       clerkInstance = window.Clerk;
       clerkLoaded = true;
       return window.Clerk;
@@ -157,61 +165,76 @@
     document.cookie = "x=; Path=/; Max-Age=0";
   }
 
+  function clerkSignedOut() {
+    try {
+      return sessionStorage.getItem("tawala.clerk.signedOut") === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  function markClerkSignedOut() {
+    try {
+      sessionStorage.setItem("tawala.clerk.signedOut", "1");
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function clearClerkSignedOut() {
+    try {
+      sessionStorage.removeItem("tawala.clerk.signedOut");
+    } catch {
+      /* ignore */
+    }
+  }
+
   let clerkListenerAttached = false;
 
-  async function bindPublicClerkAccount() {
-    if (authHold() && !authAwaiting()) return;
-    const clerkUser = window.Clerk && window.Clerk.user;
-    if (!clerkUser || !clerkUser.id) return;
-    let already = "";
+  let publicBindInFlight = false;
+
+  function showClerkHandoff(text) {
     try {
-      const res = await fetch("/home", { credentials: "same-origin", cache: "no-store" });
-      const html = res.ok ? await res.text() : "";
-      const match = String(html).match(/Welcome back,\s*<span class="userName">([^<]*)<\/span>/);
-      already = match ? match[1].trim() : "";
-    } catch {
-      already = "";
-    }
-    const clerkName = clerkUser.username || "";
-    const samePerson = already === clerkUser.id || (clerkName !== "" && already === clerkName);
-    if (samePerson) {
-      try {
-        sessionStorage.setItem("tawala.clerk.bind", clerkUser.id);
-        sessionStorage.removeItem("tawala.clerk.bind.retry");
-        sessionStorage.removeItem("tawala.clerk.bind.attempt");
-      } catch {
-        /* ignore */
-      }
-      return;
-    }
-    try {
-      const stamp = clerkUser.id + ":" + already;
-      if (sessionStorage.getItem("tawala.clerk.bind.attempt") === stamp) return;
-      sessionStorage.setItem("tawala.clerk.bind.attempt", stamp);
+      sessionStorage.setItem("tawala.clerk.handoff", text);
     } catch {
       /* ignore */
     }
-    try {
-      if (sessionStorage.getItem("tawala.clerk.bind") === clerkUser.id) {
-        if (sessionStorage.getItem("tawala.clerk.bind.retry") === clerkUser.id) return;
-        sessionStorage.setItem("tawala.clerk.bind.retry", clerkUser.id);
-      }
-    } catch {
-      /* ignore */
+    let note = document.getElementById("tawala-clerk-handoff");
+    if (!note) {
+      note = document.createElement("p");
+      note.id = "tawala-clerk-handoff";
+      note.style.cssText = "margin:8px 16px;color:#8a1f11;font:16px Georgia,serif;position:relative;z-index:100000;";
+      if (document.body) document.body.insertBefore(note, document.body.firstChild);
     }
-    let token = "";
-    try {
-      token = window.Clerk.session ? await window.Clerk.session.getToken() : "";
-    } catch {
-      token = "";
+    note.textContent = text;
+    const dialog = document.querySelector("[role=dialog]");
+    if (!dialog) return;
+    let inline = dialog.querySelector("[data-tawala-clerk-note]");
+    if (!inline) {
+      inline = document.createElement("p");
+      inline.setAttribute("data-tawala-clerk-note", "1");
+      inline.style.cssText = "margin:12px 24px 0;color:#8a1f11;font:16px Georgia,serif;";
+      dialog.insertBefore(inline, dialog.firstChild);
     }
-    if (!token) return;
-    if (authHold() && !authAwaiting()) return;
+    inline.textContent = text;
+  }
+
+  function clerkErrorText(err) {
+    if (!err) return "";
+    const first = err.errors && err.errors[0];
+    const text = first
+      ? first.longMessage || first.message || first.code || ""
+      : err.message || String(err);
+    return String(text).replace(/\s+/g, " ").trim().slice(0, 180);
+  }
+
+  async function submitClerkToken(token, clerkUser) {
+    const person = clerkUser || {};
     const email =
-      clerkUser.primaryEmailAddress && clerkUser.primaryEmailAddress.emailAddress
-        ? clerkUser.primaryEmailAddress.emailAddress
+      person.primaryEmailAddress && person.primaryEmailAddress.emailAddress
+        ? person.primaryEmailAddress.emailAddress
         : "";
-    let ok = false;
+    let status = 0;
     try {
       const res = await fetch("/user/clerk-session", {
         method: "POST",
@@ -220,24 +243,131 @@
         body: JSON.stringify({
           token: token,
           email: email,
-          firstName: clerkUser.firstName || "",
-          lastName: clerkUser.lastName || "",
+          firstName: person.firstName || "",
+          lastName: person.lastName || "",
         }),
       });
-      ok = res.ok;
+      status = res.status;
+      if (!res.ok) {
+        showClerkHandoff("Clerk signed in, and Home refused it (" + status + ").");
+        return false;
+      }
     } catch {
-      ok = false;
+      showClerkHandoff("Clerk signed in, and Home could not be reached.");
+      return false;
     }
-    if (!ok) return;
-    if (authHold() && !authAwaiting()) return;
-    try {
-      sessionStorage.setItem("tawala.clerk.bind", clerkUser.id);
-    } catch {
-      /* ignore */
-    }
+    clearClerkHandoff();
     const back = absoluteReturnUrl();
     if (back === location.href) location.reload();
     else location.href = back;
+    return true;
+  }
+
+  function clearClerkHandoff() {
+    try {
+      sessionStorage.removeItem("tawala.clerk.handoff");
+    } catch {
+      /* ignore */
+    }
+    const note = document.getElementById("tawala-clerk-handoff");
+    if (note && note.parentNode) note.parentNode.removeChild(note);
+  }
+
+  function restoreClerkHandoff() {
+    let text = "";
+    try {
+      text = sessionStorage.getItem("tawala.clerk.handoff") || "";
+    } catch {
+      text = "";
+    }
+    if (text) showClerkHandoff(text);
+  }
+
+  async function bindPublicClerkAccount() {
+    if (publicBindInFlight || publicSignOutStarted) return;
+    if (authHold() && !authAwaiting()) return;
+    const clerkUser = window.Clerk && window.Clerk.user;
+    if (!clerkUser || !clerkUser.id) return;
+    publicBindInFlight = true;
+    try {
+      let already = "";
+      try {
+        const res = await fetch("/home", { credentials: "same-origin", cache: "no-store" });
+        const html = res.ok ? await res.text() : "";
+        const match = String(html).match(/Welcome back,\s*<span class="userName">([^<]*)<\/span>/);
+        already = match ? match[1].trim() : "";
+      } catch {
+        already = "";
+      }
+      const clerkName = clerkUser.username || "";
+      const samePerson = already === clerkUser.id || (clerkName !== "" && already === clerkName);
+      if (samePerson) {
+        try {
+          sessionStorage.setItem("tawala.clerk.bind", clerkUser.id);
+        } catch {
+          /* ignore */
+        }
+        clearClerkHandoff();
+        return;
+      }
+      let token = "";
+      for (let attempt = 0; attempt < 4 && !token; attempt++) {
+        const session = window.Clerk.session;
+        try {
+          token = session
+            ? await Promise.race([
+                session.getToken(),
+                new Promise((resolve) => setTimeout(() => resolve(""), 5000)),
+              ])
+            : "";
+        } catch {
+          token = "";
+        }
+        if (!token) await new Promise((resolve) => setTimeout(resolve, 400));
+      }
+      if (!token) {
+        showClerkHandoff("Clerk signed in, and Home did not receive the sign-in.");
+        return;
+      }
+      if (authHold() && !authAwaiting()) return;
+      const email =
+        clerkUser.primaryEmailAddress && clerkUser.primaryEmailAddress.emailAddress
+          ? clerkUser.primaryEmailAddress.emailAddress
+          : "";
+      let status = 0;
+      try {
+        const res = await fetch("/user/clerk-session", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: token,
+            email: email,
+            firstName: clerkUser.firstName || "",
+            lastName: clerkUser.lastName || "",
+          }),
+        });
+        status = res.status;
+        if (!res.ok) {
+          showClerkHandoff("Clerk signed in, and Home refused it (" + status + ").");
+          return;
+        }
+      } catch {
+        showClerkHandoff("Clerk signed in, and Home could not be reached.");
+        return;
+      }
+      try {
+        sessionStorage.setItem("tawala.clerk.bind", clerkUser.id);
+      } catch {
+        /* ignore */
+      }
+      clearClerkHandoff();
+      const back = absoluteReturnUrl();
+      if (back === location.href) location.reload();
+      else location.href = back;
+    } finally {
+      publicBindInFlight = false;
+    }
   }
 
   function authCleared() {
@@ -248,11 +378,123 @@
     }
   }
 
+  function clerkSessions() {
+    const clerk = window.Clerk;
+    const list = clerk && clerk.client && clerk.client.sessions;
+    const sessions = [];
+    if (!list) return sessions;
+    for (let i = 0; i < list.length; i++) {
+      const session = list[i];
+      if (!session || !session.id) continue;
+      const status = session.status || "";
+      if (
+        status === "expired" ||
+        status === "removed" ||
+        status === "abandoned" ||
+        status === "ended" ||
+        status === "revoked" ||
+        status === "replaced"
+      ) {
+        continue;
+      }
+      sessions.push(session);
+    }
+    return sessions;
+  }
+
+  function clerkActiveSession() {
+    const clerk = window.Clerk;
+    if (!clerk) return null;
+    if (clerk.session && clerk.session.id && clerk.session.status !== "expired") return clerk.session;
+    const sessions = clerkSessions();
+    for (let i = 0; i < sessions.length; i++) {
+      if (sessions[i].status === "active" || sessions[i].status === "pending") return sessions[i];
+    }
+    return sessions[0] || null;
+  }
+
+  let adoptClerkSessionStarted = false;
+
+  async function adoptClerkSession() {
+    const clerk = window.Clerk;
+    if (clerkSignedOut() || adoptClerkSessionStarted || !clerk || publicSignOutStarted) return false;
+    adoptClerkSessionStarted = true;
+    let switched = false;
+    try {
+      if (!clerk.user) {
+        const session = clerkActiveSession();
+        if (!session || typeof clerk.setActive !== "function") return false;
+        switched = true;
+        let switchError = "";
+        try {
+          await Promise.race([
+            clerk.setActive({ session: session }),
+            new Promise((_, reject) => {
+              setTimeout(() => reject(new Error("timeout")), 4000);
+            }),
+          ]);
+        } catch (err) {
+          switchError = clerkErrorText(err);
+        }
+        const deadline = Date.now() + 1500;
+        while (!clerk.user && Date.now() < deadline) {
+          await new Promise((resolve) => setTimeout(resolve, 50));
+        }
+        if (!clerk.user) {
+          let token = "";
+          try {
+            if (typeof session.touch === "function") {
+              await Promise.race([
+                session.touch(),
+                new Promise((resolve) => setTimeout(resolve, 4000)),
+              ]);
+            }
+          } catch (err) {
+            switchError = clerkErrorText(err) || switchError;
+          }
+          try {
+            token = await Promise.race([
+              session.getToken(),
+              new Promise((resolve) => setTimeout(() => resolve(""), 5000)),
+            ]);
+          } catch (err) {
+            switchError = clerkErrorText(err) || switchError;
+            token = "";
+          }
+          if (token) return submitClerkToken(token, session.user);
+          showClerkHandoff(
+            "Clerk has a sign-in, and this page could not switch it on." +
+              (switchError ? " " + switchError : "")
+          );
+          return false;
+        }
+      }
+      if (!clerk.user) return false;
+    try {
+      if (typeof clerk.closeSignIn === "function") clerk.closeSignIn();
+    } catch {
+      /* ignore */
+    }
+    try {
+      sessionStorage.removeItem("tawala.auth.hold");
+      sessionStorage.setItem("tawala.auth.await", "1");
+      sessionStorage.setItem("tawala.auth.cleared", "1");
+    } catch {
+      /* ignore */
+    }
+    bindPublicClerkAccount();
+    return true;
+    } catch {
+      if (switched) showClerkHandoff("Clerk has a sign-in, and this page could not switch it on.");
+      return false;
+    } finally {
+      adoptClerkSessionStarted = false;
+    }
+  }
+
   function maybeBindAfterPrompt() {
-    if (publicBindStarted || !isPublicSite()) return;
-    if (!authAwaiting() || !authCleared()) return;
+    if (publicSignOutStarted || !isPublicSite()) return;
     if (!window.Clerk || !window.Clerk.user) return;
-    publicBindStarted = true;
     try {
       sessionStorage.removeItem("tawala.auth.hold");
       sessionStorage.removeItem("tawala.auth.await");
@@ -262,6 +504,20 @@
       /* ignore */
     }
     bindPublicClerkAccount();
+  }
+
+  let alreadySignedInHandled = false;
+
+  async function finishAlreadySignedIn() {
+    if (alreadySignedInHandled || publicSignOutStarted) return;
+    alreadySignedInHandled = true;
+    const clerk = window.Clerk;
+    if (!clerk) {
+      alreadySignedInHandled = false;
+      return;
+    }
+    showClerkHandoff("Clerk already has this sign-in. Finishing it.");
+    await adoptClerkSession();
   }
 
   function onClerkReady() {
@@ -275,8 +531,7 @@
       if (!clerkListenerAttached) {
         clerkListenerAttached = true;
         clerkInstance.addListener((emission) => {
-          if (!emission || !emission.user) return;
-          if (authHold() && !authAwaiting()) return;
+          if (!emission || !emission.user || publicSignOutStarted || clerkSignedOut()) return;
           maybeBindAfterPrompt();
         });
       }
@@ -286,7 +541,12 @@
         continueClerkPrompt(pending);
         return;
       }
-      if (authHold() && !(authAwaiting() && authCleared() && clerkInstance.user)) return;
+      if (clerkSignedOut()) return;
+      if (!publicSignOutStarted && (clerkInstance.user || clerkActiveSession())) {
+        adoptClerkSession();
+        return;
+      }
+      if (authHold() && !authAwaiting()) return;
       maybeBindAfterPrompt();
       return;
     }
@@ -474,38 +734,52 @@
 
   async function clearClerkSession() {
     const clerk = window.Clerk;
-    if (!clerk || (!clerk.user && !clerk.session)) return;
+    if (!clerk) return;
+    const client = clerk.client;
     try {
-      if (typeof clerk.signOut === "function") await clerk.signOut();
+      if (client && typeof client.destroy === "function") {
+        await Promise.race([
+          client.destroy(),
+          new Promise((resolve) => setTimeout(resolve, 4000)),
+        ]);
+      }
     } catch {
       /* ignore */
     }
-    const deadline = Date.now() + 2500;
-    while ((clerk.user || clerk.session) && Date.now() < deadline) {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    }
-    /* signOut schedules closeSignIn(); let that finish before opening a window. */
-    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   let promptSerial = 0;
   let clerkDialogSawFields = false;
 
   async function continueClerkPrompt(kind) {
-    const serial = ++promptSerial;
+    clearClerkSignedOut();
     publicBindStarted = false;
-    holdClerkAttach();
-    await clearClerkSession();
-    if (serial !== promptSerial) return;
-    if (window.Clerk && (window.Clerk.user || window.Clerk.session)) {
-      console.warn("[TawalaChrome] Clerk session still present; sign-in window was not opened.");
-      return;
+    try {
+      await clearClerkSession();
+    } catch {
+      /* ignore */
     }
     try {
       sessionStorage.setItem("tawala.auth.hold", "1");
       sessionStorage.setItem("tawala.auth.await", "1");
       sessionStorage.setItem("tawala.auth.cleared", "1");
       sessionStorage.setItem("tawala.auth.return", absoluteReturnUrl());
+    } catch {
+      /* ignore */
+    }
+    try {
+      const signIn = window.Clerk && window.Clerk.client && window.Clerk.client.signIn;
+      if (
+        signIn &&
+        signIn.status &&
+        signIn.status !== "needs_identifier" &&
+        typeof signIn.create === "function"
+      ) {
+        await Promise.race([
+          signIn.create({}),
+          new Promise((resolve) => setTimeout(resolve, 1500)),
+        ]);
+      }
     } catch {
       /* ignore */
     }
@@ -519,8 +793,78 @@
     } catch (err) {
       console.warn("[TawalaChrome] Clerk window warning:", err);
     }
-    rememberClerkFields();
-    leaveBlankSignInWindow(serial);
+  }
+
+  function clerkSurfaceText() {
+    const bits = [];
+    const visit = (node) => {
+      if (!node) return;
+      if (node.nodeType === 1) {
+        if (node.shadowRoot) visit(node.shadowRoot);
+        if (node.getAttribute && node.getAttribute("role") === "dialog") {
+          bits.push(node.innerText || "");
+        }
+      }
+      const kids = node.children;
+      for (let i = 0; kids && i < kids.length; i++) visit(kids[i]);
+    };
+    if (document.body) visit(document.body);
+    return bits.join("\n");
+  }
+
+  function watchClerkAnswer() {
+    if (watchClerkAnswer.started) return;
+    watchClerkAnswer.started = true;
+    let stuckSince = 0;
+    setInterval(() => {
+      if (window.Clerk && window.Clerk.user) {
+        adoptClerkSession();
+        return;
+      }
+      const dialog = document.querySelector("[role=dialog]");
+      const surface = clerkSurfaceText();
+      const pageText = surface || (document.body ? document.body.innerText : "");
+      if (/already signed in/i.test(pageText)) {
+        finishAlreadySignedIn();
+        return;
+      }
+      if (!dialog) {
+        stuckSince = 0;
+        return;
+      }
+      const buttons = dialog.querySelectorAll("button");
+      let spinning = false;
+      for (let i = 0; i < buttons.length; i++) {
+        const button = buttons[i];
+        if (!button.disabled) continue;
+        const label = (button.getAttribute("aria-label") || button.textContent || "").replace(/\s+/g, " ").trim();
+        if (/continue/i.test(label)) spinning = true;
+      }
+      const blank = !dialog.querySelector("input, textarea") && (dialog.innerText || "").replace(/\s+/g, " ").trim().length < 40;
+      if (!spinning && !blank) {
+        stuckSince = 0;
+        const old = dialog.querySelector("[data-tawala-clerk-note]");
+        if (old) old.remove();
+        return;
+      }
+      if (!stuckSince) stuckSince = Date.now();
+      if (Date.now() - stuckSince < 8000) return;
+      const signIn = window.Clerk && window.Clerk.client && window.Clerk.client.signIn;
+      const verification = signIn && signIn.firstFactorVerification;
+      const clerkError = verification && verification.error;
+      const message = (clerkError && (clerkError.longMessage || clerkError.message))
+        || "Clerk did not answer. Close this window. Do not click Continue again.";
+      let note = dialog.querySelector("[data-tawala-clerk-note]");
+      if (!note) {
+        note = document.createElement("p");
+        note.setAttribute("data-tawala-clerk-note", "1");
+        note.style.margin = "12px 24px 0";
+        note.style.color = "#9b1c1c";
+        note.style.font = "15px Georgia, serif";
+        dialog.appendChild(note);
+      }
+      note.textContent = message;
+    }, 500);
   }
 
   function rememberClerkFields() {
@@ -556,8 +900,15 @@
     if (publicSignOutStarted) return;
     publicSignOutStarted = true;
     pendingClerkAction = "";
+    markClerkSignedOut();
     holdClerkAttach();
     clearKeepSignedInCookie();
+    try {
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.setItem(GUEST_KEY, "1");
+    } catch {
+      /* ignore */
+    }
     try {
       await Promise.race([
         ensureClerk(),
@@ -576,7 +927,7 @@
     } catch {
       /* ignore */
     }
-    location.href = "/home";
+    location.href = "/";
   }
 
   function signOutAndLeave() {
@@ -592,11 +943,13 @@
     if (requested && requested !== "/") return requested;
     const path = location.pathname || "/";
     if (
-      path === "/" ||
       path.endsWith("/login.html") ||
       path.endsWith("/signup.html")
     ) {
       return "/home";
+    }
+    if (path === "/") {
+      return "/" + (location.search || "");
     }
     return path + (location.search || "");
   }
@@ -613,8 +966,8 @@
   function clerkOpenOptions() {
     const target = absoluteReturnUrl();
     return {
-      fallbackRedirectUrl: target,
-      signUpFallbackRedirectUrl: target,
+      afterSignInUrl: target,
+      afterSignUpUrl: target,
     };
   }
 
@@ -1017,6 +1370,7 @@
   }
 
   function mount() {
+    restoreClerkHandoff();
     initClerk();
     const body = document.body;
     const activePage = body.dataset.tawalaPage || "home";
@@ -1048,9 +1402,13 @@
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
-      if (isPublicSite()) initClerk();
+      if (isPublicSite()) {
+        restoreClerkHandoff();
+        initClerk();
+      }
     });
   } else if (isPublicSite()) {
+    restoreClerkHandoff();
     initClerk();
   }
 

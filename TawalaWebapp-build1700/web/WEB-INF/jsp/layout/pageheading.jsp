@@ -1,5 +1,6 @@
 <%@ taglib prefix="tiles" uri="http://jakarta.apache.org/struts/tags-tiles" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tawala" uri="http://www.tawala.com/tags" %>
@@ -48,7 +49,11 @@
 		<div id="statusLoggedIn" style="display: none;">
 		<c:choose>
 			<c:when test="${! empty user.id}">
-				Welcome back, <span class="userName"><c:out value="${user.id}" /></span>.
+				<c:set var="shownName" value="${user.id}" />
+				<c:if test="${fn:startsWith(user.id, 'user_') and not empty user.firstName}">
+					<c:set var="shownName" value="${user.firstName}" />
+				</c:if>
+				Welcome back, <span class="userName"><c:out value="${shownName}" /></span>.
 			</c:when>
 			<c:otherwise>
 				Welcome back!
@@ -84,7 +89,7 @@
 	}
 </script>
 <script>window.TAWALA_PUBLIC_SITE=true;</script>
-<script src="/app/js/chrome.js?v=20261123-same11"></script>
+<script src="/app/js/chrome.js?v=20261124-clerk16"></script>
 <script>
 	function openClerkAccount(action) {
 		if (!window.TawalaChrome) return;

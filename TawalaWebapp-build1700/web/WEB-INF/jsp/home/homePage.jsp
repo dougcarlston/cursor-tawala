@@ -56,7 +56,11 @@
 					<c:choose>
 						<c:when test="${! empty user}">
 							Welcome back,
-							<span class="userName"><c:out value="${user.id}" /></span>.
+							<c:set var="shownName" value="${user.id}" />
+							<c:if test="${fn:startsWith(user.id, 'user_') and not empty user.firstName}">
+								<c:set var="shownName" value="${user.firstName}" />
+							</c:if>
+							<span class="userName"><c:out value="${shownName}" /></span>.
 							<a class="headingStatusLink" href="/logout">Logout</a>
 						</c:when>
 						<c:otherwise>
@@ -65,7 +69,7 @@
 					</c:choose>        
 				</div>
 <script>window.TAWALA_PUBLIC_SITE=true;</script>
-<script src="/app/js/chrome.js?v=20261123-same11"></script>
+<script src="/app/js/chrome.js?v=20261124-clerk16"></script>
 <script>
 	function openClerkAccount(action) {
 		if (!window.TawalaChrome) return;

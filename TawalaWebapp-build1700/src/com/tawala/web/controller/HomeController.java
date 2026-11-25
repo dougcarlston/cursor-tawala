@@ -33,13 +33,7 @@ public class HomeController implements Controller {
 
         */
 		
-		String target = WellKnown.urls.getHomePage();
-		String query = request.getQueryString();
-		if (query != null && query.length() > 0) {
-			target = target + "?" + query;
-		}
-		response.sendRedirect(target);
-		return null;
+		return new com.tawala.web.general.HomePageController().handleRequest(request, response);
 	}
 
 }
